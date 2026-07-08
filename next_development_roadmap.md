@@ -40,9 +40,11 @@ Fokus pada aspek keamanan data, kepatuhan (compliance), kelengkapan bukti transa
 - **Tingkat Kesulitan**: Menengah - Tinggi
 - **Estimasi Waktu**: 7 - 10 Hari Kerja.
 
-### F. Sistem Notifikasi Transaksi Baru
+### F. Sistem Notifikasi Transaksi Baru - [SELESAI / IMPLEMENTED]
 - **Manfaat**: Memberitahu pengurus yayasan (misal Ketua atau Viewer) ketika ada donasi masuk bernominal besar atau ada pengajuan pengeluaran baru yang memerlukan persetujuan.
-- **Tingkat Kesulitan**: Menengah (notifikasi in-app menggunakan Supabase Realtime).
+- **Status**: Selesai diimplementasikan. Menggunakan trigger database Supabase dan listener reaktif stream reaktif di Flutter.
+- **Dokumentasi**: [docs/features/notifications.md](file:///Users/ahmadbasymeleh/Documents/Development/Flutter%20Projects/yayasan_finance/docs/features/notifications.md)
+- **Tingkat Kesulitan**: Menengah
 - **Estimasi Waktu**: 4 - 6 Hari Kerja.
 
 ### G. Chart of Accounts (COA) Yayasan Sesuai Standar PSAK / ISAK 35 Indonesia Terbaru - [SELESAI / IMPLEMENTED]

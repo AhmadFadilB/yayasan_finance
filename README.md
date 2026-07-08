@@ -47,6 +47,10 @@ Berikut adalah daftar fitur utama yang telah diimplementasikan dalam aplikasi, b
 *   **Deskripsi:** Pengeluaran dana yayasan bernominal besar (>= Rp1.000.000) yang dicatat oleh bendahara akan ditandakan sebagai Tertunda (`pending`), dan memerlukan verifikasi serta persetujuan resmi oleh Pimpinan/Ketua Yayasan sebelum memotong neraca saldo keuangan yayasan.
 *   **Dokumentasi Detail:** [Alur Persetujuan Transaksi (docs/features/transaction_approval.md)](file:///Users/ahmadbasymeleh/Documents/Development/Flutter%20Projects/yayasan_finance/docs/features/transaction_approval.md)
 
+### 12. Sistem Notifikasi Transaksi Baru (In-App Notification)
+*   **Deskripsi:** Menyajikan notifikasi secara realtime langsung di dalam aplikasi (in-app banner & bel notifikasi) ketika bendahara mengajukan pengeluaran pending, pimpinan menyetujui/menolak pengajuan, atau ketika yayasan menerima pemasukan nominal besar.
+*   **Dokumentasi Detail:** [Sistem Notifikasi Transaksi Baru (docs/features/notifications.md)](file:///Users/ahmadbasymeleh/Documents/Development/Flutter%20Projects/yayasan_finance/docs/features/notifications.md)
+
 ---
 
 ## Struktur Folder Kode Sumber

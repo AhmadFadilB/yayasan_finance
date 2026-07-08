@@ -9,7 +9,9 @@ import '../../reports/screens/report_screen.dart';
 import '../../transactions/screens/transaction_list_screen.dart';
 import '../../audit_logs/screens/audit_log_screen.dart';
 import '../../transactions/screens/approval_list_screen.dart';
+import '../../notifications/providers/notification_provider.dart';
 import '../../coa/screens/coa_list_screen.dart';
+import '../../../core/utils/formatter.dart';
 import 'dashboard_screen.dart';
 
 class MainNavigationScreen extends ConsumerStatefulWidget {
@@ -21,6 +23,142 @@ class MainNavigationScreen extends ConsumerStatefulWidget {
 
 class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
   int _selectedIndex = 0;
+
+  void _showNotificationCenter() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Consumer(
+          builder: (context, ref, child) {
+            final state = ref.watch(notificationProvider);
+            final role = ref.read(foundationProvider).activeFoundation?.currentUserRole ?? 'viewer';
+            final isAdmin = role == 'admin';
+
+            return AlertDialog(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Notifikasi',
+                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  if (state.unreadCount > 0)
+                    TextButton(
+                      onPressed: () {
+                        ref.read(notificationProvider.notifier).markAllAsRead();
+                      },
+                      child: Text(
+                        'Tandai Semua Dibaca',
+                        style: GoogleFonts.outfit(fontSize: 12, color: const Color(0xFF0D5C46), fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                ],
+              ),
+              content: SizedBox(
+                width: 400,
+                height: 400,
+                child: state.isLoading
+                    ? const Center(child: CircularProgressIndicator(color: Color(0xFF0D5C46)))
+                    : state.notifications.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(Icons.notifications_off_outlined, size: 48, color: Colors.grey),
+                                const SizedBox(height: 12),
+                                Text(
+                                  'Tidak ada notifikasi baru',
+                                  style: GoogleFonts.outfit(color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.separated(
+                            shrinkWrap: true,
+                            itemCount: state.notifications.length,
+                            separatorBuilder: (_, __) => const Divider(height: 1),
+                            itemBuilder: (context, index) {
+                              final notif = state.notifications[index];
+
+                              IconData iconData;
+                              Color iconColor;
+                              switch (notif.type) {
+                                case 'pending_approval':
+                                  iconData = Icons.rule_outlined;
+                                  iconColor = Colors.orange;
+                                  break;
+                                case 'large_income':
+                                  iconData = Icons.arrow_downward;
+                                  iconColor = const Color(0xFF2E7D32);
+                                  break;
+                                default:
+                                  iconData = Icons.info_outline;
+                                  iconColor = Colors.blue;
+                              }
+
+                              return ListTile(
+                                contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                                leading: CircleAvatar(
+                                  backgroundColor: iconColor.withAlpha(26),
+                                  child: Icon(iconData, color: iconColor, size: 18),
+                                ),
+                                title: Text(
+                                  notif.title,
+                                  style: GoogleFonts.outfit(
+                                    fontWeight: notif.isRead ? FontWeight.normal : FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      notif.message,
+                                      style: GoogleFonts.outfit(fontSize: 12, color: Colors.grey[700]),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      Formatter.formatTanggal(notif.createdAt),
+                                      style: GoogleFonts.outfit(fontSize: 10, color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
+                                trailing: !notif.isRead
+                                    ? Container(
+                                        width: 8,
+                                        height: 8,
+                                        decoration: const BoxDecoration(
+                                          color: Colors.red,
+                                          shape: BoxShape.circle,
+                                        ),
+                                      )
+                                    : null,
+                                onTap: () {
+                                  ref.read(notificationProvider.notifier).markAsRead(notif.id);
+                                  Navigator.pop(context);
+
+                                  if (notif.type == 'pending_approval' && isAdmin) {
+                                    setState(() {
+                                      _selectedIndex = 3; // Pindah ke tab Persetujuan
+                                    });
+                                  }
+                                },
+                              );
+                            },
+                          ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text('Tutup', style: GoogleFonts.outfit(color: Colors.grey)),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
 
   void _showFoundationMembersDialog(String foundationName) {
     showDialog(
@@ -122,6 +260,43 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Dengarkan notifikasi baru untuk memicu banner in-app secara realtime
+    ref.listen(notificationProvider, (previous, next) {
+      final newNotif = next.lastNewNotification;
+      if (newNotif != null) {
+        final role = ref.read(foundationProvider).activeFoundation?.currentUserRole ?? 'viewer';
+        final isAdmin = role == 'admin';
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(newNotif.title, style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+                Text(newNotif.message, style: GoogleFonts.outfit(fontSize: 12)),
+              ],
+            ),
+            backgroundColor: const Color(0xFF0D5C46),
+            duration: const Duration(seconds: 4),
+            action: SnackBarAction(
+              label: 'Buka',
+              textColor: Colors.white,
+              onPressed: () {
+                ref.read(notificationProvider.notifier).markAsRead(newNotif.id);
+                if (newNotif.type == 'pending_approval' && isAdmin) {
+                  setState(() {
+                    _selectedIndex = 3; // Pindah ke tab Persetujuan
+                  });
+                }
+              },
+            ),
+          ),
+        );
+        ref.read(notificationProvider.notifier).clearLastNewNotification();
+      }
+    });
+
     // Dengarkan pergantian yayasan untuk me-reset index
     ref.listen(foundationProvider, (previous, next) {
       if (previous?.activeFoundation?.id != next.activeFoundation?.id) {
@@ -269,6 +444,46 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
       appBar: AppBar(
         title: buildAppBarTitle(),
         actions: [
+          Consumer(
+            builder: (context, ref, child) {
+              final unreadCount = ref.watch(notificationProvider.select((s) => s.unreadCount));
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.notifications_outlined),
+                    tooltip: 'Notifikasi',
+                    onPressed: _showNotificationCenter,
+                  ),
+                  if (unreadCount > 0)
+                    Positioned(
+                      right: 8,
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 14,
+                          minHeight: 14,
+                        ),
+                        child: Text(
+                          '$unreadCount',
+                          style: GoogleFonts.outfit(
+                            color: Colors.white,
+                            fontSize: 8,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.people_outline),
             tooltip: 'Anggota Yayasan',
