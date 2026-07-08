@@ -1,0 +1,10 @@
+{
+  "eval_id": 1,
+  "eval_name": "audit-log-docs",
+  "prompt": "I have just completed implementing the 'Audit Log' feature. It records changes (who created, modified, or deleted project/transaction data, along with before/after values) using database triggers in Supabase. Please document this feature, update the roadmap status in next_development_roadmap.md, and register it in the main README.md.",
+  "assertions": [
+    "A feature documentation file exists under docs/features/audit_log.md",
+    "The status of Audit Log in next_development_roadmap.md is marked as implemented",
+    "README.md lists and links to the audit_log.md file under a Features section"
+  ]
+}

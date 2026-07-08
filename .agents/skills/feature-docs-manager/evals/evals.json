@@ -1,0 +1,15 @@
+{
+  "skill_name": "feature-docs-manager",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I have just completed implementing the 'Audit Log' feature. It records changes (who created, modified, or deleted project/transaction data, along with before/after values) using database triggers in Supabase. Please document this feature, update the roadmap status in next_development_roadmap.md, and register it in the main README.md.",
+      "expected_output": "A new feature documentation file under docs/features/audit_log.md detailing the Postgres trigger architecture and fields, an updated status for Audit Log in next_development_roadmap.md, and a new link under README.md."
+    },
+    {
+      "id": 2,
+      "prompt": "We've added the feature 'Ekspor Laporan ke format Excel (XLSX)' to enable the treasurer to export financial sheets. Please create the documentation, ensure next_development_roadmap.md is updated, and register it in the README.md index.",
+      "expected_output": "A documentation file docs/features/ekspor_laporan_excel.md describing the Excel export utility, an updated next_development_roadmap.md reflecting its implementation status, and a README.md reference linking to it."
+    }
+  ]
+}

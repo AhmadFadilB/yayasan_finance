@@ -1,0 +1,9 @@
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+
+// Implementasi khusus non-web (mobile/desktop) menyimpan ke Dokumen lokal
+Future<void> saveAndLaunchFile(List<int> bytes, String fileName) async {
+  final directory = await getApplicationDocumentsDirectory();
+  final file = File('${directory.path}/$fileName');
+  await file.writeAsBytes(bytes);
+}

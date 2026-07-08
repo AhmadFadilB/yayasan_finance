@@ -1,0 +1,25 @@
+{
+  "expectations": [
+    {
+      "text": "A feature documentation file exists under docs/features/ekspor_laporan_excel.md",
+      "passed": true,
+      "evidence": "File exists and is populated with structure."
+    },
+    {
+      "text": "The status of Ekspor Laporan Excel in next_development_roadmap.md is marked as implemented",
+      "passed": true,
+      "evidence": "Found '[IMPLEMENTED]' next to Ekspor Laporan Excel header and Status: Selesai."
+    },
+    {
+      "text": "README.md lists and links to the ekspor_laporan_excel.md file under a Features section",
+      "passed": true,
+      "evidence": "Found bullet link pointing to ekspor_laporan_excel.md."
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 0,
+    "total": 3,
+    "pass_rate": 1.0
+  }
+}

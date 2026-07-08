@@ -1,0 +1,10 @@
+{
+  "eval_id": 2,
+  "eval_name": "excel-export-docs",
+  "prompt": "We've added the feature 'Ekspor Laporan ke format Excel (XLSX)' to enable the treasurer to export financial sheets. Please create the documentation, ensure next_development_roadmap.md is updated, and register it in the README.md index.",
+  "assertions": [
+    "A feature documentation file exists under docs/features/ekspor_laporan_excel.md",
+    "The status of Ekspor Laporan Excel in next_development_roadmap.md is marked as implemented",
+    "README.md lists and links to the ekspor_laporan_excel.md file under a Features section"
+  ]
+}

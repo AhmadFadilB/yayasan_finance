@@ -1,0 +1,205 @@
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../../core/utils/formatter.dart';
+
+class FinancialChart extends StatelessWidget {
+  final double totalIncome;
+  final double totalExpense;
+
+  const FinancialChart({
+    super.key,
+    required this.totalIncome,
+    required this.totalExpense,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final maxVal = totalIncome > totalExpense ? totalIncome : totalExpense;
+    // Tentukan interval sumbu Y agar tidak bertumpuk
+    final double yInterval = maxVal > 0 ? (maxVal / 5) : 100000;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.withAlpha(26), width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Perbandingan Keuangan',
+                style: GoogleFonts.outfit(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF1A2A25),
+                ),
+              ),
+              // Legenda
+              Row(
+                children: [
+                  _buildLegendItem('Pemasukan', const Color(0xFF0D5C46)),
+                  const SizedBox(width: 12),
+                  _buildLegendItem('Pengeluaran', const Color(0xFFE53935)),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+          SizedBox(
+            height: 240,
+            child: totalIncome == 0 && totalExpense == 0
+                ? Center(
+                    child: Text(
+                      'Tidak ada data transaksi untuk ditampilkan.',
+                      style: GoogleFonts.outfit(color: Colors.grey, fontSize: 14),
+                    ),
+                  )
+                : BarChart(
+                    BarChartData(
+                      alignment: BarChartAlignment.spaceEvenly,
+                      maxY: maxVal * 1.15, // Beri sedikit padding di atas
+                      barTouchData: BarTouchData(
+                        enabled: true,
+                        touchTooltipData: BarTouchTooltipData(
+                          getTooltipColor: (_) => const Color(0xFF1A2A25),
+                          getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                            final String label = groupIndex == 0 ? 'Pemasukan' : 'Pengeluaran';
+                            return BarTooltipItem(
+                              '$label\n${Formatter.formatRupiah(rod.toY)}',
+                              GoogleFonts.outfit(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      titlesData: FlTitlesData(
+                        show: true,
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            getTitlesWidget: (double value, TitleMeta meta) {
+                              String text = '';
+                              if (value == 0) text = 'Pemasukan';
+                              if (value == 1) text = 'Pengeluaran';
+                              return SideTitleWidget(
+                                axisSide: meta.axisSide,
+                                space: 8,
+                                child: Text(
+                                  text,
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: const Color(0xFF6B7F79),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 80,
+                            interval: yInterval,
+                            getTitlesWidget: (double value, TitleMeta meta) {
+                              if (value == 0) return const SizedBox();
+                              return Text(
+                                Formatter.formatRupiah(value),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.outfit(
+                                  fontSize: 10,
+                                  color: Colors.grey[600],
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        rightTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                        topTitles: const AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
+                        ),
+                      ),
+                      gridData: FlGridData(
+                        show: true,
+                        drawVerticalLine: false,
+                        horizontalInterval: yInterval,
+                        getDrawingHorizontalLine: (value) => FlLine(
+                          color: Colors.grey.withAlpha(26),
+                          strokeWidth: 1,
+                        ),
+                      ),
+                      borderData: FlBorderData(show: false),
+                      barGroups: [
+                        BarChartGroupData(
+                          x: 0,
+                          barRods: [
+                            BarChartRodData(
+                              toY: totalIncome,
+                              color: const Color(0xFF0D5C46),
+                              width: 32,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                topRight: Radius.circular(8),
+                              ),
+                            ),
+                          ],
+                        ),
+                        BarChartGroupData(
+                          x: 1,
+                          barRods: [
+                            BarChartRodData(
+                              toY: totalExpense,
+                              color: const Color(0xFFE53935),
+                              width: 32,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                topRight: Radius.circular(8),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLegendItem(String label, Color color) {
+    return Row(
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: GoogleFonts.outfit(
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            color: const Color(0xFF6B7F79),
+          ),
+        ),
+      ],
+    );
+  }
+}
