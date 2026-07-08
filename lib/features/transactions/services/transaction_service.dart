@@ -9,7 +9,7 @@ class TransactionService {
     try {
       final response = await _supabase
           .from('transactions')
-          .select('*, projects(name), profiles(name), approver:approved_by(name)')
+          .select('*, projects(name), profiles!transactions_created_by_fkey(name), approver:approved_by(name)')
           .eq('foundation_id', foundationId)
           .order('transaction_date', ascending: false)
           .order('created_at', ascending: false);
@@ -33,7 +33,7 @@ class TransactionService {
       final response = await _supabase
           .from('transactions')
           .insert(data)
-          .select('*, projects(name), profiles(name), approver:approved_by(name)')
+          .select('*, projects(name), profiles!transactions_created_by_fkey(name), approver:approved_by(name)')
           .single();
       
       return TransactionModel.fromJson(response);
@@ -49,7 +49,7 @@ class TransactionService {
           .from('transactions')
           .update(transaction.toJson())
           .eq('id', transaction.id)
-          .select('*, projects(name), profiles(name), approver:approved_by(name)')
+          .select('*, projects(name), profiles!transactions_created_by_fkey(name), approver:approved_by(name)')
           .single();
       
       return TransactionModel.fromJson(response);
