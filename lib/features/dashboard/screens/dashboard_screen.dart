@@ -69,39 +69,77 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Filter Bar
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Ringkasan Keuangan',
-                          style: GoogleFonts.outfit(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1A2A25),
+                    isDesktop
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'Ringkasan Keuangan',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF1A2A25),
+                                ),
+                              ),
+                              SegmentedButton<DashboardFilter>(
+                                segments: const [
+                                  ButtonSegment(
+                                    value: DashboardFilter.thisMonth,
+                                    label: Text('Bulan Ini'),
+                                    icon: Icon(Icons.calendar_today_outlined, size: 16),
+                                  ),
+                                  ButtonSegment(
+                                    value: DashboardFilter.allTime,
+                                    label: Text('Semua Waktu'),
+                                    icon: Icon(Icons.all_inclusive, size: 16),
+                                  ),
+                                ],
+                                selected: {_activeFilter},
+                                onSelectionChanged: (newSelection) {
+                                  setState(() {
+                                    _activeFilter = newSelection.first;
+                                  });
+                                },
+                              ),
+                            ],
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Ringkasan Keuangan',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF1A2A25),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              SizedBox(
+                                width: double.infinity,
+                                child: SegmentedButton<DashboardFilter>(
+                                  segments: const [
+                                    ButtonSegment(
+                                      value: DashboardFilter.thisMonth,
+                                      label: Text('Bulan Ini'),
+                                      icon: Icon(Icons.calendar_today_outlined, size: 16),
+                                    ),
+                                    ButtonSegment(
+                                      value: DashboardFilter.allTime,
+                                      label: Text('Semua Waktu'),
+                                      icon: Icon(Icons.all_inclusive, size: 16),
+                                    ),
+                                  ],
+                                  selected: {_activeFilter},
+                                  onSelectionChanged: (newSelection) {
+                                    setState(() {
+                                      _activeFilter = newSelection.first;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        SegmentedButton<DashboardFilter>(
-                          segments: const [
-                            ButtonSegment(
-                              value: DashboardFilter.thisMonth,
-                              label: Text('Bulan Ini'),
-                              icon: Icon(Icons.calendar_today_outlined, size: 16),
-                            ),
-                            ButtonSegment(
-                              value: DashboardFilter.allTime,
-                              label: Text('Semua Waktu'),
-                              icon: Icon(Icons.all_inclusive, size: 16),
-                            ),
-                          ],
-                          selected: {_activeFilter},
-                          onSelectionChanged: (newSelection) {
-                            setState(() {
-                              _activeFilter = newSelection.first;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
                     const SizedBox(height: 24),
 
                     // Cards Panel (Responsive Layout)
@@ -148,26 +186,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                 isHighlight: true,
                               ),
                               const SizedBox(height: 16),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: _buildFinanceCard(
-                                      title: 'Pemasukan',
-                                      amount: totalIncome,
-                                      color: const Color(0xFF1E8267),
-                                      icon: Icons.trending_up,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: _buildFinanceCard(
-                                      title: 'Pengeluaran',
-                                      amount: totalExpense,
-                                      color: const Color(0xFFE53935),
-                                      icon: Icons.trending_down,
-                                    ),
-                                  ),
-                                ],
+                              _buildFinanceCard(
+                                title: 'Total Pemasukan',
+                                amount: totalIncome,
+                                color: const Color(0xFF1E8267),
+                                icon: Icons.trending_up,
+                              ),
+                              const SizedBox(height: 16),
+                              _buildFinanceCard(
+                                title: 'Total Pengeluaran',
+                                amount: totalExpense,
+                                color: const Color(0xFFE53935),
+                                icon: Icons.trending_down,
                               ),
                             ],
                           ),

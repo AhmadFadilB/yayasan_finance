@@ -19,38 +19,64 @@ class FinancialChart extends StatelessWidget {
     // Tentukan interval sumbu Y agar tidak bertumpuk
     final double yInterval = maxVal > 0 ? (maxVal / 5) : 100000;
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withAlpha(26), width: 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Perbandingan Keuangan',
-                style: GoogleFonts.outfit(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1A2A25),
-                ),
-              ),
-              // Legenda
-              Row(
-                children: [
-                  _buildLegendItem('Pemasukan', const Color(0xFF0D5C46)),
-                  const SizedBox(width: 12),
-                  _buildLegendItem('Pengeluaran', const Color(0xFFE53935)),
-                ],
-              ),
-            ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isMobile = constraints.maxWidth < 450;
+
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.grey.withAlpha(26), width: 1),
           ),
-          const SizedBox(height: 32),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              isMobile
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Perbandingan Keuangan',
+                          style: GoogleFonts.outfit(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF1A2A25),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            _buildLegendItem('Pemasukan', const Color(0xFF0D5C46)),
+                            const SizedBox(width: 12),
+                            _buildLegendItem('Pengeluaran', const Color(0xFFE53935)),
+                          ],
+                        ),
+                      ],
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Perbandingan Keuangan',
+                          style: GoogleFonts.outfit(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF1A2A25),
+                          ),
+                        ),
+                        // Legenda
+                        Row(
+                          children: [
+                            _buildLegendItem('Pemasukan', const Color(0xFF0D5C46)),
+                            const SizedBox(width: 12),
+                            _buildLegendItem('Pengeluaran', const Color(0xFFE53935)),
+                          ],
+                        ),
+                      ],
+                    ),
+              const SizedBox(height: 32),
           SizedBox(
             height: 240,
             child: totalIncome == 0 && totalExpense == 0
@@ -176,6 +202,8 @@ class FinancialChart extends StatelessWidget {
           ),
         ],
       ),
+    );
+      },
     );
   }
 

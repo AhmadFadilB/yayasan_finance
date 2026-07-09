@@ -142,6 +142,9 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
       selectedProjectName = projects.firstWhere((p) => p.id == _selectedProjectId).name;
     }
 
+    final size = MediaQuery.of(context).size;
+    final isDesktop = size.width > 800;
+
     return Scaffold(
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -180,41 +183,72 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                       style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        // Tanggal Mulai
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                            ),
-                            onPressed: () => _pickDate(true),
-                            icon: const Icon(Icons.date_range),
-                            label: Text(
-                              'Mulai: ${Formatter.formatTanggalPendek(_startDate)}',
-                              style: GoogleFonts.outfit(fontSize: 13),
-                            ),
+                    isDesktop
+                        ? Row(
+                            children: [
+                              // Tanggal Mulai
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  style: OutlinedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                  ),
+                                  onPressed: () => _pickDate(true),
+                                  icon: const Icon(Icons.date_range),
+                                  label: Text(
+                                    'Mulai: ${Formatter.formatTanggalPendek(_startDate)}',
+                                    style: GoogleFonts.outfit(fontSize: 13),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              // Tanggal Akhir
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  style: OutlinedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                  ),
+                                  onPressed: () => _pickDate(false),
+                                  icon: const Icon(Icons.event),
+                                  label: Text(
+                                    'Akhir: ${Formatter.formatTanggalPendek(_endDate)}',
+                                    style: GoogleFonts.outfit(fontSize: 13),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              OutlinedButton.icon(
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                ),
+                                onPressed: () => _pickDate(true),
+                                icon: const Icon(Icons.date_range),
+                                label: Text(
+                                  'Mulai: ${Formatter.formatTanggalPendek(_startDate)}',
+                                  style: GoogleFonts.outfit(fontSize: 13),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              OutlinedButton.icon(
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                ),
+                                onPressed: () => _pickDate(false),
+                                icon: const Icon(Icons.event),
+                                label: Text(
+                                  'Akhir: ${Formatter.formatTanggalPendek(_endDate)}',
+                                  style: GoogleFonts.outfit(fontSize: 13),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        // Tanggal Akhir
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                            ),
-                            onPressed: () => _pickDate(false),
-                            icon: const Icon(Icons.event),
-                            label: Text(
-                              'Akhir: ${Formatter.formatTanggalPendek(_endDate)}',
-                              style: GoogleFonts.outfit(fontSize: 13),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
                     const SizedBox(height: 16),
                     // Dropdown Proyek
                     DropdownButtonFormField<String?>(
@@ -251,125 +285,248 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
               ),
               child: Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Ringkasan Laporan',
-                        style: GoogleFonts.outfit(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xFF1A2A25),
-                        ),
-                      ),
-                      Wrap(
-                        spacing: 8,
-                        children: [
-                          ElevatedButton.icon(
-                            onPressed: _isGeneratingPdf
-                                ? null
-                                : () => _exportPdfReport(
-                                      activeFoundation.name,
-                                      filteredTxs,
-                                      totalIncome,
-                                      totalExpense,
-                                      selectedProjectName,
+                  isDesktop
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Ringkasan Laporan',
+                              style: GoogleFonts.outfit(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF1A2A25),
+                              ),
+                            ),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: [
+                                ElevatedButton.icon(
+                                  onPressed: _isGeneratingPdf
+                                      ? null
+                                      : () => _exportPdfReport(
+                                            activeFoundation.name,
+                                            filteredTxs,
+                                            totalIncome,
+                                            totalExpense,
+                                            selectedProjectName,
+                                          ),
+                                  icon: _isGeneratingPdf
+                                      ? const SizedBox(
+                                          height: 16,
+                                          width: 16,
+                                          child: CircularProgressIndicator(strokeWidth: 2),
+                                        )
+                                      : const Icon(Icons.picture_as_pdf, size: 18),
+                                  label: const Text('Ekspor PDF'),
+                                ),
+                                ElevatedButton.icon(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFF1B5E20),
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  onPressed: () async {
+                                    await ExcelReportGenerator.generate(
+                                      foundationName: activeFoundation.name,
+                                      transactions: filteredTxs,
+                                      startDate: _startDate,
+                                      endDate: _endDate,
+                                      projectName: selectedProjectName,
+                                    );
+                                  },
+                                  icon: const Icon(Icons.table_view_outlined, size: 18),
+                                  label: const Text('Ekspor Excel'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Ringkasan Laporan',
+                              style: GoogleFonts.outfit(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: const Color(0xFF1A2A25),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              width: double.infinity,
+                              child: Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: [
+                                  ElevatedButton.icon(
+                                    onPressed: _isGeneratingPdf
+                                        ? null
+                                        : () => _exportPdfReport(
+                                              activeFoundation.name,
+                                              filteredTxs,
+                                              totalIncome,
+                                              totalExpense,
+                                              selectedProjectName,
+                                            ),
+                                    icon: _isGeneratingPdf
+                                        ? const SizedBox(
+                                            height: 16,
+                                            width: 16,
+                                            child: CircularProgressIndicator(strokeWidth: 2),
+                                          )
+                                        : const Icon(Icons.picture_as_pdf, size: 18),
+                                    label: const Text('Ekspor PDF'),
+                                  ),
+                                  ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF1B5E20),
+                                      foregroundColor: Colors.white,
                                     ),
-                            icon: _isGeneratingPdf
-                                ? const SizedBox(
-                                    height: 16,
-                                    width: 16,
-                                    child: CircularProgressIndicator(strokeWidth: 2),
-                                  )
-                                : const Icon(Icons.picture_as_pdf, size: 18),
-                            label: const Text('Ekspor PDF'),
-                          ),
-                          ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF1B5E20),
-                              foregroundColor: Colors.white,
+                                    onPressed: () async {
+                                      await ExcelReportGenerator.generate(
+                                        foundationName: activeFoundation.name,
+                                        transactions: filteredTxs,
+                                        startDate: _startDate,
+                                        endDate: _endDate,
+                                        projectName: selectedProjectName,
+                                      );
+                                    },
+                                    icon: const Icon(Icons.table_view_outlined, size: 18),
+                                    label: const Text('Ekspor Excel'),
+                                  ),
+                                ],
+                              ),
                             ),
-                            onPressed: () async {
-                              await ExcelReportGenerator.generate(
-                                foundationName: activeFoundation.name,
-                                transactions: filteredTxs,
-                                startDate: _startDate,
-                                endDate: _endDate,
-                                projectName: selectedProjectName,
-                              );
-                            },
-                            icon: const Icon(Icons.table_view_outlined, size: 18),
-                            label: const Text('Ekspor Excel'),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                          ],
+                        ),
                   const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      // Total Pemasukan
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  isDesktop
+                      ? Row(
                           children: [
-                            Text(
-                              'Pemasukan',
-                              style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
+                            // Total Pemasukan
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Pemasukan',
+                                    style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
+                                  ),
+                                  Text(
+                                    Formatter.formatRupiah(totalIncome),
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFF0D5C46),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            Text(
-                              Formatter.formatRupiah(totalIncome),
-                              style: GoogleFonts.outfit(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF0D5C46),
+                            // Total Pengeluaran
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Pengeluaran',
+                                    style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
+                                  ),
+                                  Text(
+                                    Formatter.formatRupiah(totalExpense),
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFFE53935),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // Saldo
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Saldo Bersih',
+                                    style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
+                                  ),
+                                  Text(
+                                    Formatter.formatRupiah(balance),
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: balance >= 0 ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
-                        ),
-                      ),
-                      // Total Pengeluaran
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Text(
-                              'Pengeluaran',
-                              style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
+                            // Total Pemasukan
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Pemasukan',
+                                  style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
+                                ),
+                                Text(
+                                  Formatter.formatRupiah(totalIncome),
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFF0D5C46),
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              Formatter.formatRupiah(totalExpense),
-                              style: GoogleFonts.outfit(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFFE53935),
-                              ),
+                            const SizedBox(height: 12),
+                            // Total Pengeluaran
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Pengeluaran',
+                                  style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
+                                ),
+                                Text(
+                                  Formatter.formatRupiah(totalExpense),
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFFE53935),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            // Saldo
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Saldo Bersih',
+                                  style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
+                                ),
+                                Text(
+                                  Formatter.formatRupiah(balance),
+                                  style: GoogleFonts.outfit(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: balance >= 0 ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ),
-                      // Saldo
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Saldo Bersih',
-                              style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
-                            ),
-                            Text(
-                              Formatter.formatRupiah(balance),
-                              style: GoogleFonts.outfit(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: balance >= 0 ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),

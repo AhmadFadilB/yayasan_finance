@@ -484,34 +484,100 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
               );
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.people_outline),
-            tooltip: 'Anggota Yayasan',
-            onPressed: () => _showFoundationMembersDialog(activeFoundation.name),
-          ),
-          IconButton(
-            icon: const Icon(Icons.account_tree_outlined),
-            tooltip: 'Bagan Akun (COA)',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const CoaListScreen()),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.swap_horiz),
-            tooltip: 'Ganti Yayasan',
-            onPressed: () {
-              // Mengembalikan seleksi ke null agar memicu tampilan pemilihan yayasan
-              ref.read(foundationProvider.notifier).selectFoundation(null);
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Logout',
-            onPressed: () => ref.read(authProvider.notifier).logout(),
-          ),
+          if (isDesktop) ...[
+            IconButton(
+              icon: const Icon(Icons.people_outline),
+              tooltip: 'Anggota Yayasan',
+              onPressed: () => _showFoundationMembersDialog(activeFoundation.name),
+            ),
+            IconButton(
+              icon: const Icon(Icons.account_tree_outlined),
+              tooltip: 'Bagan Akun (COA)',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const CoaListScreen()),
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.swap_horiz),
+              tooltip: 'Ganti Yayasan',
+              onPressed: () {
+                ref.read(foundationProvider.notifier).selectFoundation(null);
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.logout),
+              tooltip: 'Logout',
+              onPressed: () => ref.read(authProvider.notifier).logout(),
+            ),
+          ] else
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert),
+              onSelected: (value) {
+                switch (value) {
+                  case 'members':
+                    _showFoundationMembersDialog(activeFoundation.name);
+                    break;
+                  case 'coa':
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const CoaListScreen()),
+                    );
+                    break;
+                  case 'switch':
+                    ref.read(foundationProvider.notifier).selectFoundation(null);
+                    break;
+                  case 'logout':
+                    ref.read(authProvider.notifier).logout();
+                    break;
+                }
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  value: 'members',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.people_outline, size: 20, color: Color(0xFF0D5C46)),
+                      const SizedBox(width: 8),
+                      Text('Anggota Yayasan', style: GoogleFonts.outfit()),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'coa',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.account_tree_outlined, size: 20, color: Color(0xFF0D5C46)),
+                      const SizedBox(width: 8),
+                      Text('Bagan Akun (COA)', style: GoogleFonts.outfit()),
+                    ],
+                  ),
+                ),
+                PopupMenuItem(
+                  value: 'switch',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.swap_horiz, size: 20, color: Color(0xFF0D5C46)),
+                      const SizedBox(width: 8),
+                      Text('Ganti Yayasan', style: GoogleFonts.outfit()),
+                    ],
+                  ),
+                ),
+                const PopupMenuDivider(),
+                PopupMenuItem(
+                  value: 'logout',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.logout, size: 20, color: Colors.red),
+                      const SizedBox(width: 8),
+                      Text('Logout', style: GoogleFonts.outfit(color: Colors.red)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
         ],
       ),
       body: Row(

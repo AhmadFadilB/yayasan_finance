@@ -593,37 +593,66 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Header daftar & Tombol catat
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Transaksi Keuangan',
-                              style: GoogleFonts.outfit(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: const Color(0xFF1A2A25),
+                    isDesktop
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Transaksi Keuangan',
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFF1A2A25),
+                                    ),
+                                  ),
+                                  Text(
+                                    'Riwayat pencatatan keluar masuk uang yayasan.',
+                                    style: GoogleFonts.outfit(
+                                      fontSize: 13,
+                                      color: const Color(0xFF6B7F79),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            Text(
-                              'Riwayat pencatatan keluar masuk uang yayasan.',
-                              style: GoogleFonts.outfit(
-                                fontSize: 13,
-                                color: const Color(0xFF6B7F79),
+                              if (canModify)
+                                ElevatedButton.icon(
+                                  onPressed: () => showTransactionForm(),
+                                  icon: const Icon(Icons.add, size: 18),
+                                  label: const Text('Catat Uang'),
+                                ),
+                            ],
+                          )
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                'Transaksi Keuangan',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF1A2A25),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        if (canModify)
-                          ElevatedButton.icon(
-                            onPressed: () => showTransactionForm(),
-                            icon: const Icon(Icons.add, size: 18),
-                            label: const Text('Catat Uang'),
+                              Text(
+                                'Riwayat pencatatan keluar masuk uang yayasan.',
+                                style: GoogleFonts.outfit(
+                                  fontSize: 13,
+                                  color: const Color(0xFF6B7F79),
+                                ),
+                              ),
+                              if (canModify) ...[
+                                const SizedBox(height: 12),
+                                ElevatedButton.icon(
+                                  onPressed: () => showTransactionForm(),
+                                  icon: const Icon(Icons.add, size: 18),
+                                  label: const Text('Catat Uang'),
+                                ),
+                              ],
+                            ],
                           ),
-                      ],
-                    ),
                     const SizedBox(height: 20),
 
                     // Filter Panel
