@@ -142,8 +142,247 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
       selectedProjectName = projects.firstWhere((p) => p.id == _selectedProjectId).name;
     }
 
+    // Urutkan kronologis (terlama ke terbaru) untuk menghitung saldo berjalan (running balance)
+    final chronologicalTxs = List<TransactionModel>.from(filteredTxs)
+      ..sort((a, b) => a.transactionDate.compareTo(b.transactionDate));
+
+    final List<double> runningBalances = [];
+    double currentBalance = 0;
+    for (var tx in chronologicalTxs) {
+      if (tx.isIncome) {
+        currentBalance += tx.amount;
+      } else {
+        currentBalance -= tx.amount;
+      }
+      runningBalances.add(currentBalance);
+    }
+
     final size = MediaQuery.of(context).size;
     final isDesktop = size.width > 800;
+
+    Widget buildDesktopTable() {
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.withAlpha(26)),
+        ),
+        child: Column(
+          children: [
+            // Header Tabel
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
+                ),
+              ),
+              child: Table(
+                columnWidths: const {
+                  0: FixedColumnWidth(100), // Tanggal
+                  1: FlexColumnWidth(2),    // Keterangan / Proyek
+                  2: FlexColumnWidth(1),    // Uang Masuk
+                  3: FlexColumnWidth(1),    // Uang Keluar
+                  4: FlexColumnWidth(1.2),  // Saldo
+                },
+                children: [
+                  TableRow(
+                    children: [
+                      Text('Tanggal', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: const Color(0xFF37474F), fontSize: 13)),
+                      Text('Keterangan / Proyek', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: const Color(0xFF37474F), fontSize: 13)),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text('Uang Masuk', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: const Color(0xFF37474F), fontSize: 13)),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text('Uang Keluar', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: const Color(0xFF37474F), fontSize: 13)),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text('Saldo', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: const Color(0xFF37474F), fontSize: 13)),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1, thickness: 1),
+            // Isi Tabel
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: chronologicalTxs.length,
+              separatorBuilder: (_, __) => Divider(color: Colors.grey.withAlpha(26), height: 1),
+              itemBuilder: (context, index) {
+                final tx = chronologicalTxs[index];
+                final runningBal = runningBalances[index];
+                
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                  child: Table(
+                    columnWidths: const {
+                      0: FixedColumnWidth(100),
+                      1: FlexColumnWidth(2),
+                      2: FlexColumnWidth(1),
+                      3: FlexColumnWidth(1),
+                      4: FlexColumnWidth(1.2),
+                    },
+                    children: [
+                      TableRow(
+                        children: [
+                          // Tanggal
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: Text(
+                              Formatter.formatTanggalPendek(tx.transactionDate),
+                              style: GoogleFonts.outfit(fontSize: 13, color: const Color(0xFF6B7F79)),
+                            ),
+                          ),
+                          // Keterangan / Proyek
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  tx.description?.isNotEmpty == true ? tx.description! : tx.category,
+                                  style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13, color: const Color(0xFF1A2A25)),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  tx.projectName ?? 'Umum',
+                                  style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey[500]),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Uang Masuk
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4.0),
+                              child: Text(
+                                tx.isIncome ? Formatter.formatRupiah(tx.amount) : '-',
+                                style: GoogleFonts.outfit(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                  color: tx.isIncome ? const Color(0xFF0D5C46) : Colors.grey,
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Uang Keluar
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4.0),
+                              child: Text(
+                                !tx.isIncome ? Formatter.formatRupiah(tx.amount) : '-',
+                                style: GoogleFonts.outfit(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                  color: !tx.isIncome ? const Color(0xFFE53935) : Colors.grey,
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Saldo
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4.0),
+                              child: Text(
+                                Formatter.formatRupiah(runningBal),
+                                style: GoogleFonts.outfit(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                  color: runningBal >= 0 ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      );
+    }
+
+    Widget buildMobileList() {
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.withAlpha(26)),
+        ),
+        child: ListView.separated(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: chronologicalTxs.length,
+          separatorBuilder: (_, __) => Divider(color: Colors.grey.withAlpha(26), height: 1),
+          itemBuilder: (context, index) {
+            final tx = chronologicalTxs[index];
+            final runningBal = runningBalances[index];
+            
+            return ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              leading: CircleAvatar(
+                backgroundColor: tx.isIncome ? const Color(0xFF0D5C46).withAlpha(18) : const Color(0xFFE53935).withAlpha(18),
+                foregroundColor: tx.isIncome ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
+                child: Icon(tx.isIncome ? Icons.arrow_downward : Icons.arrow_upward, size: 18),
+              ),
+              title: Text(
+                tx.description?.isNotEmpty == true ? tx.description! : tx.category,
+                style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 2),
+                  Text(
+                    '${Formatter.formatTanggalPendek(tx.transactionDate)} • ${tx.projectName ?? "Umum"}',
+                    style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
+                  ),
+                ],
+              ),
+              trailing: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  // Uang Masuk / Keluar
+                  Text(
+                    '${tx.isIncome ? '+' : '-'}${Formatter.formatRupiah(tx.amount)}',
+                    style: GoogleFonts.outfit(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                      color: tx.isIncome ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  // Saldo Berjalan
+                  Text(
+                    'Saldo: ${Formatter.formatRupiah(runningBal)}',
+                    style: GoogleFonts.outfit(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF546E7A),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      );
+    }
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -562,45 +801,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                 ),
               )
             else
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.grey.withAlpha(26)),
-                ),
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: filteredTxs.length,
-                  separatorBuilder: (_, __) => Divider(color: Colors.grey.withAlpha(26), height: 1),
-                  itemBuilder: (context, index) {
-                    final tx = filteredTxs[index];
-                    return ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                      leading: CircleAvatar(
-                        backgroundColor: tx.isIncome ? const Color(0xFF0D5C46).withAlpha(18) : const Color(0xFFE53935).withAlpha(18),
-                        foregroundColor: tx.isIncome ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
-                        child: Icon(tx.isIncome ? Icons.arrow_downward : Icons.arrow_upward, size: 18),
-                      ),
-                      title: Text(
-                        tx.description?.isNotEmpty == true ? tx.description! : tx.category,
-                        style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14),
-                      ),
-                      subtitle: Text(
-                        '${Formatter.formatTanggal(tx.transactionDate)} • ${tx.projectName ?? "Umum"}',
-                        style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
-                      ),
-                      trailing: Text(
-                        '${tx.isIncome ? '+' : '-'}${Formatter.formatRupiah(tx.amount)}',
-                        style: GoogleFonts.outfit(
-                          fontWeight: FontWeight.bold,
-                          color: tx.isIncome ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
+              isDesktop ? buildDesktopTable() : buildMobileList(),
           ],
         ),
       ),
