@@ -222,12 +222,20 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
                   // Line Pemasukan (Green)
                   LineChartBarData(
                     spots: List.generate(12, (i) => FlSpot(i.toDouble(), monthlyIncome[i])),
-                    isCurved: true,
-                    preventCurveOverShooting: true,
+                    isCurved: false,
                     color: const Color(0xFF0D5C46),
                     barWidth: 3,
                     isStrokeCapRound: true,
-                    dotData: const FlDotData(show: false),
+                    dotData: FlDotData(
+                      show: true,
+                      getDotPainter: (spot, percent, barData, index) =>
+                          FlDotCirclePainter(
+                        radius: 4,
+                        color: Colors.white,
+                        strokeWidth: 2.5,
+                        strokeColor: const Color(0xFF0D5C46),
+                      ),
+                    ),
                     belowBarData: BarAreaData(
                       show: true,
                       color: const Color(0xFF0D5C46).withAlpha(20),
@@ -236,12 +244,20 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
                   // Line Pengeluaran (Red)
                   LineChartBarData(
                     spots: List.generate(12, (i) => FlSpot(i.toDouble(), monthlyExpense[i])),
-                    isCurved: true,
-                    preventCurveOverShooting: true,
+                    isCurved: false,
                     color: const Color(0xFFE53935),
                     barWidth: 3,
                     isStrokeCapRound: true,
-                    dotData: const FlDotData(show: false),
+                    dotData: FlDotData(
+                      show: true,
+                      getDotPainter: (spot, percent, barData, index) =>
+                          FlDotCirclePainter(
+                        radius: 4,
+                        color: Colors.white,
+                        strokeWidth: 2.5,
+                        strokeColor: const Color(0xFFE53935),
+                      ),
+                    ),
                     belowBarData: BarAreaData(
                       show: true,
                       color: const Color(0xFFE53935).withAlpha(15),
