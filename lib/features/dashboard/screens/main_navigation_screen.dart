@@ -332,7 +332,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
       NavigationDestination(
         icon: Icon(Icons.dashboard_outlined),
         selectedIcon: Icon(Icons.dashboard, color: Colors.white),
-        label: 'Dashboard',
+        label: 'Dasbor',
       ),
       NavigationDestination(
         icon: Icon(Icons.business_outlined),
@@ -348,7 +348,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
         const NavigationDestination(
           icon: Icon(Icons.rule_outlined),
           selectedIcon: Icon(Icons.rule, color: Colors.white),
-          label: 'Persetujuan',
+          label: 'Validasi',
         ),
       NavigationDestination(
         icon: Icon(Icons.analytics_outlined),
@@ -358,7 +358,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
       NavigationDestination(
         icon: Icon(Icons.history_toggle_off_outlined),
         selectedIcon: Icon(Icons.history_toggle_off, color: Colors.white),
-        label: 'Log Audit',
+        label: 'Audit',
       ),
     ];
 
@@ -618,14 +618,26 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
       ),
       // Bottom Navigation untuk Mobile
       bottomNavigationBar: !isDesktop
-          ? NavigationBar(
-              selectedIndex: _selectedIndex,
-              onDestinationSelected: (index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
-              destinations: navigationDestinations,
+          ? NavigationBarTheme(
+              data: NavigationBarThemeData(
+                labelTextStyle: WidgetStateProperty.resolveWith((states) {
+                  return GoogleFonts.outfit(
+                    fontSize: 10,
+                    fontWeight: states.contains(WidgetState.selected)
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+                  );
+                }),
+              ),
+              child: NavigationBar(
+                selectedIndex: _selectedIndex,
+                onDestinationSelected: (index) {
+                  setState(() {
+                    _selectedIndex = index;
+                  });
+                },
+                destinations: navigationDestinations,
+              ),
             )
           : null,
     );

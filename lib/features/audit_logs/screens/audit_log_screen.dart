@@ -127,6 +127,23 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
     }
   }
 
+  bool _isSystemField(String key) {
+    const systemFields = {
+      'id',
+      'foundation_id',
+      'created_at',
+      'updated_at',
+      'created_by',
+      'account_id',
+      'project_id',
+      'user_id',
+      'approved_by',
+      'approved_at',
+      'receipt_url',
+    };
+    return systemFields.contains(key);
+  }
+
   String _getFriendlyFieldName(String key) {
     switch (key) {
       case 'amount':
@@ -150,7 +167,9 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
       case 'transaction_date':
         return 'Tanggal Transaksi';
       default:
-        return key;
+        final String readable = key.replaceAll('_', ' ');
+        if (readable.isEmpty) return key;
+        return readable[0].toUpperCase() + readable.substring(1);
     }
   }
 
@@ -165,7 +184,9 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
       }
     }
     if (key == 'type') {
-      return value == 'income' ? 'Pemasukan' : 'Pengeluaran';
+      if (value.toString() == 'income') return 'Pemasukan';
+      if (value.toString() == 'expense') return 'Pengeluaran';
+      return value.toString();
     }
     if (key == 'status') {
       switch (value.toString()) {
@@ -175,6 +196,24 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
           return 'Selesai';
         case 'planned':
           return 'Direncanakan';
+        case 'pending':
+          return 'Tertunda';
+        case 'approved':
+          return 'Disetujui';
+        case 'rejected':
+          return 'Ditolak';
+        default:
+          return value.toString();
+      }
+    }
+    if (key == 'role') {
+      switch (value.toString()) {
+        case 'admin':
+          return 'Pimpinan';
+        case 'bendahara':
+          return 'Bendahara';
+        case 'viewer':
+          return 'Viewer / Pengawas';
         default:
           return value.toString();
       }
@@ -484,12 +523,7 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
 
   Widget _buildValuesList(Map<String, dynamic> values, String title) {
     // Filter internal columns
-    final filteredKeys = values.keys.where((k) =>
-        k != 'id' &&
-        k != 'foundation_id' &&
-        k != 'created_at' &&
-        k != 'updated_at' &&
-        k != 'created_by').toList();
+    final filteredKeys = values.keys.where((k) => !_isSystemField(k)).toList();
 
     if (filteredKeys.isEmpty) return const SizedBox.shrink();
 
@@ -548,7 +582,7 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
     final changedKeys = <String>[];
 
     for (var key in newMap.keys) {
-      if (key == 'updated_at' || key == 'created_at' || key == 'id' || key == 'foundation_id' || key == 'created_by') {
+      if (_isSystemField(key)) {
         continue;
       }
       final oldVal = oldMap[key];
