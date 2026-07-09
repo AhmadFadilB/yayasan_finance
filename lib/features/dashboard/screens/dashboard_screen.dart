@@ -5,6 +5,8 @@ import '../../../core/utils/formatter.dart';
 import '../../foundations/providers/foundation_provider.dart';
 import '../../transactions/providers/transaction_provider.dart';
 import '../widgets/financial_chart.dart';
+import '../widgets/expense_pie_chart.dart';
+import '../widgets/yearly_trend_chart.dart';
 
 enum DashboardFilter { thisMonth, allTime }
 
@@ -203,22 +205,46 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           ),
                     const SizedBox(height: 24),
 
-                    // Chart & Recent Transactions (Responsive Row/Column)
+                    // Chart, Pie Chart & Yearly Trend Grid (Responsive Layout)
                     isDesktop
-                        ? Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              Expanded(
-                                flex: 3,
-                                child: FinancialChart(
-                                  totalIncome: totalIncome,
-                                  totalExpense: totalExpense,
-                                ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    flex: 3,
+                                    child: FinancialChart(
+                                      totalIncome: totalIncome,
+                                      totalExpense: totalExpense,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 24),
+                                  Expanded(
+                                    flex: 2,
+                                    child: ExpensePieChart(
+                                      transactions: transactionState.transactions,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 24),
-                              Expanded(
-                                flex: 2,
-                                child: _buildRecentTransactionsList(recentTxs),
+                              const SizedBox(height: 24),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    flex: 3,
+                                    child: YearlyTrendChart(
+                                      transactions: transactionState.transactions,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 24),
+                                  Expanded(
+                                    flex: 2,
+                                    child: _buildRecentTransactionsList(recentTxs),
+                                  ),
+                                ],
                               ),
                             ],
                           )
@@ -228,6 +254,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               FinancialChart(
                                 totalIncome: totalIncome,
                                 totalExpense: totalExpense,
+                              ),
+                              const SizedBox(height: 24),
+                              ExpensePieChart(
+                                transactions: transactionState.transactions,
+                              ),
+                              const SizedBox(height: 24),
+                              YearlyTrendChart(
+                                transactions: transactionState.transactions,
                               ),
                               const SizedBox(height: 24),
                               _buildRecentTransactionsList(recentTxs),

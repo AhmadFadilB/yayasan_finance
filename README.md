@@ -51,6 +51,10 @@ Berikut adalah daftar fitur utama yang telah diimplementasikan dalam aplikasi, b
 *   **Deskripsi:** Menyajikan notifikasi secara realtime langsung di dalam aplikasi (in-app banner & bel notifikasi) ketika bendahara mengajukan pengeluaran pending, pimpinan menyetujui/menolak pengajuan, atau ketika yayasan menerima pemasukan nominal besar.
 *   **Dokumentasi Detail:** [Sistem Notifikasi Transaksi Baru (docs/features/notifications.md)](file:///Users/ahmadbasymeleh/Documents/Development/Flutter%20Projects/yayasan_finance/docs/features/notifications.md)
 
+### 13. Dashboard Keuangan Interaktif
+*   **Deskripsi:** Menyajikan analisis performa kas secara komprehensif, membandingkan tren bulanan pemasukan/pengeluaran sepanjang tahun serta memvisualisasikan sebaran pengeluaran berdasarkan kategori akun COA dengan diagram donat interaktif.
+*   **Dokumentasi Detail:** [Dashboard Keuangan Interaktif (docs/features/interactive_dashboard.md)](file:///Users/ahmadbasymeleh/Documents/Development/Flutter%20Projects/yayasan_finance/docs/features/interactive_dashboard.md)
+
 ---
 
 ## Struktur Folder Kode Sumber

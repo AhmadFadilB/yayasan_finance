@@ -64,9 +64,11 @@ Fokus pada perluasan cakupan operasional yayasan dan fleksibilitas pencatatan ke
 - **Tingkat Kesulitan**: Menengah (menambahkan tabel `branches` dan relasi `branch_id` pada transaksi/proyek).
 - **Estimasi Waktu**: 8 - 12 Hari Kerja.
 
-### B. Dashboard Keuangan yang Lebih Lengkap & Grafik Tahunan
+### B. Dashboard Keuangan yang Lebih Lengkap & Grafik Tahunan - [SELESAI / IMPLEMENTED]
 - **Manfaat**: Menyajikan perbandingan performa keuangan antar-bulan sepanjang tahun berjalan, tren donasi, serta diagram kategori pengeluaran terbesar untuk mempermudah evaluasi anggaran bulanan.
-- **Tingkat Kesulitan**: Menengah (membuat query agregasi SQL kustom / RPC untuk data tahunan dan integrasi fl_chart).
+- **Status**: Selesai diimplementasikan. Menggunakan diagram donat sebaran pengeluaran reaktif (`ExpensePieChart`) dan diagram garis tren tahunan (`YearlyTrendChart`) berbasis filter tahun.
+- **Dokumentasi**: [docs/features/interactive_dashboard.md](file:///Users/ahmadbasymeleh/Documents/Development/Flutter%20Projects/yayasan_finance/docs/features/interactive_dashboard.md)
+- **Tingkat Kesulitan**: Menengah
 - **Estimasi Waktu**: 6 - 9 Hari Kerja.
 
 ### C. Kategori Kustom (Custom Categories)
