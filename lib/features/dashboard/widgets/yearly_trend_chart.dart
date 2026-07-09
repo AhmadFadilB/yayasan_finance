@@ -223,6 +223,7 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
                   LineChartBarData(
                     spots: List.generate(12, (i) => FlSpot(i.toDouble(), monthlyIncome[i])),
                     isCurved: true,
+                    preventCurveOverShooting: true,
                     color: const Color(0xFF0D5C46),
                     barWidth: 3,
                     isStrokeCapRound: true,
@@ -236,6 +237,7 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
                   LineChartBarData(
                     spots: List.generate(12, (i) => FlSpot(i.toDouble(), monthlyExpense[i])),
                     isCurved: true,
+                    preventCurveOverShooting: true,
                     color: const Color(0xFFE53935),
                     barWidth: 3,
                     isStrokeCapRound: true,
