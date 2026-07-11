@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/utils/error_handler.dart';
 import '../../foundations/providers/foundation_provider.dart';
 import '../../transactions/providers/transaction_provider.dart';
 import '../../projects/providers/project_provider.dart';
@@ -82,7 +83,7 @@ class AuditLogNotifier extends StateNotifier<AuditLogState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Gagal memuat log audit: ${e.toString()}',
+        errorMessage: 'Gagal memuat log audit: ${ErrorHandler.formatError(e)}',
       );
     }
   }

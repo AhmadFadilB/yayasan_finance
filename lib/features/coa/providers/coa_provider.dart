@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../core/utils/error_handler.dart';
 import '../../foundations/providers/foundation_provider.dart';
 import '../models/coa_model.dart';
 import '../services/coa_service.dart';
@@ -65,7 +66,7 @@ class CoaNotifier extends StateNotifier<CoaState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Gagal memuat Bagan Akun: ${e.toString()}',
+        errorMessage: 'Gagal memuat Bagan Akun: ${ErrorHandler.formatError(e)}',
       );
     }
   }
@@ -102,7 +103,7 @@ class CoaNotifier extends StateNotifier<CoaState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Gagal menambahkan akun: ${e.toString()}',
+        errorMessage: 'Gagal menambahkan akun: ${ErrorHandler.formatError(e)}',
       );
       return false;
     }
@@ -139,7 +140,7 @@ class CoaNotifier extends StateNotifier<CoaState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Gagal memperbarui akun: ${e.toString()}',
+        errorMessage: 'Gagal memperbarui akun: ${ErrorHandler.formatError(e)}',
       );
       return false;
     }
@@ -158,7 +159,7 @@ class CoaNotifier extends StateNotifier<CoaState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Gagal menghapus akun: ${e.toString()}',
+        errorMessage: 'Gagal menghapus akun: ${ErrorHandler.formatError(e)}',
       );
       return false;
     }

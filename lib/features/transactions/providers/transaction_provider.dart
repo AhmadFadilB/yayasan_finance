@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/utils/error_handler.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../foundations/providers/foundation_provider.dart';
 import '../models/transaction_model.dart';
@@ -70,7 +71,7 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Gagal memuat transaksi: ${e.toString()}',
+        errorMessage: 'Gagal memuat transaksi: ${ErrorHandler.formatError(e)}',
       );
     }
   }
@@ -94,7 +95,7 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
 
       return publicUrl;
     } catch (e) {
-      state = state.copyWith(errorMessage: 'Gagal mengunggah bukti: ${e.toString()}');
+      state = state.copyWith(errorMessage: 'Gagal mengunggah bukti: ${ErrorHandler.formatError(e)}');
       return null;
     }
   }
@@ -148,7 +149,7 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Gagal menambahkan transaksi: ${e.toString()}',
+        errorMessage: 'Gagal menambahkan transaksi: ${ErrorHandler.formatError(e)}',
       );
       return false;
     }
@@ -206,7 +207,7 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Gagal memperbarui transaksi: ${e.toString()}',
+        errorMessage: 'Gagal memperbarui transaksi: ${ErrorHandler.formatError(e)}',
       );
       return false;
     }
@@ -237,7 +238,7 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Gagal menyetujui transaksi: ${e.toString()}',
+        errorMessage: 'Gagal menyetujui transaksi: ${ErrorHandler.formatError(e)}',
       );
       return false;
     }
@@ -268,7 +269,7 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Gagal menolak transaksi: ${e.toString()}',
+        errorMessage: 'Gagal menolak transaksi: ${ErrorHandler.formatError(e)}',
       );
       return false;
     }
@@ -287,7 +288,7 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Gagal menghapus transaksi: ${e.toString()}',
+        errorMessage: 'Gagal menghapus transaksi: ${ErrorHandler.formatError(e)}',
       );
       return false;
     }

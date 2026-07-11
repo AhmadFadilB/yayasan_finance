@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/utils/error_handler.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../models/foundation_model.dart';
 import '../services/foundation_service.dart';
@@ -89,7 +90,7 @@ class FoundationNotifier extends StateNotifier<FoundationState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Gagal memuat yayasan: ${e.toString()}',
+        errorMessage: 'Gagal memuat yayasan: ${ErrorHandler.formatError(e)}',
       );
     }
   }
@@ -130,7 +131,7 @@ class FoundationNotifier extends StateNotifier<FoundationState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Gagal membuat yayasan: ${e.toString()}',
+        errorMessage: 'Gagal membuat yayasan: ${ErrorHandler.formatError(e)}',
       );
       return false;
     }
@@ -156,7 +157,7 @@ class FoundationNotifier extends StateNotifier<FoundationState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: e.toString().replaceAll('Exception:', '').trim(),
+        errorMessage: ErrorHandler.formatError(e),
       );
       return false;
     }

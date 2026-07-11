@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/utils/error_handler.dart';
 import '../models/profile_model.dart';
 import '../services/auth_service.dart';
 
@@ -68,7 +69,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final profile = await _authService.getProfile(userId);
       state = state.copyWith(profile: profile);
     } catch (e) {
-      state = state.copyWith(errorMessage: 'Gagal memuat profil: ${e.toString()}');
+      state = state.copyWith(errorMessage: 'Gagal memuat profil: ${ErrorHandler.formatError(e)}');
     }
   }
 
@@ -80,10 +81,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       // Profil dimuat otomatis via listener onAuthStateChange
       return true;
     } on AuthException catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.message);
+      state = state.copyWith(isLoading: false, errorMessage: ErrorHandler.formatError(e));
       return false;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: 'Terjadi kesalahan tidak terduga');
+      state = state.copyWith(isLoading: false, errorMessage: ErrorHandler.formatError(e));
       return false;
     }
   }
@@ -96,10 +97,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       // Profil dimuat otomatis via listener
       return true;
     } on AuthException catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.message);
+      state = state.copyWith(isLoading: false, errorMessage: ErrorHandler.formatError(e));
       return false;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: 'Terjadi kesalahan tidak terduga');
+      state = state.copyWith(isLoading: false, errorMessage: ErrorHandler.formatError(e));
       return false;
     }
   }
@@ -111,7 +112,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       await _authService.signOut();
       state = AuthState(session: null, profile: null);
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: 'Gagal logout: ${e.toString()}');
+      state = state.copyWith(isLoading: false, errorMessage: 'Gagal logout: ${ErrorHandler.formatError(e)}');
     }
   }
 }

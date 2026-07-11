@@ -59,6 +59,10 @@ Berikut adalah daftar fitur utama yang telah diimplementasikan dalam aplikasi, b
 *   **Deskripsi:** Menyelaraskan seluruh label dan struktur tabel transaksi di dashboard, form input, log audit, dan laporan kas dengan membagi kolom/badge menjadi Debit (Uang Masuk) dan Kredit (Uang Keluar) secara akuntansi standar.
 *   **Dokumentasi Detail:** [Model Pembukuan Hibrida (docs/features/hybrid_bookkeeping.md)](file:///Users/ahmadbasymeleh/Documents/Development/Flutter%20Projects/yayasan_finance/docs/features/hybrid_bookkeeping.md)
 
+### 15. Penanganan Error Ramah Pengguna (User-Friendly Error Handling)
+*   **Deskripsi:** Mengubah pesan error jaringan mentah dan stack trace teknis (seperti kegagalan fetch dari Supabase SDK akibat koneksi lambat/putus) menjadi pesan bahasa Indonesia yang bersih dan mudah dipahami.
+*   **Dokumentasi Detail:** [Penanganan Error Ramah Pengguna (docs/features/user_friendly_errors.md)](file:///Users/ahmadbasymeleh/Documents/Development/Flutter%20Projects/yayasan_finance/docs/features/user_friendly_errors.md)
+
 ---
 
 ## Struktur Folder Kode Sumber

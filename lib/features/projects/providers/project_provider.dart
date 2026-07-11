@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/utils/error_handler.dart';
 import '../../foundations/providers/foundation_provider.dart';
 import '../../transactions/providers/transaction_provider.dart';
 import '../models/project_model.dart';
@@ -68,7 +69,7 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Gagal memuat proyek: ${e.toString()}',
+        errorMessage: 'Gagal memuat proyek: ${ErrorHandler.formatError(e)}',
       );
     }
   }
@@ -106,7 +107,7 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Gagal menambahkan proyek: ${e.toString()}',
+        errorMessage: 'Gagal menambahkan proyek: ${ErrorHandler.formatError(e)}',
       );
       return false;
     }
@@ -143,7 +144,7 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Gagal memperbarui proyek: ${e.toString()}',
+        errorMessage: 'Gagal memperbarui proyek: ${ErrorHandler.formatError(e)}',
       );
       return false;
     }
@@ -162,7 +163,7 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Gagal menghapus proyek: ${e.toString()}',
+        errorMessage: 'Gagal menghapus proyek: ${ErrorHandler.formatError(e)}',
       );
       return false;
     }
