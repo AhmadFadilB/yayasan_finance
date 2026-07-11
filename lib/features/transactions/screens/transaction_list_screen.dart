@@ -384,8 +384,8 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
             columnSpacing: 32,
             columns: [
               DataColumn(label: Text('Tanggal', style: GoogleFonts.outfit(fontWeight: FontWeight.bold))),
-              DataColumn(label: Text('Tipe', style: GoogleFonts.outfit(fontWeight: FontWeight.bold))),
-              DataColumn(label: Text('Nominal', style: GoogleFonts.outfit(fontWeight: FontWeight.bold))),
+              DataColumn(label: Text('Debit (Masuk)', style: GoogleFonts.outfit(fontWeight: FontWeight.bold))),
+              DataColumn(label: Text('Kredit (Keluar)', style: GoogleFonts.outfit(fontWeight: FontWeight.bold))),
               DataColumn(label: Text('Kategori', style: GoogleFonts.outfit(fontWeight: FontWeight.bold))),
               DataColumn(label: Text('Proyek', style: GoogleFonts.outfit(fontWeight: FontWeight.bold))),
               DataColumn(label: Text('Keterangan', style: GoogleFonts.outfit(fontWeight: FontWeight.bold))),
@@ -397,19 +397,23 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
               return DataRow(
                 cells: [
                   DataCell(Text(Formatter.formatTanggalPendek(tx.transactionDate))),
-                  DataCell(
-                    Icon(
-                      tx.isIncome ? Icons.arrow_downward : Icons.arrow_upward,
-                      color: tx.isIncome ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
-                      size: 18,
-                    ),
-                  ),
+                  // Debit (Masuk)
                   DataCell(
                     Text(
-                      Formatter.formatRupiah(tx.amount),
+                      tx.isIncome ? Formatter.formatRupiah(tx.amount) : '-',
                       style: GoogleFonts.outfit(
                         fontWeight: FontWeight.bold,
-                        color: tx.isIncome ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
+                        color: tx.isIncome ? const Color(0xFF0D5C46) : Colors.grey,
+                      ),
+                    ),
+                  ),
+                  // Kredit (Keluar)
+                  DataCell(
+                    Text(
+                      !tx.isIncome ? Formatter.formatRupiah(tx.amount) : '-',
+                      style: GoogleFonts.outfit(
+                        fontWeight: FontWeight.bold,
+                        color: !tx.isIncome ? const Color(0xFFE53935) : Colors.grey,
                       ),
                     ),
                   ),
@@ -542,6 +546,15 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
                           style: GoogleFonts.outfit(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
+                            color: tx.isIncome ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          tx.isIncome ? 'DEBIT' : 'KREDIT',
+                          style: GoogleFonts.outfit(
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
                             color: tx.isIncome ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
                           ),
                         ),

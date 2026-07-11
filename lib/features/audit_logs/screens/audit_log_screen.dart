@@ -184,8 +184,8 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
       }
     }
     if (key == 'type') {
-      if (value.toString() == 'income') return 'Pemasukan';
-      if (value.toString() == 'expense') return 'Pengeluaran';
+      if (value.toString() == 'income') return 'Debit (Masuk)';
+      if (value.toString() == 'expense') return 'Kredit (Keluar)';
       return value.toString();
     }
     if (key == 'status') {

@@ -223,12 +223,12 @@ class _TransactionFormDialogState extends ConsumerState<TransactionFormDialog> {
                 segments: const [
                   ButtonSegment(
                     value: 'income',
-                    label: Text('Uang Masuk'),
+                    label: Text('Debit (Uang Masuk)'),
                     icon: Icon(Icons.arrow_downward, size: 16),
                   ),
                   ButtonSegment(
                     value: 'expense',
-                    label: Text('Uang Keluar'),
+                    label: Text('Kredit (Uang Keluar)'),
                     icon: Icon(Icons.arrow_upward, size: 16),
                   ),
                 ],
@@ -248,7 +248,7 @@ class _TransactionFormDialogState extends ConsumerState<TransactionFormDialog> {
                 controller: _amountController,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
-                  labelText: 'Jumlah Uang (Rp)',
+                  labelText: 'Nominal Transaksi (Rp)',
                   prefixIcon: Icon(Icons.payments_outlined),
                   hintText: '150000',
                 ),

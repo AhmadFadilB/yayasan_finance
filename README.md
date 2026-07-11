@@ -55,6 +55,10 @@ Berikut adalah daftar fitur utama yang telah diimplementasikan dalam aplikasi, b
 *   **Deskripsi:** Menyajikan analisis performa kas secara komprehensif, membandingkan tren bulanan pemasukan/pengeluaran sepanjang tahun serta memvisualisasikan sebaran pengeluaran berdasarkan kategori akun COA dengan diagram donat interaktif.
 *   **Dokumentasi Detail:** [Dashboard Keuangan Interaktif (docs/features/interactive_dashboard.md)](file:///Users/ahmadbasymeleh/Documents/Development/Flutter%20Projects/yayasan_finance/docs/features/interactive_dashboard.md)
 
+### 14. Model Pembukuan Hibrida (Debit & Kredit)
+*   **Deskripsi:** Menyelaraskan seluruh label dan struktur tabel transaksi di dashboard, form input, log audit, dan laporan kas dengan membagi kolom/badge menjadi Debit (Uang Masuk) dan Kredit (Uang Keluar) secara akuntansi standar.
+*   **Dokumentasi Detail:** [Model Pembukuan Hibrida (docs/features/hybrid_bookkeeping.md)](file:///Users/ahmadbasymeleh/Documents/Development/Flutter%20Projects/yayasan_finance/docs/features/hybrid_bookkeeping.md)
+
 ---
 
 ## Struktur Folder Kode Sumber

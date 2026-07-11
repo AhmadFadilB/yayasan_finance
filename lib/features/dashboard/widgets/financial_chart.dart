@@ -48,9 +48,9 @@ class FinancialChart extends StatelessWidget {
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            _buildLegendItem('Pemasukan', const Color(0xFF0D5C46)),
+                            _buildLegendItem('Debit', const Color(0xFF0D5C46)),
                             const SizedBox(width: 12),
-                            _buildLegendItem('Pengeluaran', const Color(0xFFE53935)),
+                            _buildLegendItem('Kredit', const Color(0xFFE53935)),
                           ],
                         ),
                       ],
@@ -69,9 +69,9 @@ class FinancialChart extends StatelessWidget {
                         // Legenda
                         Row(
                           children: [
-                            _buildLegendItem('Pemasukan', const Color(0xFF0D5C46)),
+                            _buildLegendItem('Debit', const Color(0xFF0D5C46)),
                             const SizedBox(width: 12),
-                            _buildLegendItem('Pengeluaran', const Color(0xFFE53935)),
+                            _buildLegendItem('Kredit', const Color(0xFFE53935)),
                           ],
                         ),
                       ],
@@ -95,7 +95,7 @@ class FinancialChart extends StatelessWidget {
                         touchTooltipData: BarTouchTooltipData(
                           getTooltipColor: (_) => const Color(0xFF1A2A25),
                           getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                            final String label = groupIndex == 0 ? 'Pemasukan' : 'Pengeluaran';
+                            final String label = groupIndex == 0 ? 'Debit' : 'Kredit';
                             return BarTooltipItem(
                               '$label\n${Formatter.formatRupiah(rod.toY)}',
                               GoogleFonts.outfit(

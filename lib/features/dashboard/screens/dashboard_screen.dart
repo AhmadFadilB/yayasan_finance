@@ -160,7 +160,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               const SizedBox(width: 16),
                               Expanded(
                                 child: _buildFinanceCard(
-                                  title: 'Total Pemasukan',
+                                  title: 'Total Debit (Masuk)',
                                   amount: totalIncome,
                                   color: const Color(0xFF1E8267),
                                   icon: Icons.trending_up,
@@ -169,7 +169,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               const SizedBox(width: 16),
                               Expanded(
                                 child: _buildFinanceCard(
-                                  title: 'Total Pengeluaran',
+                                  title: 'Total Kredit (Keluar)',
                                   amount: totalExpense,
                                   color: const Color(0xFFE53935),
                                   icon: Icons.trending_down,
@@ -189,14 +189,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               ),
                               const SizedBox(height: 16),
                               _buildFinanceCard(
-                                title: 'Total Pemasukan',
+                                title: 'Total Debit (Masuk)',
                                 amount: totalIncome,
                                 color: const Color(0xFF1E8267),
                                 icon: Icons.trending_up,
                               ),
                               const SizedBox(height: 16),
                               _buildFinanceCard(
-                                title: 'Total Pengeluaran',
+                                title: 'Total Kredit (Keluar)',
                                 amount: totalExpense,
                                 color: const Color(0xFFE53935),
                                 icon: Icons.trending_down,

@@ -123,9 +123,9 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
           const SizedBox(height: 12),
           Row(
             children: [
-              _buildLegendItem('Pemasukan', const Color(0xFF0D5C46)),
+              _buildLegendItem('Debit', const Color(0xFF0D5C46)),
               const SizedBox(width: 16),
-              _buildLegendItem('Pengeluaran', const Color(0xFFE53935)),
+              _buildLegendItem('Kredit', const Color(0xFFE53935)),
             ],
           ),
           const SizedBox(height: 32),
@@ -207,7 +207,7 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
                       return touchedSpots.map((spot) {
                         final isIncome = spot.barIndex == 0;
                         return LineTooltipItem(
-                          '${isIncome ? 'Pemasukan' : 'Pengeluaran'}\n${Formatter.formatRupiah(spot.y)}',
+                          '${isIncome ? 'Debit' : 'Kredit'}\n${Formatter.formatRupiah(spot.y)}',
                           GoogleFonts.outfit(
                             color: isIncome ? const Color(0xFF4CAF50) : const Color(0xFFE53935),
                             fontWeight: FontWeight.bold,

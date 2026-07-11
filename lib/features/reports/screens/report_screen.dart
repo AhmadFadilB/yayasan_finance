@@ -183,8 +183,8 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                 columnWidths: const {
                   0: FixedColumnWidth(100), // Tanggal
                   1: FlexColumnWidth(2),    // Keterangan / Proyek
-                  2: FlexColumnWidth(1),    // Uang Masuk
-                  3: FlexColumnWidth(1),    // Uang Keluar
+                  2: FlexColumnWidth(1),    // Debit
+                  3: FlexColumnWidth(1),    // Kredit
                   4: FlexColumnWidth(1.2),  // Saldo
                 },
                 children: [
@@ -194,11 +194,11 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                       Text('Keterangan / Proyek', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: const Color(0xFF37474F), fontSize: 13)),
                       Align(
                         alignment: Alignment.centerRight,
-                        child: Text('Uang Masuk', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: const Color(0xFF37474F), fontSize: 13)),
+                        child: Text('Debit (Masuk)', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: const Color(0xFF37474F), fontSize: 13)),
                       ),
                       Align(
                         alignment: Alignment.centerRight,
-                        child: Text('Uang Keluar', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: const Color(0xFF37474F), fontSize: 13)),
+                        child: Text('Kredit (Keluar)', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: const Color(0xFF37474F), fontSize: 13)),
                       ),
                       Align(
                         alignment: Alignment.centerRight,
@@ -366,7 +366,16 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                       color: tx.isIncome ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 1),
+                  Text(
+                    tx.isIncome ? 'DEBIT' : 'KREDIT',
+                    style: GoogleFonts.outfit(
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                      color: tx.isIncome ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
+                    ),
+                  ),
+                  const SizedBox(height: 1),
                   // Saldo Berjalan
                   Text(
                     'Saldo: ${Formatter.formatRupiah(runningBal)}',
