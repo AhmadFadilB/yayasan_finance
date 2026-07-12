@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/utils/formatter.dart';
+import '../../../core/utils/url_helper.dart';
 import '../../transactions/providers/transaction_provider.dart';
 
 class ProjectDetailScreen extends ConsumerWidget {
@@ -153,7 +154,7 @@ class ProjectDetailScreen extends ConsumerWidget {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          final String basePath = Uri.base.path;
+                          final String basePath = UrlHelper.getActualPath();
                           final String cleanPath = basePath.endsWith('/') ? basePath : '$basePath/';
                           final String publicUrl = '${Uri.base.origin}${cleanPath}#/public/project?id=${project.id}';
                           Clipboard.setData(ClipboardData(text: publicUrl));

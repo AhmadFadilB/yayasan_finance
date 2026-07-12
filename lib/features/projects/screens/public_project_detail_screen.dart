@@ -5,7 +5,7 @@ import '../models/project_model.dart';
 import '../models/donation_model.dart';
 import '../services/project_service.dart';
 import '../widgets/public_donation_form_dialog.dart';
-
+import '../../../../core/utils/url_helper.dart';
 class PublicProjectDetailScreen extends StatefulWidget {
   final String projectId;
 
@@ -562,8 +562,10 @@ class _PublicProjectDetailScreenState extends State<PublicProjectDetailScreen> {
             height: 40,
             child: OutlinedButton(
               onPressed: () {
-                final url = Uri.base.toString();
-                Clipboard.setData(ClipboardData(text: url));
+                final String basePath = UrlHelper.getActualPath();
+                final String cleanPath = basePath.endsWith('/') ? basePath : '$basePath/';
+                final String publicUrl = '${Uri.base.origin}${cleanPath}#/public/project?id=${widget.projectId}';
+                Clipboard.setData(ClipboardData(text: publicUrl));
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Link crowdfunding berhasil disalin! Bagikan ke sosial media.'),

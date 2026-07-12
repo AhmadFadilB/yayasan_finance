@@ -1,0 +1,3 @@
+String getBrowserPath() {
+  return '/';
+}
