@@ -55,6 +55,20 @@ class YayasanFinanceApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       home: _getHomeScreen(authState, foundationState),
+      onGenerateRoute: (settings) {
+        final name = settings.name;
+        if (name != null && name.contains('/public/project')) {
+          final uri = Uri.parse(name);
+          final projectId = uri.queryParameters['id'];
+          if (projectId != null && projectId.isNotEmpty) {
+            return MaterialPageRoute(
+              settings: settings,
+              builder: (context) => PublicProjectDetailScreen(projectId: projectId),
+            );
+          }
+        }
+        return null;
+      },
     );
   }
 
