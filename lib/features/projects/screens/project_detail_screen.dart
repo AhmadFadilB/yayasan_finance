@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/utils/formatter.dart';
@@ -134,6 +135,43 @@ class ProjectDetailScreen extends ConsumerWidget {
                     'Tanggal Selesai',
                     project.endDate != null ? Formatter.formatTanggal(project.endDate!) : '-',
                   ),
+                  const SizedBox(height: 8),
+                  buildInfoRow(
+                    Icons.public_outlined,
+                    'Tipe Proyek',
+                    project.isPublic ? 'Publik (Crowdfunding)' : 'Privat (Pembukuan Internal)',
+                  ),
+                  if (project.isPublic) ...[
+                    const SizedBox(height: 8),
+                    buildInfoRow(
+                      Icons.track_changes,
+                      'Target Dana',
+                      project.targetAmount > 0 ? Formatter.formatRupiah(project.targetAmount) : 'Tidak Terbatas',
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          final String publicUrl = '${Uri.base.origin}/#/public/project?id=${project.id}';
+                          Clipboard.setData(ClipboardData(text: publicUrl));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Link crowdfunding proyek berhasil disalin!'),
+                              backgroundColor: Color(0xFF0D5C46),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.copy, size: 16, color: Colors.white),
+                        label: const Text('Salin Link Donasi Publik', style: TextStyle(color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0D5C46),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),

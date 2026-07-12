@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/project_model.dart';
+import '../models/donation_model.dart';
 
 class ProjectService {
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -63,6 +64,141 @@ class ProjectService {
           .from('projects')
           .delete()
           .eq('id', projectId);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Mengambil detail satu proyek publik secara bebas (tanpa auth session checks)
+  Future<ProjectModel> getPublicProject(String projectId) async {
+    try {
+      final projectRes = await _supabase
+          .from('projects')
+          .select()
+          .eq('id', projectId)
+          .single();
+          
+      final txsRes = await _supabase
+          .from('transactions')
+          .select('amount')
+          .eq('project_id', projectId)
+          .eq('status', 'approved')
+          .eq('type', 'income');
+          
+      double totalIncome = 0;
+      for (var tx in txsRes as List<dynamic>) {
+        totalIncome += (tx['amount'] as num).toDouble();
+      }
+      
+      return ProjectModel.fromJson(projectRes, totalIncome: totalIncome);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Mengambil daftar donatur publik yang disetujui (status = approved)
+  Future<List<DonationModel>> getProjectDonations(String projectId) async {
+    try {
+      final response = await _supabase
+          .from('donations')
+          .select('''
+            id,
+            donor_name,
+            is_anonymous,
+            created_at,
+            unique_code,
+            transactions!inner (
+              amount,
+              status,
+              project_id
+            )
+          ''')
+          .eq('transactions.project_id', projectId)
+          .eq('transactions.status', 'approved')
+          .order('created_at', ascending: false);
+
+      final list = response as List<dynamic>;
+      return list.map((item) {
+        final Map<String, dynamic> map = Map<String, dynamic>.from(item);
+        if (map['transactions'] != null) {
+          map['amount'] = map['transactions']['amount'];
+        }
+        return DonationModel.fromJson(map);
+      }).toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Mengirim donasi pending dari publik
+  Future<Map<String, dynamic>> submitPublicDonation({
+    required String projectId,
+    required String donorName,
+    required bool isAnonymous,
+    required String? email,
+    required String? phone,
+    required double baseAmount,
+  }) async {
+    try {
+      final project = await _supabase
+          .from('projects')
+          .select('foundation_id')
+          .eq('id', projectId)
+          .single();
+      final foundationId = project['foundation_id'] as String;
+
+      final uniqueCode = 100 + (DateTime.now().microsecondsSinceEpoch % 900);
+      final double totalAmount = baseAmount + uniqueCode;
+
+      final coaRes = await _supabase
+          .from('coa')
+          .select('id')
+          .eq('foundation_id', foundationId)
+          .eq('code', '4210')
+          .maybeSingle();
+      final String? accountId = coaRes?['id'] as String?;
+
+      final txRes = await _supabase
+          .from('transactions')
+          .insert({
+            'foundation_id': foundationId,
+            'project_id': projectId,
+            'account_id': accountId,
+            'type': 'income',
+            'amount': totalAmount,
+            'category': 'Donasi',
+            'description': 'Donasi Publik - $donorName${isAnonymous ? " (Anonim)" : ""}',
+            'status': 'pending',
+            'transaction_date': DateTime.now().toIso8601String().substring(0, 10),
+          })
+          .select('id')
+          .single();
+      final txId = txRes['id'] as String;
+
+      await _supabase
+          .from('donations')
+          .insert({
+            'transaction_id': txId,
+            'donor_name': donorName,
+            'is_anonymous': isAnonymous,
+            'email': email,
+            'phone': phone,
+            'unique_code': uniqueCode,
+          });
+
+      final foundation = await _supabase
+          .from('foundations')
+          .select('name, description')
+          .eq('id', foundationId)
+          .single();
+
+      return {
+        'transaction_id': txId,
+        'unique_code': uniqueCode,
+        'total_amount': totalAmount,
+        'foundation_name': foundation['name'] as String,
+        'foundation_description': foundation['description'] as String?,
+      };
     } catch (e) {
       rethrow;
     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/utils/formatter.dart';
@@ -18,24 +19,36 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _descController;
+  late TextEditingController _targetAmountController;
   DateTime? _startDate;
   DateTime? _endDate;
   String _status = 'planned';
+  bool _isPublic = false;
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.project?.name ?? '');
     _descController = TextEditingController(text: widget.project?.description ?? '');
+    _targetAmountController = TextEditingController(
+      text: widget.project?.targetAmount != null && widget.project!.targetAmount > 0
+          ? Formatter.formatRupiah(widget.project!.targetAmount)
+              .replaceAll('Rp', '')
+              .replaceAll(',00', '')
+              .trim()
+          : '',
+    );
     _startDate = widget.project?.startDate;
     _endDate = widget.project?.endDate;
     _status = widget.project?.status ?? 'planned';
+    _isPublic = widget.project?.isPublic ?? false;
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _descController.dispose();
+    _targetAmountController.dispose();
     super.dispose();
   }
 
@@ -63,6 +76,10 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
       final desc = _descController.text.trim();
       final status = _status;
 
+      final targetAmount = _targetAmountController.text.trim().isEmpty
+          ? 0.0
+          : double.parse(_targetAmountController.text.replaceAll('.', ''));
+
       bool success;
       if (widget.project == null) {
         // Mode Tambah
@@ -72,6 +89,8 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
               startDate: _startDate,
               endDate: _endDate,
               status: status,
+              isPublic: _isPublic,
+              targetAmount: targetAmount,
             );
       } else {
         // Mode Edit
@@ -82,6 +101,8 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
               startDate: _startDate,
               endDate: _endDate,
               status: status,
+              isPublic: _isPublic,
+              targetAmount: targetAmount,
             );
       }
 
@@ -217,6 +238,46 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                   }
                 },
               ),
+              const SizedBox(height: 16),
+
+              // Switch Publik
+              SwitchListTile(
+                value: _isPublic,
+                title: const Text('Jadikan Proyek Publik'),
+                subtitle: const Text('Donatur publik dapat melihat proyek ini tanpa login'),
+                activeColor: const Color(0xFF0D5C46),
+                contentPadding: EdgeInsets.zero,
+                onChanged: (val) {
+                  setState(() {
+                    _isPublic = val;
+                  });
+                },
+              ),
+
+              // Target Amount (jika publik)
+              if (_isPublic) ...[
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _targetAmountController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    labelText: 'Target Dana Crowdfunding (Rp)',
+                    hintText: '5.000.000',
+                    prefixText: 'Rp ',
+                    prefixIcon: Icon(Icons.monetization_on_outlined),
+                  ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    _RupiahInputFormatter(),
+                  ],
+                  validator: (value) {
+                    if (_isPublic && (value == null || value.trim().isEmpty)) {
+                      return 'Target dana wajib diisi jika proyek diset publik';
+                    }
+                    return null;
+                  },
+                ),
+              ],
             ],
           ),
         ),
@@ -240,6 +301,26 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
               : Text(isEdit ? 'Simpan' : 'Tambah'),
         ),
       ],
+    );
+  }
+}
+
+class _RupiahInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    if (newValue.text.isEmpty) {
+      return newValue.copyWith(text: '');
+    }
+
+    final int numValue = int.parse(newValue.text.replaceAll('.', ''));
+    final String formatted = Formatter.formatRupiah(numValue.toDouble())
+        .replaceAll('Rp', '')
+        .replaceAll(',00', '')
+        .trim();
+
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
     );
   }
 }

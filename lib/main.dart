@@ -9,6 +9,7 @@ import 'features/auth/screens/login_screen.dart';
 import 'features/dashboard/screens/main_navigation_screen.dart';
 import 'features/foundations/providers/foundation_provider.dart';
 import 'features/foundations/screens/foundation_select_screen.dart';
+import 'features/projects/screens/public_project_detail_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,6 +60,22 @@ class YayasanFinanceApp extends ConsumerWidget {
 
   // Pengendali Alur Routing Reaktif
   Widget _getHomeScreen(AuthState authState, FoundationState foundationState) {
+    // 0. Interseptor URL Publik (Bypass Auth untuk Crowdfunding)
+    final uri = Uri.base;
+    final isPublicProjectRoute = uri.path.contains('/public/project') || uri.fragment.contains('/public/project');
+    if (isPublicProjectRoute) {
+      String? projectId;
+      if (uri.path.contains('/public/project')) {
+        projectId = uri.queryParameters['id'];
+      } else if (uri.fragment.contains('/public/project')) {
+        final fragmentUri = Uri.parse(uri.fragment);
+        projectId = fragmentUri.queryParameters['id'];
+      }
+      if (projectId != null && projectId.isNotEmpty) {
+        return PublicProjectDetailScreen(projectId: projectId);
+      }
+    }
+
     // A. Jika belum masuk/login, tampilkan halaman Login
     if (!authState.isAuthenticated) {
       return const LoginScreen();

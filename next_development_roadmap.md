@@ -54,6 +54,11 @@ Fokus pada aspek keamanan data, kepatuhan (compliance), kelengkapan bukti transa
 - **Tingkat Kesulitan**: Menengah
 - **Estimasi Waktu**: 6 - 9 Hari Kerja.
 
+### H. Crowdfunding & Gamifikasi Publik - [DALAM PENGERJAAN / IN PROGRESS]
+- **Manfaat**: Membuka jangkauan pendanaan lebih luas bagi yayasan. Yayasan bisa mempublikasikan proyek mereka ke halaman web publik yang bisa diakses oleh siapa saja tanpa login (seperti Kickstarter). Sistem secara otomatis menghasilkan kode transfer unik 3 digit terakhir untuk memudahkan verifikasi transaksi transfer bank manual oleh bendahara, dan progress bar penggalangan dana diupdate secara realtime dengan milestone donasi (gamifikasi).
+- **Tingkat Kesulitan**: Menengah - Tinggi
+- **Estimasi Waktu**: 7 - 10 Hari Kerja.
+
 ---
 
 ## 2. Prioritas Menengah (Medium Priority)
@@ -71,10 +76,8 @@ Fokus pada perluasan cakupan operasional yayasan dan fleksibilitas pencatatan ke
 - **Tingkat Kesulitan**: Menengah
 - **Estimasi Waktu**: 6 - 9 Hari Kerja.
 
-### C. Kategori Kustom (Custom Categories)
-- **Manfaat**: Mengizinkan pengurus yayasan membuat, mengedit, atau menghapus kategori pemasukan/pengeluaran mereka sendiri sesuai dengan kebutuhan unik yayasan, tidak terbatas pada opsi default MVP.
-- **Tingkat Kesulitan**: Rendah - Menengah (membuat tabel `categories` di database yang terikat ke `foundation_id`).
-- **Estimasi Waktu**: 5 - 7 Hari Kerja.
+### C. Kategori Kustom (Custom Categories) - [SELESAI / ACCOMMODATED VIA COA]
+- **Manfaat**: Terpenuhi melalui Bagan Akun (COA). Pengguna dapat langsung menambahkan/mengedit akun COA baru dari tab Bagan Akun untuk bertindak sebagai kategori transaksi keuangan yang kustom.
 
 ---
 
@@ -101,7 +104,7 @@ Fokus pada integrasi pihak ketiga, perluasan platform, serta opsi monetisasi (Sa
 - **Tingkat Kesulitan**: Tinggi (membutuhkan pemahaman akuntansi double-entry dan jurnal umum otomatis).
 - **Estimasi Waktu**: 15 - 25 Hari Kerja.
 
-### E. Model Langganan SaaS (Software-as-a-Service Subscription)
-- **Manfaat**: Mengubah aplikasi menjadi platform komersial di mana yayasan-yayasan eksternal dapat mendaftar dan berlangganan sistem keuangan ini dengan membayar biaya bulanan/tahunan (multi-tenant komersial).
-- **Tingkat Kesulitan**: Tinggi (perlu integrasi payment gateway untuk subscription billing, pembatasan kuota space storage, dan pengelolaan tenant komersial).
+### E. Model Langganan SaaS & Pungutan Biaya Donasi (Crowdfunding Fee Monetization)
+- **Manfaat**: Mengubah aplikasi menjadi platform komersial (SaaS) multi-tenant. Selain biaya langganan bulanan bagi yayasan besar, platform dapat memungut biaya operasional donasi sebesar 1% untuk donasi publik yang melebihi nominal tertentu (contoh: donasi di atas Rp10.000.000). Untuk versi awal/beta, semua fitur donasi publik ini digratiskan sepenuhnya untuk menarik basis pengguna awal.
+- **Tingkat Kesulitan**: Tinggi
 - **Estimasi Waktu**: 20 - 30 Hari Kerja.

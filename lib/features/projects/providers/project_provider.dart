@@ -81,6 +81,8 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
     DateTime? startDate,
     DateTime? endDate,
     required String status,
+    bool isPublic = false,
+    double targetAmount = 0.0,
   }) async {
     final activeFoundation = _ref.read(foundationProvider).activeFoundation;
     if (activeFoundation == null) {
@@ -98,6 +100,8 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
         startDate: startDate,
         endDate: endDate,
         status: status,
+        isPublic: isPublic,
+        targetAmount: targetAmount,
         createdAt: DateTime.now(),
       );
 
@@ -121,6 +125,8 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
     DateTime? startDate,
     DateTime? endDate,
     required String status,
+    bool isPublic = false,
+    double targetAmount = 0.0,
   }) async {
     final activeFoundation = _ref.read(foundationProvider).activeFoundation;
     if (activeFoundation == null) return false;
@@ -135,6 +141,8 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
         startDate: startDate,
         endDate: endDate,
         status: status,
+        isPublic: isPublic,
+        targetAmount: targetAmount,
         createdAt: DateTime.now(), // Diabaikan oleh DB update
       );
 

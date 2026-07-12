@@ -7,6 +7,8 @@ class ProjectModel {
   final DateTime? endDate;
   final String status; // 'active', 'completed', 'planned'
   final DateTime createdAt;
+  final bool isPublic;
+  final double targetAmount;
 
   // Agregasi Keuangan Proyek (dihitung secara dinamis)
   final double totalIncome;
@@ -21,6 +23,8 @@ class ProjectModel {
     this.endDate,
     required this.status,
     required this.createdAt,
+    this.isPublic = false,
+    this.targetAmount = 0.0,
     this.totalIncome = 0.0,
     this.totalExpense = 0.0,
   });
@@ -37,6 +41,8 @@ class ProjectModel {
       endDate: json['end_date'] != null ? DateTime.parse(json['end_date'] as String) : null,
       status: json['status'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),
+      isPublic: json['is_public'] as bool? ?? false,
+      targetAmount: (json['target_amount'] as num?)?.toDouble() ?? 0.0,
       totalIncome: totalIncome,
       totalExpense: totalExpense,
     );
@@ -51,6 +57,8 @@ class ProjectModel {
       if (startDate != null) 'start_date': startDate!.toIso8601String().substring(0, 10),
       if (endDate != null) 'end_date': endDate!.toIso8601String().substring(0, 10),
       'status': status,
+      'is_public': isPublic,
+      'target_amount': targetAmount,
     };
   }
 
@@ -63,6 +71,8 @@ class ProjectModel {
     DateTime? endDate,
     String? status,
     DateTime? createdAt,
+    bool? isPublic,
+    double? targetAmount,
     double? totalIncome,
     double? totalExpense,
   }) {
@@ -75,6 +85,8 @@ class ProjectModel {
       endDate: endDate ?? this.endDate,
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
+      isPublic: isPublic ?? this.isPublic,
+      targetAmount: targetAmount ?? this.targetAmount,
       totalIncome: totalIncome ?? this.totalIncome,
       totalExpense: totalExpense ?? this.totalExpense,
     );
