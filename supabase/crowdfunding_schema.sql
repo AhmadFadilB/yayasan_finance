@@ -64,6 +64,21 @@ USING (
     ))
 );
 
+-- Mengizinkan siapa pun (termasuk anonim) melihat transaksi pending mereka untuk keperluan RETURNING saat insert
+DROP POLICY IF EXISTS "Anyone can view pending public transactions" ON public.transactions;
+
+CREATE POLICY "Anyone can view pending public transactions"
+ON public.transactions FOR SELECT
+USING (
+    status = 'pending'
+    AND type = 'income'
+    AND project_id IS NOT NULL
+    AND EXISTS (
+        SELECT 1 FROM public.projects
+        WHERE id = transactions.project_id AND is_public = true
+    )
+);
+
 -- Kebijakan untuk memasukkan donasi pending dari publik
 DROP POLICY IF EXISTS "Anyone can insert pending transactions for public projects" ON public.transactions;
 
