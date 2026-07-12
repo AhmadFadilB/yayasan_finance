@@ -79,6 +79,11 @@ Fokus pada perluasan cakupan operasional yayasan dan fleksibilitas pencatatan ke
 ### C. Kategori Kustom (Custom Categories) - [SELESAI / ACCOMMODATED VIA COA]
 - **Manfaat**: Terpenuhi melalui Bagan Akun (COA). Pengguna dapat langsung menambahkan/mengedit akun COA baru dari tab Bagan Akun untuk bertindak sebagai kategori transaksi keuangan yang kustom.
 
+### D. Beranda Publik / Feed Proyek (Kickstarter-like Homepage)
+- **Manfaat**: Ketika aplikasi/web dibuka pertama kali oleh publik, halaman utama tidak langsung memaksa masuk ke layar Login, melainkan menampilkan beranda feed proyek publik dari berbagai yayasan terdaftar. Pengunjung umum dapat mencari (*search*), menjelajah (*browse*), dan memfilter daftar proyek crowdfunding yang aktif tanpa harus masuk atau memiliki akun terlebih dahulu.
+- **Tingkat Kesulitan**: Menengah - Tinggi (perlu penyesuaian skema RLS publik global untuk projects dan landing page).
+- **Estimasi Waktu**: 8 - 12 Hari Kerja.
+
 ---
 
 ## 3. Prioritas Lanjutan (Advanced Priority)
