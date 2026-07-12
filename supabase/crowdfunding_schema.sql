@@ -103,3 +103,13 @@ WITH CHECK (
 CREATE POLICY "Anyone can view foundations" 
 ON public.foundations FOR SELECT 
 USING (true);
+
+-- E. Kebijakan Storage untuk Bukti Transaksi Publik
+-- Mengizinkan donatur anonim/publik untuk mengunggah file ke bucket 'receipts'
+DROP POLICY IF EXISTS "Allow authenticated uploads to receipts" ON storage.objects;
+DROP POLICY IF EXISTS "Allow anyone to upload receipts" ON storage.objects;
+
+CREATE POLICY "Allow anyone to upload receipts"
+ON storage.objects FOR INSERT
+TO public
+WITH CHECK (bucket_id = 'receipts');

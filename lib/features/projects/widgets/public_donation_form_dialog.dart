@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:file_picker/file_picker.dart';
 import '../../../../core/utils/formatter.dart';
 import '../services/project_service.dart';
 
@@ -30,7 +31,15 @@ class _PublicDonationFormDialogState extends State<PublicDonationFormDialog> {
   bool _isLoading = false;
   
   // Step 2 Data
-  Map<String, dynamic>? _donationResult;
+  bool _isStep2 = false;
+  int? _uniqueCode;
+  double? _totalAmount;
+  Map<String, dynamic>? _bankInfo;
+
+  // Upload Proof state
+  bool _isUploadingReceipt = false;
+  String? _uploadedReceiptUrl;
+  String? _receiptFileName;
 
   @override
   void dispose() {
@@ -41,7 +50,8 @@ class _PublicDonationFormDialogState extends State<PublicDonationFormDialog> {
     super.dispose();
   }
 
-  Future<void> _submitDonation() async {
+  // Pindah dari Step 1 ke Step 2 (Muat info bank & hitung nominal unik)
+  Future<void> _proceedToPaymentInstructions() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -49,22 +59,17 @@ class _PublicDonationFormDialogState extends State<PublicDonationFormDialog> {
     });
 
     try {
+      final bankInfo = await _service.getFoundationBankInfo(widget.projectId);
       final double baseAmount = double.parse(_amountController.text.replaceAll('.', ''));
-      final result = await _service.submitPublicDonation(
-        projectId: widget.projectId,
-        donorName: _isAnonymous ? 'Hamba Allah' : _nameController.text.trim(),
-        isAnonymous: _isAnonymous,
-        email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
-        phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
-        baseAmount: baseAmount,
-      );
-
+      final uniqueCode = 100 + (DateTime.now().microsecondsSinceEpoch % 900);
+      
       setState(() {
-        _donationResult = result;
+        _bankInfo = bankInfo;
+        _uniqueCode = uniqueCode;
+        _totalAmount = baseAmount + uniqueCode;
+        _isStep2 = true;
         _isLoading = false;
       });
-      
-      widget.onSuccess();
     } catch (e) {
       setState(() {
         _isLoading = false;
@@ -80,10 +85,94 @@ class _PublicDonationFormDialogState extends State<PublicDonationFormDialog> {
     }
   }
 
+  // Pilih & unggah bukti transfer ke Supabase
+  Future<void> _pickAndUploadReceipt() async {
+    try {
+      final result = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
+        withData: true,
+      );
+
+      if (result != null && result.files.isNotEmpty) {
+        final file = result.files.first;
+        if (file.bytes == null) return;
+
+        setState(() {
+          _isUploadingReceipt = true;
+          _receiptFileName = file.name;
+        });
+
+        final uploadUrl = await _service.uploadPublicReceipt(file.name, file.bytes!);
+
+        setState(() {
+          _uploadedReceiptUrl = uploadUrl;
+          _isUploadingReceipt = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isUploadingReceipt = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal mengunggah bukti: $e')),
+        );
+      }
+    }
+  }
+
+  // Kirim data transaksi final (Ketika donatur klik "Saya Sudah Transfer")
+  Future<void> _submitDonation() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final double baseAmount = double.parse(_amountController.text.replaceAll('.', ''));
+      await _service.submitPublicDonation(
+        projectId: widget.projectId,
+        donorName: _isAnonymous ? 'Hamba Allah' : _nameController.text.trim(),
+        isAnonymous: _isAnonymous,
+        email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
+        phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
+        baseAmount: baseAmount,
+        uniqueCode: _uniqueCode!,
+        receiptUrl: _uploadedReceiptUrl,
+      );
+
+      setState(() {
+        _isLoading = false;
+      });
+      
+      widget.onSuccess();
+      
+      if (mounted) {
+        Navigator.pop(context); // Tutup dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Donasi berhasil dikirim! Menunggu konfirmasi bendahara.'),
+            backgroundColor: Color(0xFF0F5A47),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal mengirim donasi: ${e.toString()}'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isStep2 = _donationResult != null;
-
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ConstrainedBox(
@@ -92,7 +181,7 @@ class _PublicDonationFormDialogState extends State<PublicDonationFormDialog> {
           padding: const EdgeInsets.all(24),
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
-            child: isStep2 ? _buildStep2() : _buildStep1(),
+            child: _isStep2 ? _buildStep2() : _buildStep1(),
           ),
         ),
       ),
@@ -236,7 +325,7 @@ class _PublicDonationFormDialogState extends State<PublicDonationFormDialog> {
             width: double.infinity,
             height: 48,
             child: ElevatedButton(
-              onPressed: _isLoading ? null : _submitDonation,
+              onPressed: _isLoading ? null : _proceedToPaymentInstructions,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF0F5A47),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -252,12 +341,10 @@ class _PublicDonationFormDialogState extends State<PublicDonationFormDialog> {
   }
 
   Widget _buildStep2() {
-    if (_donationResult == null) return const SizedBox();
+    if (_bankInfo == null || _uniqueCode == null || _totalAmount == null) return const SizedBox();
 
-    final uniqueCode = _donationResult!['unique_code'] as int;
-    final totalAmount = _donationResult!['total_amount'] as double;
-    final foundationName = _donationResult!['foundation_name'] as String;
-    final bankDetails = _donationResult!['foundation_description'] ?? 'Detail bank belum disetel oleh yayasan. Silakan hubungi yayasan terkait.';
+    final foundationName = _bankInfo!['foundation_name'] as String;
+    final bankDetails = _bankInfo!['foundation_description'] ?? 'Detail bank belum disetel oleh yayasan. Silakan hubungi yayasan terkait.';
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -292,13 +379,13 @@ class _PublicDonationFormDialogState extends State<PublicDonationFormDialog> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                Formatter.formatRupiah(totalAmount),
+                Formatter.formatRupiah(_totalAmount!),
                 style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF0F5A47)),
               ),
               IconButton(
                 icon: const Icon(Icons.copy, size: 20, color: Color(0xFF0F5A47)),
                 onPressed: () {
-                  Clipboard.setData(ClipboardData(text: totalAmount.toStringAsFixed(0)));
+                  Clipboard.setData(ClipboardData(text: _totalAmount!.toStringAsFixed(0)));
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Nominal transfer berhasil disalin!')),
                   );
@@ -309,7 +396,7 @@ class _PublicDonationFormDialogState extends State<PublicDonationFormDialog> {
         ),
         const SizedBox(height: 4),
         Text(
-          'PENTING: Kode unik 3 digit terakhir ($uniqueCode) ditambahkan otomatis untuk membantu bendahara memverifikasi donasi Anda.',
+          'PENTING: Kode unik 3 digit terakhir ($_uniqueCode) ditambahkan otomatis untuk membantu bendahara memverifikasi donasi Anda.',
           style: const TextStyle(fontSize: 11, color: Colors.orange, height: 1.4),
         ),
         const SizedBox(height: 16),
@@ -342,6 +429,15 @@ class _PublicDonationFormDialogState extends State<PublicDonationFormDialog> {
             ],
           ),
         ),
+        const SizedBox(height: 20),
+
+        // Upload Section
+        const Text(
+          '3. Unggah Bukti Transfer (Dianjurkan):',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black54),
+        ),
+        const SizedBox(height: 8),
+        _buildUploadSection(),
         const SizedBox(height: 24),
 
         // Done button
@@ -349,18 +445,102 @@ class _PublicDonationFormDialogState extends State<PublicDonationFormDialog> {
           width: double.infinity,
           height: 48,
           child: ElevatedButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: _isLoading || _isUploadingReceipt ? null : _submitDonation,
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF0F5A47),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
-            child: const Text(
-              'Saya Sudah Transfer',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            ),
+            child: _isLoading
+                ? const CircularProgressIndicator(color: Colors.white)
+                : const Text(
+                    'Saya Sudah Transfer',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildUploadSection() {
+    if (_isUploadingReceipt) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF9FBF9),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFFEBEBEB)),
+        ),
+        child: const Row(
+          children: [
+            SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF0F5A47)),
+            ),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Mengunggah bukti transfer...',
+                style: TextStyle(fontSize: 13, color: Colors.black54),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_uploadedReceiptUrl != null) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: const Color(0xFFE8F5E9),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: const Color(0xFFC8E6C9)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.check_circle, color: Colors.green, size: 24),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                _receiptFileName ?? 'bukti_transfer.pdf',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 13, color: Colors.black87, fontWeight: FontWeight.w500),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.cancel, color: Colors.redAccent, size: 20),
+              onPressed: () {
+                setState(() {
+                  _uploadedReceiptUrl = null;
+                  _receiptFileName = null;
+                });
+              },
+            ),
+          ],
+        ),
+      );
+    }
+
+    return SizedBox(
+      width: double.infinity,
+      height: 48,
+      child: OutlinedButton.icon(
+        onPressed: _pickAndUploadReceipt,
+        icon: const Icon(Icons.cloud_upload_outlined, color: Color(0xFF0F5A47)),
+        label: const Text(
+          'Unggah Bukti Transfer',
+          style: TextStyle(color: Color(0xFF0F5A47), fontWeight: FontWeight.bold),
+        ),
+        style: OutlinedButton.styleFrom(
+          side: const BorderSide(color: Color(0xFF0F5A47)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      ),
     );
   }
 }

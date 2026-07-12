@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/project_model.dart';
 import '../models/donation_model.dart';
@@ -138,6 +139,8 @@ class ProjectService {
     required String? email,
     required String? phone,
     required double baseAmount,
+    required int uniqueCode,
+    String? receiptUrl,
   }) async {
     try {
       final project = await _supabase
@@ -147,7 +150,6 @@ class ProjectService {
           .single();
       final foundationId = project['foundation_id'] as String;
 
-      final uniqueCode = 100 + (DateTime.now().microsecondsSinceEpoch % 900);
       final double totalAmount = baseAmount + uniqueCode;
 
       final coaRes = await _supabase
@@ -170,6 +172,7 @@ class ProjectService {
             'description': 'Donasi Publik - $donorName${isAnonymous ? " (Anonim)" : ""}',
             'status': 'pending',
             'transaction_date': DateTime.now().toIso8601String().substring(0, 10),
+            'receipt_url': receiptUrl,
           })
           .select('id')
           .single();
@@ -186,6 +189,26 @@ class ProjectService {
             'unique_code': uniqueCode,
           });
 
+      return {
+        'transaction_id': txId,
+        'unique_code': uniqueCode,
+        'total_amount': totalAmount,
+      };
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Mengambil informasi bank yayasan terasosiasi dengan proyek
+  Future<Map<String, dynamic>> getFoundationBankInfo(String projectId) async {
+    try {
+      final project = await _supabase
+          .from('projects')
+          .select('foundation_id')
+          .eq('id', projectId)
+          .single();
+      final foundationId = project['foundation_id'] as String;
+
       final foundation = await _supabase
           .from('foundations')
           .select('name, description')
@@ -193,12 +216,29 @@ class ProjectService {
           .single();
 
       return {
-        'transaction_id': txId,
-        'unique_code': uniqueCode,
-        'total_amount': totalAmount,
         'foundation_name': foundation['name'] as String,
         'foundation_description': foundation['description'] as String?,
       };
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Mengunggah file bukti transfer dari publik ke bucket 'receipts'
+  Future<String?> uploadPublicReceipt(String filename, Uint8List bytes) async {
+    try {
+      final cleanFilename = filename.replaceAll(RegExp(r'[^\w\s\.\-]'), '').replaceAll(' ', '_');
+      final String path = 'public/${DateTime.now().millisecondsSinceEpoch}_$cleanFilename';
+
+      await _supabase.storage
+          .from('receipts')
+          .uploadBinary(path, bytes);
+
+      final String publicUrl = _supabase.storage
+          .from('receipts')
+          .getPublicUrl(path);
+
+      return publicUrl;
     } catch (e) {
       rethrow;
     }
