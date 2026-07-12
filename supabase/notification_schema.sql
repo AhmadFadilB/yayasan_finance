@@ -17,12 +17,21 @@ create table if not exists public.notifications (
 );
 
 -- 2. Aktifkan RLS (Row Level Security)
-alter table public.notifications enable row level security;
+ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
 
 -- 3. Kebijakan RLS (RLS Policies)
-drop policy if exists "Pengguna hanya dapat melihat notifikasi miliknya sendiri" on public.notifications;
-drop policy if exists "Pengguna hanya dapat memperbarui status baca notifikasi miliknya" on public.notifications;
-drop policy if exists "System/Service Role dapat melakukan semua operasi" on public.notifications;
+DO $$
+DECLARE
+    pol RECORD;
+BEGIN
+    FOR pol IN 
+        SELECT policyname 
+        FROM pg_policies 
+        WHERE tablename = 'notifications' AND schemaname = 'public'
+    LOOP
+        EXECUTE format('DROP POLICY IF EXISTS %I ON public.notifications', pol.policyname);
+    END LOOP;
+END $$;
 
 create policy "Pengguna hanya dapat melihat notifikasi miliknya sendiri"
   on public.notifications for select
