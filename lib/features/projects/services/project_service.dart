@@ -153,7 +153,7 @@ class ProjectService {
       final double totalAmount = baseAmount + uniqueCode;
 
       final coaRes = await _supabase
-          .from('coa')
+          .from('chart_of_accounts')
           .select('id')
           .eq('foundation_id', foundationId)
           .eq('code', '4210')
