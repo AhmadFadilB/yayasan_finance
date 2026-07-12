@@ -153,7 +153,9 @@ class ProjectDetailScreen extends ConsumerWidget {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: () {
-                          final String publicUrl = '${Uri.base.origin}/#/public/project?id=${project.id}';
+                          final String basePath = Uri.base.path;
+                          final String cleanPath = basePath.endsWith('/') ? basePath : '$basePath/';
+                          final String publicUrl = '${Uri.base.origin}${cleanPath}#/public/project?id=${project.id}';
                           Clipboard.setData(ClipboardData(text: publicUrl));
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
