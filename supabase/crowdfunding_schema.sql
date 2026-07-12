@@ -27,8 +27,9 @@ ALTER TABLE public.donations ENABLE ROW LEVEL SECURITY;
 -- 3. PERBAIKAN & PENAMBAHAN KEBIJAKAN KEAMANAN (RLS POLICIES)
 
 -- A. Kebijakan untuk tabel PROJECTS
--- Menghapus kebijakan lama jika ingin di-replace
+-- Menghapus kebijakan lama agar re-runable
 DROP POLICY IF EXISTS "Members can view projects" ON public.projects;
+DROP POLICY IF EXISTS "Anyone can view public projects or members can view all" ON public.projects;
 
 -- Kebijakan baru: Siapa pun (termasuk anonim/donatur) dapat melihat proyek yang disetel publik,
 -- dan anggota yayasan dapat melihat semua proyek (baik publik maupun privat) di yayasan mereka.
@@ -44,6 +45,7 @@ USING (
 
 -- B. Kebijakan untuk tabel TRANSACTIONS (Melihat Donasi Masuk)
 DROP POLICY IF EXISTS "Members can view transactions" ON public.transactions;
+DROP POLICY IF EXISTS "Anyone can view approved public transactions or members view all" ON public.transactions;
 
 CREATE POLICY "Anyone can view approved public transactions or members view all" 
 ON public.transactions FOR SELECT 
@@ -78,6 +80,7 @@ WITH CHECK (
 );
 
 -- C. Kebijakan untuk tabel DONATIONS
+DROP POLICY IF EXISTS "Anyone can view donations of public projects" ON public.donations;
 CREATE POLICY "Anyone can view donations of public projects" 
 ON public.donations FOR SELECT 
 USING (
@@ -88,6 +91,7 @@ USING (
     )
 );
 
+DROP POLICY IF EXISTS "Anyone can insert donations for pending public transactions" ON public.donations;
 CREATE POLICY "Anyone can insert donations for pending public transactions" 
 ON public.donations FOR INSERT 
 WITH CHECK (
@@ -100,6 +104,7 @@ WITH CHECK (
 
 -- D. Kebijakan untuk tabel FOUNDATIONS
 -- Mengizinkan siapa pun (termasuk anonim) untuk melihat info yayasan agar namanya bisa dirender di proyek publik
+DROP POLICY IF EXISTS "Anyone can view foundations" ON public.foundations;
 CREATE POLICY "Anyone can view foundations" 
 ON public.foundations FOR SELECT 
 USING (true);
