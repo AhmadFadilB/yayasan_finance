@@ -46,29 +46,39 @@ USING (
 -- B. Kebijakan untuk tabel TRANSACTIONS (Melihat Donasi Masuk)
 DROP POLICY IF EXISTS "Members can view transactions" ON public.transactions;
 DROP POLICY IF EXISTS "Anyone can view approved public transactions or members view all" ON public.transactions;
+DROP POLICY IF EXISTS "Anyone can view approved public transactions" ON public.transactions;
+DROP POLICY IF EXISTS "Members can view all transactions of their foundation" ON public.transactions;
 
-CREATE POLICY "Anyone can view approved public transactions or members view all" 
+-- 1. Publik dapat melihat donasi (pemasukan) yang sudah disetujui
+CREATE POLICY "Anyone can view approved public transactions" 
 ON public.transactions FOR SELECT 
+TO public
 USING (
-    (
-        project_id IS NOT NULL 
-        AND status = 'approved'
-        AND EXISTS (
-            SELECT 1 FROM public.projects 
-            WHERE id = transactions.project_id AND is_public = true
-        )
+    project_id IS NOT NULL 
+    AND status = 'approved'
+    AND EXISTS (
+        SELECT 1 FROM public.projects 
+        WHERE id = transactions.project_id AND is_public = true
     )
-    OR (auth.role() = 'authenticated' AND EXISTS (
-        SELECT 1 FROM public.foundation_members 
-        WHERE foundation_id = transactions.foundation_id AND profile_id = auth.uid()
-    ))
 );
 
--- Mengizinkan siapa pun (termasuk anonim) melihat transaksi pending mereka untuk keperluan RETURNING saat insert
+-- 2. Anggota terautentikasi dapat melihat semua transaksi yayasan mereka
+CREATE POLICY "Members can view all transactions of their foundation"
+ON public.transactions FOR SELECT
+TO authenticated
+USING (
+    EXISTS (
+        SELECT 1 FROM public.foundation_members
+        WHERE foundation_id = transactions.foundation_id AND profile_id = auth.uid()
+    )
+);
+
+-- 3. Mengizinkan siapa pun (termasuk anonim) melihat transaksi pending mereka untuk keperluan RETURNING saat insert
 DROP POLICY IF EXISTS "Anyone can view pending public transactions" ON public.transactions;
 
 CREATE POLICY "Anyone can view pending public transactions"
 ON public.transactions FOR SELECT
+TO public
 USING (
     status = 'pending'
     AND type = 'income'

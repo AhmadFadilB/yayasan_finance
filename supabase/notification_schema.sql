@@ -38,14 +38,14 @@ create policy "System/Service Role dapat melakukan semua operasi"
 create or replace function public.handle_transaction_notifications()
 returns trigger as $$
 begin
-  -- SKENARIO 1: Pengajuan pengeluaran berstatus 'pending' (memerlukan persetujuan admin)
+  -- SKENARIO 1: Pengajuan pengeluaran atau donasi berstatus 'pending' (memerlukan persetujuan admin)
   if (TG_OP = 'INSERT' and NEW.status = 'pending') then
     insert into public.notifications (foundation_id, user_id, title, message, type, related_id)
     select 
       NEW.foundation_id, 
       profile_id, 
-      'Persetujuan Diperlukan', 
-      'Pengeluaran baru untuk "' || coalesce(NEW.description, NEW.category) || '" sebesar ' || NEW.amount::text || ' membutuhkan persetujuan Anda.',
+      case when NEW.type = 'income' then 'Verifikasi Donasi Masuk' else 'Persetujuan Diperlukan' end, 
+      case when NEW.type = 'income' then 'Donasi baru untuk "' else 'Pengeluaran baru untuk "' end || coalesce(NEW.description, NEW.category) || '" sebesar ' || NEW.amount::text || ' membutuhkan persetujuan/verifikasi Anda.',
       'pending_approval', 
       NEW.id
     from public.foundation_members
