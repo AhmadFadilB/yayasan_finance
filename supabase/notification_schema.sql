@@ -20,6 +20,10 @@ create table if not exists public.notifications (
 alter table public.notifications enable row level security;
 
 -- 3. Kebijakan RLS (RLS Policies)
+drop policy if exists "Pengguna hanya dapat melihat notifikasi miliknya sendiri" on public.notifications;
+drop policy if exists "Pengguna hanya dapat memperbarui status baca notifikasi miliknya" on public.notifications;
+drop policy if exists "System/Service Role dapat melakukan semua operasi" on public.notifications;
+
 create policy "Pengguna hanya dapat melihat notifikasi miliknya sendiri"
   on public.notifications for select
   using (auth.uid() = user_id);
