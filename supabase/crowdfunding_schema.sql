@@ -97,3 +97,9 @@ WITH CHECK (
         WHERE t.id = transaction_id AND t.status = 'pending' AND t.type = 'income' AND p.is_public = true
     )
 );
+
+-- D. Kebijakan untuk tabel FOUNDATIONS
+-- Mengizinkan siapa pun (termasuk anonim) untuk melihat info yayasan agar namanya bisa dirender di proyek publik
+CREATE POLICY "Anyone can view foundations" 
+ON public.foundations FOR SELECT 
+USING (true);

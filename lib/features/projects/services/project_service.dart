@@ -203,4 +203,43 @@ class ProjectService {
       rethrow;
     }
   }
+
+  // Mengambil daftar seluruh proyek publik (dari seluruh yayasan) beserta akumulasi donasi yang disetujui
+  Future<List<Map<String, dynamic>>> getAllPublicProjects() async {
+    try {
+      final response = await _supabase
+          .from('projects')
+          .select('*, foundations(name)')
+          .eq('is_public', true)
+          .order('created_at', ascending: false);
+
+      final list = response as List<dynamic>;
+      final List<Map<String, dynamic>> resultList = [];
+
+      for (var item in list) {
+        final Map<String, dynamic> projectMap = Map<String, dynamic>.from(item);
+        final String projectId = projectMap['id'] as String;
+
+        // Hitung total dana terkumpul (pemasukan disetujui) untuk proyek ini
+        final txsRes = await _supabase
+            .from('transactions')
+            .select('amount')
+            .eq('project_id', projectId)
+            .eq('status', 'approved')
+            .eq('type', 'income');
+
+        double totalIncome = 0;
+        for (var tx in txsRes as List<dynamic>) {
+          totalIncome += (tx['amount'] as num).toDouble();
+        }
+
+        projectMap['total_income'] = totalIncome;
+        resultList.add(projectMap);
+      }
+
+      return resultList;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

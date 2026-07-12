@@ -5,11 +5,11 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 import 'core/theme/app_theme.dart';
 import 'features/auth/providers/auth_provider.dart';
-import 'features/auth/screens/login_screen.dart';
 import 'features/dashboard/screens/main_navigation_screen.dart';
 import 'features/foundations/providers/foundation_provider.dart';
 import 'features/foundations/screens/foundation_select_screen.dart';
 import 'features/projects/screens/public_project_detail_screen.dart';
+import 'features/projects/screens/public_project_feed_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -90,9 +90,9 @@ class YayasanFinanceApp extends ConsumerWidget {
       }
     }
 
-    // A. Jika belum masuk/login, tampilkan halaman Login
+    // A. Jika belum masuk/login, tampilkan halaman Feed Proyek Publik (Kickstarter-like)
     if (!authState.isAuthenticated) {
-      return const LoginScreen();
+      return const PublicProjectFeedScreen();
     }
 
     // B. Jika sudah masuk, pastikan data profil terisi sebelum memproses yayasan
