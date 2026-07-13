@@ -34,7 +34,7 @@ jobs:
         run: |
           # Mendapatkan nama repositori secara otomatis untuk base-href
           REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
-          flutter build web --release --base-href "/$REPO_NAME/"
+          flutter build web --release --base-href "/$REPO_NAME/" --no-tree-shake-icons
           # Buat file .nojekyll agar GitHub Pages tidak memfilter file dotfiles (seperti .env)
           touch build/web/.nojekyll
 
