@@ -5,6 +5,7 @@ import '../../auth/providers/auth_provider.dart';
 import '../../foundations/providers/foundation_provider.dart';
 import '../../foundations/widgets/add_member_dialog.dart';
 import '../../projects/screens/project_list_screen.dart';
+import '../../projects/screens/public_project_feed_screen.dart';
 import '../../reports/screens/report_screen.dart';
 import '../../transactions/screens/transaction_list_screen.dart';
 import '../../audit_logs/screens/audit_log_screen.dart';
@@ -139,7 +140,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
 
                                   if (notif.type == 'pending_approval' && isAdmin) {
                                     setState(() {
-                                      _selectedIndex = 3; // Pindah ke tab Persetujuan
+                                      _selectedIndex = 4; // Pindah ke tab Persetujuan
                                     });
                                   }
                                 },
@@ -286,7 +287,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                 ref.read(notificationProvider.notifier).markAsRead(newNotif.id);
                 if (newNotif.type == 'pending_approval' && isAdmin) {
                   setState(() {
-                    _selectedIndex = 3; // Pindah ke tab Persetujuan
+                    _selectedIndex = 4; // Pindah ke tab Persetujuan
                   });
                 }
               },
@@ -321,6 +322,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
 
     final List<Widget> screens = [
       const DashboardScreen(),
+      const PublicProjectFeedScreen(showNavbar: false),
       const ProjectListScreen(),
       const TransactionListScreen(),
       if (isAdmin) const ApprovalListScreen(),
@@ -333,6 +335,11 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
         icon: Icon(Icons.dashboard_outlined),
         selectedIcon: Icon(Icons.dashboard, color: Colors.white),
         label: 'Dasbor',
+      ),
+      NavigationDestination(
+        icon: Icon(Icons.explore_outlined),
+        selectedIcon: Icon(Icons.explore, color: Colors.white),
+        label: 'Jelajah',
       ),
       NavigationDestination(
         icon: Icon(Icons.business_outlined),
@@ -367,6 +374,11 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
         icon: Icon(Icons.dashboard_outlined),
         selectedIcon: Icon(Icons.dashboard),
         label: Text('Dashboard'),
+      ),
+      const NavigationRailDestination(
+        icon: Icon(Icons.explore_outlined),
+        selectedIcon: Icon(Icons.explore),
+        label: Text('Jelajah'),
       ),
       const NavigationRailDestination(
         icon: Icon(Icons.business_outlined),

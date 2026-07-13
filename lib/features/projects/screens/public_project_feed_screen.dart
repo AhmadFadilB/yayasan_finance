@@ -8,7 +8,8 @@ import '../../dashboard/screens/main_navigation_screen.dart';
 import '../services/project_service.dart';
 
 class PublicProjectFeedScreen extends ConsumerStatefulWidget {
-  const PublicProjectFeedScreen({super.key});
+  final bool showNavbar;
+  const PublicProjectFeedScreen({super.key, this.showNavbar = true});
 
   @override
   ConsumerState<PublicProjectFeedScreen> createState() => _PublicProjectFeedScreenState();
@@ -86,9 +87,10 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
       body: Column(
         children: [
           // Elegant Top Header / Navigation bar
-          _buildNavbar(authState),
-          
-          const Divider(height: 1, color: Color(0xFFEEEEEE)),
+          if (widget.showNavbar) ...[
+            _buildNavbar(authState),
+            const Divider(height: 1, color: Color(0xFFEEEEEE)),
+          ],
 
           // Hero Search Section
           _buildHeroSection(isDesktop),
