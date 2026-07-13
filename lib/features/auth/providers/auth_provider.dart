@@ -115,6 +115,41 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(isLoading: false, errorMessage: 'Gagal logout: ${ErrorHandler.formatError(e)}');
     }
   }
+
+  // Aksi Perbarui Profil Perorangan
+  Future<bool> updatePersonalProfile({required String name, String? avatarUrl}) async {
+    final userId = state.session?.user.id;
+    if (userId == null) return false;
+
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    try {
+      await _authService.updateProfile(userId, name: name, avatarUrl: avatarUrl);
+      await _loadProfile(userId);
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'Gagal memperbarui profil: ${ErrorHandler.formatError(e)}',
+      );
+      return false;
+    }
+  }
+
+  // Aksi Perbarui Kata Sandi
+  Future<bool> updatePassword(String newPassword) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    try {
+      await _authService.updatePassword(newPassword);
+      state = state.copyWith(isLoading: false);
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'Gagal mengubah kata sandi: ${ErrorHandler.formatError(e)}',
+      );
+      return false;
+    }
+  }
 }
 
 // Provider utama untuk AuthNotifier

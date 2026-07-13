@@ -6,7 +6,7 @@ import '../../foundations/providers/foundation_provider.dart';
 import '../../foundations/widgets/add_member_dialog.dart';
 import '../../projects/screens/project_list_screen.dart';
 import '../../projects/screens/public_project_feed_screen.dart';
-import '../../foundations/screens/foundation_profile_edit_screen.dart';
+import 'settings_tab_screen.dart';
 import '../../reports/screens/report_screen.dart';
 import '../../transactions/screens/transaction_list_screen.dart';
 import '../../audit_logs/screens/audit_log_screen.dart';
@@ -216,6 +216,26 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
+                              CircleAvatar(
+                                radius: 16,
+                                backgroundColor: const Color(0xFF0D5C46),
+                                backgroundImage: member.avatarUrl != null 
+                                    ? NetworkImage(member.avatarUrl!) 
+                                    : null,
+                                child: member.avatarUrl == null
+                                    ? Text(
+                                        member.name.isNotEmpty 
+                                            ? member.name.substring(0, 1).toUpperCase() 
+                                            : '?',
+                                        style: GoogleFonts.outfit(
+                                          color: Colors.white,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                              const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
                                   member.name,
@@ -329,7 +349,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
       if (isAdmin) const ApprovalListScreen(),
       const ReportScreen(),
       const AuditLogScreen(),
-      const FoundationProfileEditScreen(),
+      const SettingsTabScreen(),
     ];
 
     final navigationDestinations = [
@@ -372,7 +392,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
       NavigationDestination(
         icon: Icon(Icons.settings_outlined),
         selectedIcon: Icon(Icons.settings, color: Colors.white),
-        label: 'Profil',
+        label: 'Pengaturan',
       ),
     ];
 
@@ -416,7 +436,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
       const NavigationRailDestination(
         icon: Icon(Icons.settings_outlined),
         selectedIcon: Icon(Icons.settings),
-        label: Text('Profil'),
+        label: Text('Pengaturan'),
       ),
     ];
 

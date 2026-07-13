@@ -74,12 +74,14 @@ class FoundationModel {
 class FoundationMemberModel {
   final String profileId;
   final String name;
+  final String? avatarUrl;
   final String role;
   final DateTime createdAt;
 
   FoundationMemberModel({
     required this.profileId,
     required this.name,
+    this.avatarUrl,
     required this.role,
     required this.createdAt,
   });
@@ -87,10 +89,13 @@ class FoundationMemberModel {
   factory FoundationMemberModel.fromJoinJson(Map<String, dynamic> json) {
     final profile = json['profiles'] as Map<String, dynamic>;
     return FoundationMemberModel(
-      profileId: profile['id'] as String,
-      name: profile['name'] as String,
-      role: json['role'] as String,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      profileId: profile['id']?.toString() ?? '',
+      name: profile['name']?.toString() ?? '',
+      avatarUrl: profile['avatar_url']?.toString(),
+      role: json['role']?.toString() ?? 'viewer',
+      createdAt: json['created_at'] != null 
+          ? DateTime.parse(json['created_at'].toString()) 
+          : DateTime.now(),
     );
   }
 }

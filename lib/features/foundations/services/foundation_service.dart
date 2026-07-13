@@ -49,7 +49,7 @@ class FoundationService {
     try {
       final response = await _supabase
           .from('foundation_members')
-          .select('role, created_at, profiles(id, name)')
+          .select('role, created_at, profiles(id, name, avatar_url)')
           .eq('foundation_id', foundationId);
       
       final list = response as List<dynamic>;

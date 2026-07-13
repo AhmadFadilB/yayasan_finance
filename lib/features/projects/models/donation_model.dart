@@ -7,6 +7,8 @@ class DonationModel {
   final String? phone;
   final int uniqueCode;
   final DateTime createdAt;
+  final String? donorProfileId;
+  final String? donorAvatarUrl;
   
   // Keuangan donasi (opsional dibaca dari join transaction)
   final double? amount;
@@ -20,6 +22,8 @@ class DonationModel {
     this.phone,
     required this.uniqueCode,
     required this.createdAt,
+    this.donorProfileId,
+    this.donorAvatarUrl,
     this.amount,
   });
 
@@ -41,6 +45,11 @@ class DonationModel {
       donationAmount = (json['amount'] as num?)?.toDouble();
     }
 
+    String? avatar;
+    if (json['profiles'] != null && json['profiles'] is Map) {
+      avatar = json['profiles']['avatar_url']?.toString();
+    }
+
     return DonationModel(
       id: json['id']?.toString() ?? '',
       transactionId: json['transaction_id']?.toString() ?? '',
@@ -52,6 +61,8 @@ class DonationModel {
       createdAt: json['created_at'] != null 
           ? DateTime.parse(json['created_at'].toString()) 
           : DateTime.now(),
+      donorProfileId: json['donor_profile_id']?.toString(),
+      donorAvatarUrl: avatar,
       amount: donationAmount,
     );
   }

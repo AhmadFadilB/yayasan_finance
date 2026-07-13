@@ -108,6 +108,10 @@ class ProjectService {
             is_anonymous,
             created_at,
             unique_code,
+            donor_profile_id,
+            profiles (
+              avatar_url
+            ),
             transactions!inner (
               amount,
               status,
@@ -188,6 +192,7 @@ class ProjectService {
           .single();
       final txId = txRes['id'] as String;
 
+      final currentUser = _supabase.auth.currentUser;
       await _supabase
           .from('donations')
           .insert({
@@ -197,6 +202,7 @@ class ProjectService {
             'email': email,
             'phone': phone,
             'unique_code': uniqueCode,
+            if (currentUser != null) 'donor_profile_id': currentUser.id,
           });
 
       return {

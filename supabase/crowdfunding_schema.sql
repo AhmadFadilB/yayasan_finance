@@ -151,3 +151,7 @@ GRANT INSERT ON storage.objects TO anon;
 -- G. Kolom Logo & Banner untuk Tabel Foundations
 ALTER TABLE public.foundations ADD COLUMN IF NOT EXISTS logo_url text;
 ALTER TABLE public.foundations ADD COLUMN IF NOT EXISTS banner_url text;
+
+-- H. Kolom Profil Perorangan & Avatar Donatur
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS avatar_url text;
+ALTER TABLE public.donations ADD COLUMN IF NOT EXISTS donor_profile_id uuid REFERENCES public.profiles(id) ON DELETE SET NULL;

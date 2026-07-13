@@ -410,14 +410,19 @@ class _PublicProjectDetailScreenState extends State<PublicProjectDetailScreen> {
                         CircleAvatar(
                           backgroundColor: item.isAnonymous ? Colors.teal.shade50 : Colors.green.shade50,
                           radius: 20,
-                          child: Text(
-                            initial,
-                            style: TextStyle(
-                              color: item.isAnonymous ? Colors.teal : Colors.green,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
+                          backgroundImage: (!item.isAnonymous && item.donorAvatarUrl != null)
+                              ? NetworkImage(item.donorAvatarUrl!)
+                              : null,
+                          child: (item.isAnonymous || item.donorAvatarUrl == null)
+                              ? Text(
+                                  initial,
+                                  style: TextStyle(
+                                    color: item.isAnonymous ? Colors.teal : Colors.green,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                )
+                              : null,
                         ),
                         const SizedBox(width: 12),
                         Expanded(

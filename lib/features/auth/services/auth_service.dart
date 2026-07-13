@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/profile_model.dart';
 
@@ -76,6 +77,54 @@ class AuthService {
           .from('profiles')
           .update({'name': newName})
           .eq('id', userId);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Mengubah nama dan/atau foto profil
+  Future<void> updateProfile(String userId, {required String name, String? avatarUrl}) async {
+    try {
+      await _supabase
+          .from('profiles')
+          .update({
+            'name': name,
+            if (avatarUrl != null) 'avatar_url': avatarUrl,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', userId);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Mengubah kata sandi di auth Supabase
+  Future<void> updatePassword(String newPassword) async {
+    try {
+      await _supabase.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Mengunggah foto profil pengguna ke storage 'receipts' (virtual folder 'profiles/')
+  Future<String?> uploadAvatar(String userId, String filename, Uint8List bytes) async {
+    try {
+      final extension = filename.split('.').length > 1 ? filename.split('.').last : 'png';
+      final cleanExtension = extension.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+      final String path = 'profiles/$userId/avatar_${DateTime.now().millisecondsSinceEpoch}.${cleanExtension.isEmpty ? "png" : cleanExtension}';
+
+      await _supabase.storage
+          .from('receipts')
+          .uploadBinary(path, bytes);
+
+      final String publicUrl = _supabase.storage
+          .from('receipts')
+          .getPublicUrl(path);
+
+      return publicUrl;
     } catch (e) {
       rethrow;
     }
