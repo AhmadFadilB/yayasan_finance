@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/foundation_model.dart';
 
@@ -73,6 +74,55 @@ class FoundationService {
           'p_role': role,
         },
       );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Mengedit profil yayasan (Nama, Deskripsi, Logo, Banner)
+  Future<FoundationModel> updateFoundation({
+    required String id,
+    required String name,
+    String? description,
+    String? logoUrl,
+    String? bannerUrl,
+    String? role,
+  }) async {
+    try {
+      final response = await _supabase
+          .from('foundations')
+          .update({
+            'name': name,
+            'description': description,
+            'logo_url': logoUrl,
+            'banner_url': bannerUrl,
+          })
+          .eq('id', id)
+          .select()
+          .single();
+      
+      return FoundationModel.fromJson(response, role: role);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // Mengunggah logo/banner yayasan ke storage 'receipts' (virtual folder 'foundations/')
+  Future<String?> uploadFoundationFile(String foundationId, String filename, Uint8List bytes) async {
+    try {
+      final extension = filename.split('.').length > 1 ? filename.split('.').last : 'png';
+      final cleanExtension = extension.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+      final String path = 'foundations/$foundationId/asset_${DateTime.now().millisecondsSinceEpoch}.${cleanExtension.isEmpty ? "png" : cleanExtension}';
+
+      await _supabase.storage
+          .from('receipts')
+          .uploadBinary(path, bytes);
+
+      final String publicUrl = _supabase.storage
+          .from('receipts')
+          .getPublicUrl(path);
+
+      return publicUrl;
     } catch (e) {
       rethrow;
     }

@@ -162,6 +162,49 @@ class FoundationNotifier extends StateNotifier<FoundationState> {
       return false;
     }
   }
+
+  // Memperbarui profil yayasan
+  Future<bool> updateFoundationProfile({
+    required String name,
+    String? description,
+    String? logoUrl,
+    String? bannerUrl,
+  }) async {
+    final active = state.activeFoundation;
+    if (active == null) {
+      state = state.copyWith(errorMessage: 'Tidak ada yayasan aktif');
+      return false;
+    }
+
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    try {
+      final updated = await _service.updateFoundation(
+        id: active.id,
+        name: name,
+        description: description,
+        logoUrl: logoUrl,
+        bannerUrl: bannerUrl,
+        role: active.currentUserRole,
+      );
+
+      final updatedList = state.foundations.map((item) {
+        return item.id == active.id ? updated : item;
+      }).toList();
+
+      state = state.copyWith(
+        foundations: updatedList,
+        activeFoundation: updated,
+        isLoading: false,
+      );
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'Gagal memperbarui profil yayasan: ${ErrorHandler.formatError(e)}',
+      );
+      return false;
+    }
+  }
 }
 
 // Provider utama untuk mengelola yayasan

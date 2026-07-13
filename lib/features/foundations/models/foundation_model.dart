@@ -2,6 +2,8 @@ class FoundationModel {
   final String id;
   final String name;
   final String? description;
+  final String? logoUrl;
+  final String? bannerUrl;
   final DateTime createdAt;
   final String? currentUserRole; // Peran pengguna aktif di yayasan ini
 
@@ -9,16 +11,22 @@ class FoundationModel {
     required this.id,
     required this.name,
     this.description,
+    this.logoUrl,
+    this.bannerUrl,
     required this.createdAt,
     this.currentUserRole,
   });
 
   factory FoundationModel.fromJson(Map<String, dynamic> json, {String? role}) {
     return FoundationModel(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String?,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      description: json['description']?.toString(),
+      logoUrl: json['logo_url']?.toString(),
+      bannerUrl: json['banner_url']?.toString(),
+      createdAt: json['created_at'] != null 
+          ? DateTime.parse(json['created_at'].toString()) 
+          : DateTime.now(),
       currentUserRole: role,
     );
   }
@@ -35,6 +43,8 @@ class FoundationModel {
       'id': id,
       'name': name,
       'description': description,
+      'logo_url': logoUrl,
+      'banner_url': bannerUrl,
       'created_at': createdAt.toIso8601String(),
     };
   }
@@ -43,6 +53,8 @@ class FoundationModel {
     String? id,
     String? name,
     String? description,
+    String? logoUrl,
+    String? bannerUrl,
     DateTime? createdAt,
     String? currentUserRole,
   }) {
@@ -50,6 +62,8 @@ class FoundationModel {
       id: id ?? this.id,
       name: name ?? this.name,
       description: description ?? this.description,
+      logoUrl: logoUrl ?? this.logoUrl,
+      bannerUrl: bannerUrl ?? this.bannerUrl,
       createdAt: createdAt ?? this.createdAt,
       currentUserRole: currentUserRole ?? this.currentUserRole,
     );

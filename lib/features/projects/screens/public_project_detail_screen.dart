@@ -6,6 +6,7 @@ import '../models/donation_model.dart';
 import '../services/project_service.dart';
 import '../widgets/public_donation_form_dialog.dart';
 import '../../../../core/utils/url_helper.dart';
+import 'package:google_fonts/google_fonts.dart';
 class PublicProjectDetailScreen extends StatefulWidget {
   final String projectId;
 
@@ -20,6 +21,7 @@ class _PublicProjectDetailScreenState extends State<PublicProjectDetailScreen> {
   
   ProjectModel? _project;
   List<DonationModel> _donations = [];
+  String? _foundationName;
   bool _isLoading = true;
   String? _errorMessage;
 
@@ -38,10 +40,12 @@ class _PublicProjectDetailScreenState extends State<PublicProjectDetailScreen> {
     try {
       final proj = await _service.getPublicProject(widget.projectId);
       final list = await _service.getProjectDonations(widget.projectId);
+      final fInfo = await _service.getFoundationBankInfo(widget.projectId);
       
       setState(() {
         _project = proj;
         _donations = list;
+        _foundationName = fInfo['foundation_name'] as String?;
         _isLoading = false;
       });
     } catch (e) {
@@ -197,6 +201,36 @@ class _PublicProjectDetailScreenState extends State<PublicProjectDetailScreen> {
                         height: 1.2,
                       ),
                     ),
+                    if (_foundationName != null) ...[
+                      const SizedBox(height: 8),
+                      MouseRegion(
+                        cursor: SystemMouseCursors.click,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              '/public/foundation?id=${_project!.foundationId}',
+                            );
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.business, size: 16, color: Color(0xFF0F5A47)),
+                              const SizedBox(width: 6),
+                              Text(
+                                _foundationName!,
+                                style: GoogleFonts.outfit(
+                                  color: const Color(0xFF0F5A47),
+                                  fontWeight: FontWeight.bold,
+                                  decoration: TextDecoration.underline,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 16),
 
                     // Layout 2 Columns for Desktop or 1 for Mobile

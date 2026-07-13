@@ -147,3 +147,7 @@ WITH CHECK (bucket_id = 'receipts');
 -- F. Hak Akses PostgreSQL untuk Pengguna Publik (Anonymous)
 -- Memberikan izin INSERT ke tabel storage.objects agar pengguna tidak terdaftar dapat melakukan upload
 GRANT INSERT ON storage.objects TO anon;
+
+-- G. Kolom Logo & Banner untuk Tabel Foundations
+ALTER TABLE public.foundations ADD COLUMN IF NOT EXISTS logo_url text;
+ALTER TABLE public.foundations ADD COLUMN IF NOT EXISTS banner_url text;

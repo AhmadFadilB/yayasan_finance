@@ -361,6 +361,7 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
     final double progress = target > 0 ? (raised / target).clamp(0.0, 1.0) : 0.0;
     final int percent = (progress * 100).round();
     final String id = proj['id'] as String;
+    final String foundationId = proj['foundation_id'] as String;
 
     return Card(
       elevation: 0,
@@ -396,20 +397,31 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0F5A47).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      foundationName.toUpperCase(),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.outfit(
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF0F5A47),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        '/public/foundation?id=$foundationId',
+                      );
+                    },
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0F5A47).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          foundationName.toUpperCase(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.outfit(
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF0F5A47),
+                          ),
+                        ),
                       ),
                     ),
                   ),

@@ -10,6 +10,7 @@ import 'features/foundations/providers/foundation_provider.dart';
 import 'features/foundations/screens/foundation_select_screen.dart';
 import 'features/projects/screens/public_project_detail_screen.dart';
 import 'features/projects/screens/public_project_feed_screen.dart';
+import 'features/projects/screens/public_foundation_profile_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,14 +58,25 @@ class YayasanFinanceApp extends ConsumerWidget {
       home: _getHomeScreen(authState, foundationState),
       onGenerateRoute: (settings) {
         final name = settings.name;
-        if (name != null && name.contains('/public/project')) {
-          final uri = Uri.parse(name);
-          final projectId = uri.queryParameters['id'];
-          if (projectId != null && projectId.isNotEmpty) {
-            return MaterialPageRoute(
-              settings: settings,
-              builder: (context) => PublicProjectDetailScreen(projectId: projectId),
-            );
+        if (name != null) {
+          if (name.contains('/public/project')) {
+            final uri = Uri.parse(name);
+            final projectId = uri.queryParameters['id'];
+            if (projectId != null && projectId.isNotEmpty) {
+              return MaterialPageRoute(
+                settings: settings,
+                builder: (context) => PublicProjectDetailScreen(projectId: projectId),
+              );
+            }
+          } else if (name.contains('/public/foundation')) {
+            final uri = Uri.parse(name);
+            final foundationId = uri.queryParameters['id'];
+            if (foundationId != null && foundationId.isNotEmpty) {
+              return MaterialPageRoute(
+                settings: settings,
+                builder: (context) => PublicFoundationProfileScreen(foundationId: foundationId),
+              );
+            }
           }
         }
         return null;
@@ -87,6 +99,20 @@ class YayasanFinanceApp extends ConsumerWidget {
       }
       if (projectId != null && projectId.isNotEmpty) {
         return PublicProjectDetailScreen(projectId: projectId);
+      }
+    }
+
+    final isPublicFoundationRoute = uri.path.contains('/public/foundation') || uri.fragment.contains('/public/foundation');
+    if (isPublicFoundationRoute) {
+      String? foundationId;
+      if (uri.path.contains('/public/foundation')) {
+        foundationId = uri.queryParameters['id'];
+      } else if (uri.fragment.contains('/public/foundation')) {
+        final fragmentUri = Uri.parse(uri.fragment);
+        foundationId = fragmentUri.queryParameters['id'];
+      }
+      if (foundationId != null && foundationId.isNotEmpty) {
+        return PublicFoundationProfileScreen(foundationId: foundationId);
       }
     }
 

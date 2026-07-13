@@ -6,6 +6,7 @@ import '../../foundations/providers/foundation_provider.dart';
 import '../../foundations/widgets/add_member_dialog.dart';
 import '../../projects/screens/project_list_screen.dart';
 import '../../projects/screens/public_project_feed_screen.dart';
+import '../../foundations/screens/foundation_profile_edit_screen.dart';
 import '../../reports/screens/report_screen.dart';
 import '../../transactions/screens/transaction_list_screen.dart';
 import '../../audit_logs/screens/audit_log_screen.dart';
@@ -328,6 +329,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
       if (isAdmin) const ApprovalListScreen(),
       const ReportScreen(),
       const AuditLogScreen(),
+      const FoundationProfileEditScreen(),
     ];
 
     final navigationDestinations = [
@@ -367,6 +369,11 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
         selectedIcon: Icon(Icons.history_toggle_off, color: Colors.white),
         label: 'Audit',
       ),
+      NavigationDestination(
+        icon: Icon(Icons.settings_outlined),
+        selectedIcon: Icon(Icons.settings, color: Colors.white),
+        label: 'Profil',
+      ),
     ];
 
     final railDestinations = [
@@ -405,6 +412,11 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
         icon: Icon(Icons.history_toggle_off_outlined),
         selectedIcon: Icon(Icons.history_toggle_off),
         label: Text('Log Audit'),
+      ),
+      const NavigationRailDestination(
+        icon: Icon(Icons.settings_outlined),
+        selectedIcon: Icon(Icons.settings),
+        label: Text('Profil'),
       ),
     ];
 
