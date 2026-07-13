@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/foundation_provider.dart';
 import '../../projects/screens/public_project_feed_screen.dart';
+import '../../auth/widgets/user_profile_dialog.dart';
 
 class FoundationSelectScreen extends ConsumerStatefulWidget {
   const FoundationSelectScreen({super.key});
@@ -138,10 +139,85 @@ class _FoundationSelectScreenState extends ConsumerState<FoundationSelectScreen>
               );
             },
           ),
-          IconButton(
-            tooltip: 'Logout',
-            icon: const Icon(Icons.logout),
-            onPressed: () => ref.read(authProvider.notifier).logout(),
+          Consumer(
+            builder: (context, ref, child) {
+              final currentProfile = ref.watch(authProvider).profile;
+              final avatarUrl = currentProfile?.avatarUrl;
+              final initials = currentProfile?.name.isNotEmpty == true 
+                  ? currentProfile!.name.substring(0, 1).toUpperCase() 
+                  : '?';
+
+              final avatarWidget = CircleAvatar(
+                radius: 16,
+                backgroundColor: const Color(0xFF0D5C46),
+                backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+                child: avatarUrl == null
+                    ? Text(
+                        initials,
+                        style: GoogleFonts.outfit(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    : null,
+              );
+
+              return PopupMenuButton<String>(
+                tooltip: 'Menu Akun',
+                offset: const Offset(0, 48),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: avatarWidget,
+                  ),
+                ),
+                onSelected: (value) {
+                  switch (value) {
+                    case 'profile':
+                      showDialog(
+                        context: context,
+                        builder: (_) => const UserProfileDialog(),
+                      );
+                      break;
+                    case 'logout':
+                      ref.read(authProvider.notifier).logout();
+                      break;
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    enabled: false,
+                    child: Text(
+                      currentProfile?.name ?? 'Akun Saya',
+                      style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.black87),
+                    ),
+                  ),
+                  const PopupMenuDivider(),
+                  PopupMenuItem(
+                    value: 'profile',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.person_outline, size: 20, color: Color(0xFF0D5C46)),
+                        const SizedBox(width: 8),
+                        Text('Edit Profil', style: GoogleFonts.outfit()),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'logout',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.logout, size: 20, color: Colors.red),
+                        const SizedBox(width: 8),
+                        Text('Logout', style: GoogleFonts.outfit(color: Colors.red)),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -167,14 +243,19 @@ class _FoundationSelectScreenState extends ConsumerState<FoundationSelectScreen>
                       CircleAvatar(
                         radius: 28,
                         backgroundColor: const Color(0xFF0D5C46),
-                        child: Text(
-                          (profile?.name ?? 'U').substring(0, 1).toUpperCase(),
-                          style: GoogleFonts.outfit(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
+                        backgroundImage: profile?.avatarUrl != null 
+                            ? NetworkImage(profile!.avatarUrl!) 
+                            : null,
+                        child: profile?.avatarUrl == null
+                            ? Text(
+                                (profile?.name ?? 'U').substring(0, 1).toUpperCase(),
+                                style: GoogleFonts.outfit(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : null,
                       ),
                       const SizedBox(width: 16),
                       Expanded(

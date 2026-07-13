@@ -7,6 +7,7 @@ import '../../auth/screens/login_screen.dart';
 import '../../dashboard/screens/main_navigation_screen.dart';
 import '../../foundations/screens/foundation_select_screen.dart';
 import '../../foundations/providers/foundation_provider.dart';
+import '../../auth/widgets/user_profile_dialog.dart';
 import '../services/project_service.dart';
 
 class PublicProjectFeedScreen extends ConsumerStatefulWidget {
@@ -152,48 +153,128 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
             ],
           ),
           
-          // Action Button login
-          ElevatedButton.icon(
-            onPressed: () {
-              if (authState.isAuthenticated) {
-                final active = ref.read(foundationProvider).activeFoundation;
-                if (active == null) {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const FoundationSelectScreen()),
-                  );
-                } else {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
-                  );
-                }
-              } else {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+          // Action Account Avatar Menu / Login Trigger
+          Consumer(
+            builder: (context, ref, child) {
+              final auth = ref.watch(authProvider);
+              if (!auth.isAuthenticated) {
+                // Not logged in: show grey profile avatar redirecting to login
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(20),
+                  child: const CircleAvatar(
+                    radius: 18,
+                    backgroundColor: Color(0xFFE5E7EB),
+                    child: Icon(Icons.person, color: Color(0xFF9CA3AF), size: 20),
+                  ),
                 );
               }
+
+              // Logged in: show account settings dropdown
+              final profile = auth.profile;
+              final avatarUrl = profile?.avatarUrl;
+              final initials = profile?.name.isNotEmpty == true 
+                  ? profile!.name.substring(0, 1).toUpperCase() 
+                  : '?';
+
+              final avatarWidget = CircleAvatar(
+                radius: 18,
+                backgroundColor: const Color(0xFF0F5A47),
+                backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+                child: avatarUrl == null
+                    ? Text(
+                        initials,
+                        style: GoogleFonts.outfit(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    : null,
+              );
+
+              final active = ref.watch(foundationProvider).activeFoundation;
+
+              return PopupMenuButton<String>(
+                tooltip: 'Menu Akun',
+                offset: const Offset(0, 48),
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: avatarWidget,
+                ),
+                onSelected: (value) {
+                  switch (value) {
+                    case 'profile':
+                      showDialog(
+                        context: context,
+                        builder: (_) => const UserProfileDialog(),
+                      );
+                      break;
+                    case 'dashboard':
+                      if (active == null) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => const FoundationSelectScreen()),
+                        );
+                      } else {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
+                        );
+                      }
+                      break;
+                    case 'logout':
+                      ref.read(authProvider.notifier).logout();
+                      break;
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    enabled: false,
+                    child: Text(
+                      profile?.name ?? 'Akun Saya',
+                      style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.black87),
+                    ),
+                  ),
+                  const PopupMenuDivider(),
+                  PopupMenuItem(
+                    value: 'profile',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.person_outline, size: 20, color: Color(0xFF0F5A47)),
+                        const SizedBox(width: 8),
+                        Text('Edit Profil', style: GoogleFonts.outfit()),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'dashboard',
+                    child: Row(
+                      children: [
+                        Icon(active == null ? Icons.account_balance : Icons.dashboard, size: 20, color: const Color(0xFF0F5A47)),
+                        const SizedBox(width: 8),
+                        Text(active == null ? 'Pilih Yayasan' : 'Ke Dasbor', style: GoogleFonts.outfit()),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'logout',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.logout, size: 20, color: Colors.red),
+                        const SizedBox(width: 8),
+                        Text('Logout', style: GoogleFonts.outfit(color: Colors.red)),
+                      ],
+                    ),
+                  ),
+                ],
+              );
             },
-            icon: Icon(
-              authState.isAuthenticated
-                  ? (ref.read(foundationProvider).activeFoundation == null ? Icons.account_balance : Icons.dashboard)
-                  : Icons.login,
-              color: Colors.white,
-              size: 16,
-            ),
-            label: Text(
-              authState.isAuthenticated
-                  ? (ref.read(foundationProvider).activeFoundation == null ? 'Pilih Yayasan' : 'Ke Dasbor')
-                  : 'Login Admin',
-              style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0F5A47),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              elevation: 0,
-            ),
           ),
         ],
       ),
