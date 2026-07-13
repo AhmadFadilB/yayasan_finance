@@ -5,6 +5,8 @@ import '../../../../core/utils/formatter.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../auth/screens/login_screen.dart';
 import '../../dashboard/screens/main_navigation_screen.dart';
+import '../../foundations/screens/foundation_select_screen.dart';
+import '../../foundations/providers/foundation_provider.dart';
 import '../services/project_service.dart';
 
 class PublicProjectFeedScreen extends ConsumerStatefulWidget {
@@ -154,10 +156,18 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
           ElevatedButton.icon(
             onPressed: () {
               if (authState.isAuthenticated) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
-                );
+                final active = ref.read(foundationProvider).activeFoundation;
+                if (active == null) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const FoundationSelectScreen()),
+                  );
+                } else {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
+                  );
+                }
               } else {
                 Navigator.push(
                   context,
@@ -166,12 +176,16 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
               }
             },
             icon: Icon(
-              authState.isAuthenticated ? Icons.dashboard : Icons.login,
+              authState.isAuthenticated
+                  ? (ref.read(foundationProvider).activeFoundation == null ? Icons.account_balance : Icons.dashboard)
+                  : Icons.login,
               color: Colors.white,
               size: 16,
             ),
             label: Text(
-              authState.isAuthenticated ? 'Ke Dashboard' : 'Login Admin',
+              authState.isAuthenticated
+                  ? (ref.read(foundationProvider).activeFoundation == null ? 'Pilih Yayasan' : 'Ke Dasbor')
+                  : 'Login Admin',
               style: GoogleFonts.outfit(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
             ),
             style: ElevatedButton.styleFrom(

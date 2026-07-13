@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/foundation_provider.dart';
+import '../../projects/screens/public_project_feed_screen.dart';
 
 class FoundationSelectScreen extends ConsumerStatefulWidget {
   const FoundationSelectScreen({super.key});
@@ -125,6 +126,18 @@ class _FoundationSelectScreenState extends ConsumerState<FoundationSelectScreen>
           style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
         ),
         actions: [
+          IconButton(
+            tooltip: 'Jelajah Proyek Publik',
+            icon: const Icon(Icons.explore_outlined),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PublicProjectFeedScreen(showNavbar: true),
+                ),
+              );
+            },
+          ),
           IconButton(
             tooltip: 'Logout',
             icon: const Icon(Icons.logout),
