@@ -143,3 +143,7 @@ CREATE POLICY "Allow anyone to upload receipts"
 ON storage.objects FOR INSERT
 TO public
 WITH CHECK (bucket_id = 'receipts');
+
+-- F. Hak Akses PostgreSQL untuk Pengguna Publik (Anonymous)
+-- Memberikan izin INSERT ke tabel storage.objects agar pengguna tidak terdaftar dapat melakukan upload
+GRANT INSERT ON storage.objects TO anon;

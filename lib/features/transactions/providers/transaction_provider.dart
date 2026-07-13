@@ -123,8 +123,9 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
       final activeFoundation = _ref.read(foundationProvider).activeFoundation;
       if (activeFoundation == null) return null;
 
-      final cleanFilename = filename.replaceAll(RegExp(r'[^\w\s\.\-]'), '').replaceAll(' ', '_');
-      final String path = '${activeFoundation.id}/${DateTime.now().millisecondsSinceEpoch}_$cleanFilename';
+      final extension = filename.split('.').length > 1 ? filename.split('.').last : 'png';
+      final cleanExtension = extension.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+      final String path = '${activeFoundation.id}/receipt_${DateTime.now().millisecondsSinceEpoch}.${cleanExtension.isEmpty ? "png" : cleanExtension}';
 
       await Supabase.instance.client.storage
           .from('receipts')

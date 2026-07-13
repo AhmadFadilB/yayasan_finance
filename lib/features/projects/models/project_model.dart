@@ -33,14 +33,16 @@ class ProjectModel {
 
   factory ProjectModel.fromJson(Map<String, dynamic> json, {double totalIncome = 0.0, double totalExpense = 0.0}) {
     return ProjectModel(
-      id: json['id'] as String,
-      foundationId: json['foundation_id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String?,
-      startDate: json['start_date'] != null ? DateTime.parse(json['start_date'] as String) : null,
-      endDate: json['end_date'] != null ? DateTime.parse(json['end_date'] as String) : null,
-      status: json['status'] as String,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      id: json['id']?.toString() ?? '',
+      foundationId: json['foundation_id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      description: json['description']?.toString(),
+      startDate: json['start_date'] != null ? DateTime.parse(json['start_date'].toString()) : null,
+      endDate: json['end_date'] != null ? DateTime.parse(json['end_date'].toString()) : null,
+      status: json['status']?.toString() ?? 'active',
+      createdAt: json['created_at'] != null 
+          ? DateTime.parse(json['created_at'].toString()) 
+          : DateTime.now(),
       isPublic: json['is_public'] as bool? ?? false,
       targetAmount: (json['target_amount'] as num?)?.toDouble() ?? 0.0,
       totalIncome: totalIncome,

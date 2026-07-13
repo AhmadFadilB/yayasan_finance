@@ -122,7 +122,17 @@ class ProjectService {
       return list.map((item) {
         final Map<String, dynamic> map = Map<String, dynamic>.from(item);
         if (map['transactions'] != null) {
-          map['amount'] = map['transactions']['amount'];
+          if (map['transactions'] is List) {
+            final txList = map['transactions'] as List;
+            if (txList.isNotEmpty) {
+              final tx = txList.first;
+              if (tx is Map) {
+                map['amount'] = tx['amount'];
+              }
+            }
+          } else if (map['transactions'] is Map) {
+            map['amount'] = map['transactions']['amount'];
+          }
         }
         return DonationModel.fromJson(map);
       }).toList();
@@ -227,8 +237,9 @@ class ProjectService {
   // Mengunggah file bukti transfer dari publik ke bucket 'receipts'
   Future<String?> uploadPublicReceipt(String projectId, String filename, Uint8List bytes) async {
     try {
-      final cleanFilename = filename.replaceAll(RegExp(r'[^\w\s\.\-]'), '').replaceAll(' ', '_');
-      final String path = '$projectId/${DateTime.now().millisecondsSinceEpoch}_$cleanFilename';
+      final extension = filename.split('.').length > 1 ? filename.split('.').last : 'png';
+      final cleanExtension = extension.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+      final String path = '$projectId/receipt_${DateTime.now().millisecondsSinceEpoch}.${cleanExtension.isEmpty ? "png" : cleanExtension}';
 
       await _supabase.storage
           .from('receipts')

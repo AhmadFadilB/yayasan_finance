@@ -26,20 +26,32 @@ class DonationModel {
   factory DonationModel.fromJson(Map<String, dynamic> json) {
     double? donationAmount;
     if (json['transactions'] != null) {
-      donationAmount = (json['transactions']['amount'] as num?)?.toDouble();
+      if (json['transactions'] is List) {
+        final list = json['transactions'] as List;
+        if (list.isNotEmpty) {
+          final tx = list.first;
+          if (tx is Map) {
+            donationAmount = (tx['amount'] as num?)?.toDouble();
+          }
+        }
+      } else if (json['transactions'] is Map) {
+        donationAmount = (json['transactions']['amount'] as num?)?.toDouble();
+      }
     } else if (json['amount'] != null) {
-      donationAmount = (json['amount'] as num).toDouble();
+      donationAmount = (json['amount'] as num?)?.toDouble();
     }
 
     return DonationModel(
-      id: json['id'] as String,
-      transactionId: json['transaction_id'] as String,
-      donorName: json['donor_name'] as String,
+      id: json['id']?.toString() ?? '',
+      transactionId: json['transaction_id']?.toString() ?? '',
+      donorName: json['donor_name']?.toString() ?? '',
       isAnonymous: json['is_anonymous'] as bool? ?? false,
-      email: json['email'] as String?,
-      phone: json['phone'] as String?,
-      uniqueCode: json['unique_code'] as int,
-      createdAt: DateTime.parse(json['created_at'] as String),
+      email: json['email']?.toString(),
+      phone: json['phone']?.toString(),
+      uniqueCode: (json['unique_code'] as num?)?.toInt() ?? 0,
+      createdAt: json['created_at'] != null 
+          ? DateTime.parse(json['created_at'].toString()) 
+          : DateTime.now(),
       amount: donationAmount,
     );
   }
