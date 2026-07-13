@@ -37,6 +37,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             backgroundColor: Color(0xFF0D5C46),
           ),
         );
+        Navigator.pop(context);
       }
     }
   }
