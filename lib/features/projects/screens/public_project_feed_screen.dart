@@ -158,20 +158,48 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
             builder: (context, ref, child) {
               final auth = ref.watch(authProvider);
               if (!auth.isAuthenticated) {
-                // Not logged in: show grey profile avatar redirecting to login
-                return InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const LoginScreen()),
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(20),
-                  child: const CircleAvatar(
-                    radius: 18,
-                    backgroundColor: Color(0xFFE5E7EB),
-                    child: Icon(Icons.person, color: Color(0xFF9CA3AF), size: 20),
+                // Not logged in: show grey profile avatar that opens login dropdown
+                final avatarWidget = const CircleAvatar(
+                  radius: 18,
+                  backgroundColor: Color(0xFFE5E7EB),
+                  child: Icon(Icons.person, color: Color(0xFF9CA3AF), size: 20),
+                );
+
+                return PopupMenuButton<String>(
+                  tooltip: 'Menu Akun',
+                  offset: const Offset(0, 48),
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: avatarWidget,
                   ),
+                  onSelected: (value) {
+                    if (value == 'login') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      );
+                    }
+                  },
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      enabled: false,
+                      child: Text(
+                        'Belum Masuk',
+                        style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.black54),
+                      ),
+                    ),
+                    const PopupMenuDivider(),
+                    PopupMenuItem(
+                      value: 'login',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.login, size: 20, color: Color(0xFF0F5A47)),
+                          const SizedBox(width: 8),
+                          Text('Login', style: GoogleFonts.outfit()),
+                        ],
+                      ),
+                    ),
+                  ],
                 );
               }
 
