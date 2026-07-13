@@ -170,6 +170,148 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
     );
   }
 
+  Widget _buildMobileDrawer(dynamic activeFoundation, bool isAdmin) {
+    // Menu items list
+    final List<Map<String, dynamic>> menuItems = [
+      {'title': 'Dasbor', 'icon': Icons.dashboard_outlined, 'selectedIcon': Icons.dashboard},
+      {'title': 'Jelajah', 'icon': Icons.explore_outlined, 'selectedIcon': Icons.explore},
+      {'title': 'Proyek', 'icon': Icons.business_outlined, 'selectedIcon': Icons.business},
+      {'title': 'Transaksi', 'icon': Icons.receipt_long_outlined, 'selectedIcon': Icons.receipt_long},
+      if (isAdmin)
+        {'title': 'Validasi', 'icon': Icons.rule_outlined, 'selectedIcon': Icons.rule},
+      {'title': 'Laporan', 'icon': Icons.analytics_outlined, 'selectedIcon': Icons.analytics},
+      {'title': 'Audit', 'icon': Icons.history_toggle_off_outlined, 'selectedIcon': Icons.history_toggle_off},
+      {'title': 'Profil Yayasan', 'icon': Icons.business_outlined, 'selectedIcon': Icons.business},
+    ];
+
+    final initials = activeFoundation.name.isNotEmpty 
+        ? activeFoundation.name.substring(0, 1).toUpperCase() 
+        : '?';
+
+    return Drawer(
+      backgroundColor: Colors.white,
+      child: Column(
+        children: [
+          // Drawer Header with Emerald theme
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 24,
+              bottom: 24,
+              left: 20,
+              right: 20,
+            ),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF0F5A47), Color(0xFF0D5C46)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: Colors.white.withAlpha(51),
+                  backgroundImage: activeFoundation.logoUrl != null 
+                      ? NetworkImage(activeFoundation.logoUrl!) 
+                      : null,
+                  child: activeFoundation.logoUrl == null
+                      ? Text(
+                          initials,
+                          style: GoogleFonts.outfit(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      : null,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        activeFoundation.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.outfit(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withAlpha(51),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          (activeFoundation.currentUserRole ?? 'viewer').toUpperCase(),
+                          style: GoogleFonts.outfit(
+                            color: Colors.white,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Scrollable Menu List
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+              itemCount: menuItems.length,
+              itemBuilder: (context, index) {
+                final item = menuItems[index];
+                final isSelected = _selectedIndex == index;
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: ListTile(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    selected: isSelected,
+                    selectedTileColor: const Color(0xFF0D5C46).withAlpha(18),
+                    selectedColor: const Color(0xFF0D5C46),
+                    iconColor: const Color(0xFF6B7F79),
+                    textColor: const Color(0xFF1A2A25),
+                    leading: Icon(
+                      isSelected ? item['selectedIcon'] : item['icon'],
+                    ),
+                    title: Text(
+                      item['title'],
+                      style: GoogleFonts.outfit(
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                        fontSize: 14,
+                      ),
+                    ),
+                    onTap: () {
+                      setState(() {
+                        _selectedIndex = index;
+                      });
+                      Navigator.pop(context); // Close Drawer
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showFoundationMembersDialog(String foundationName) {
     showDialog(
       context: context,
@@ -360,49 +502,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
       const FoundationProfileEditScreen(),
     ];
 
-    final navigationDestinations = [
-      NavigationDestination(
-        icon: Icon(Icons.dashboard_outlined),
-        selectedIcon: Icon(Icons.dashboard, color: Colors.white),
-        label: 'Dasbor',
-      ),
-      NavigationDestination(
-        icon: Icon(Icons.explore_outlined),
-        selectedIcon: Icon(Icons.explore, color: Colors.white),
-        label: 'Jelajah',
-      ),
-      NavigationDestination(
-        icon: Icon(Icons.business_outlined),
-        selectedIcon: Icon(Icons.business, color: Colors.white),
-        label: 'Proyek',
-      ),
-      NavigationDestination(
-        icon: Icon(Icons.receipt_long_outlined),
-        selectedIcon: Icon(Icons.receipt_long, color: Colors.white),
-        label: 'Transaksi',
-      ),
-      if (isAdmin)
-        const NavigationDestination(
-          icon: Icon(Icons.rule_outlined),
-          selectedIcon: Icon(Icons.rule, color: Colors.white),
-          label: 'Validasi',
-        ),
-      NavigationDestination(
-        icon: Icon(Icons.analytics_outlined),
-        selectedIcon: Icon(Icons.analytics, color: Colors.white),
-        label: 'Laporan',
-      ),
-      NavigationDestination(
-        icon: Icon(Icons.history_toggle_off_outlined),
-        selectedIcon: Icon(Icons.history_toggle_off, color: Colors.white),
-        label: 'Audit',
-      ),
-      NavigationDestination(
-        icon: Icon(Icons.business),
-        selectedIcon: Icon(Icons.business, color: Colors.white),
-        label: 'Profil Yayasan',
-      ),
-    ];
+
 
     final railDestinations = [
       const NavigationRailDestination(
@@ -493,7 +593,18 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
     }
 
     return Scaffold(
+      drawer: !isDesktop ? _buildMobileDrawer(activeFoundation, isAdmin) : null,
       appBar: AppBar(
+        centerTitle: !isDesktop ? true : null,
+        leading: !isDesktop
+            ? Builder(
+                builder: (context) => IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                  tooltip: 'Menu Utama',
+                ),
+              )
+            : null,
         title: buildAppBarTitle(),
         actions: [
           Consumer(
@@ -713,30 +824,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
           ),
         ],
       ),
-      // Bottom Navigation untuk Mobile
-      bottomNavigationBar: !isDesktop
-          ? NavigationBarTheme(
-              data: NavigationBarThemeData(
-                labelTextStyle: WidgetStateProperty.resolveWith((states) {
-                  return GoogleFonts.outfit(
-                    fontSize: 10,
-                    fontWeight: states.contains(WidgetState.selected)
-                        ? FontWeight.bold
-                        : FontWeight.normal,
-                  );
-                }),
-              ),
-              child: NavigationBar(
-                selectedIndex: _selectedIndex,
-                onDestinationSelected: (index) {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                },
-                destinations: navigationDestinations,
-              ),
-            )
-          : null,
+      bottomNavigationBar: null,
     );
   }
 }
