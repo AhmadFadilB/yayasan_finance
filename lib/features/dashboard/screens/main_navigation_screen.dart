@@ -6,7 +6,8 @@ import '../../foundations/providers/foundation_provider.dart';
 import '../../foundations/widgets/add_member_dialog.dart';
 import '../../projects/screens/project_list_screen.dart';
 import '../../projects/screens/public_project_feed_screen.dart';
-import 'settings_tab_screen.dart';
+import '../../foundations/screens/foundation_profile_edit_screen.dart';
+import '../../auth/widgets/user_profile_dialog.dart';
 import '../../reports/screens/report_screen.dart';
 import '../../transactions/screens/transaction_list_screen.dart';
 import '../../audit_logs/screens/audit_log_screen.dart';
@@ -159,6 +160,13 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
           },
         );
       },
+    );
+  }
+
+  void _showUserProfileDialog() {
+    showDialog(
+      context: context,
+      builder: (_) => const UserProfileDialog(),
     );
   }
 
@@ -349,7 +357,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
       if (isAdmin) const ApprovalListScreen(),
       const ReportScreen(),
       const AuditLogScreen(),
-      const SettingsTabScreen(),
+      const FoundationProfileEditScreen(),
     ];
 
     final navigationDestinations = [
@@ -390,9 +398,9 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
         label: 'Audit',
       ),
       NavigationDestination(
-        icon: Icon(Icons.settings_outlined),
-        selectedIcon: Icon(Icons.settings, color: Colors.white),
-        label: 'Pengaturan',
+        icon: Icon(Icons.business),
+        selectedIcon: Icon(Icons.business, color: Colors.white),
+        label: 'Profil Yayasan',
       ),
     ];
 
@@ -434,9 +442,9 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
         label: Text('Log Audit'),
       ),
       const NavigationRailDestination(
-        icon: Icon(Icons.settings_outlined),
-        selectedIcon: Icon(Icons.settings),
-        label: Text('Pengaturan'),
+        icon: Icon(Icons.business),
+        selectedIcon: Icon(Icons.business),
+        label: Text('Profil Yayasan'),
       ),
     ];
 
@@ -544,84 +552,129 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                 );
               },
             ),
-            IconButton(
-              icon: const Icon(Icons.swap_horiz),
-              tooltip: 'Ganti Yayasan',
-              onPressed: () {
-                ref.read(foundationProvider.notifier).selectFoundation(null);
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.logout),
-              tooltip: 'Logout',
-              onPressed: () => ref.read(authProvider.notifier).logout(),
-            ),
-          ] else
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert),
-              onSelected: (value) {
-                switch (value) {
-                  case 'members':
-                    _showFoundationMembersDialog(activeFoundation.name);
-                    break;
-                  case 'coa':
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const CoaListScreen()),
-                    );
-                    break;
-                  case 'switch':
-                    ref.read(foundationProvider.notifier).selectFoundation(null);
-                    break;
-                  case 'logout':
-                    ref.read(authProvider.notifier).logout();
-                    break;
-                }
-              },
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  value: 'members',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.people_outline, size: 20, color: Color(0xFF0D5C46)),
-                      const SizedBox(width: 8),
-                      Text('Anggota Yayasan', style: GoogleFonts.outfit()),
-                    ],
+          ],
+          Consumer(
+            builder: (context, ref, child) {
+              final profile = ref.watch(authProvider).profile;
+              final avatarUrl = profile?.avatarUrl;
+              final initials = profile?.name.isNotEmpty == true 
+                  ? profile!.name.substring(0, 1).toUpperCase() 
+                  : '?';
+
+              final avatarWidget = CircleAvatar(
+                radius: 16,
+                backgroundColor: const Color(0xFF0D5C46),
+                backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
+                child: avatarUrl == null
+                    ? Text(
+                        initials,
+                        style: GoogleFonts.outfit(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    : null,
+              );
+
+              return PopupMenuButton<String>(
+                tooltip: 'Menu Akun',
+                offset: const Offset(0, 48),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: avatarWidget,
                   ),
                 ),
-                PopupMenuItem(
-                  value: 'coa',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.account_tree_outlined, size: 20, color: Color(0xFF0D5C46)),
-                      const SizedBox(width: 8),
-                      Text('Bagan Akun (COA)', style: GoogleFonts.outfit()),
-                    ],
+                onSelected: (value) {
+                  switch (value) {
+                    case 'profile':
+                      _showUserProfileDialog();
+                      break;
+                    case 'members':
+                      _showFoundationMembersDialog(activeFoundation.name);
+                      break;
+                    case 'coa':
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const CoaListScreen()),
+                      );
+                      break;
+                    case 'switch':
+                      ref.read(foundationProvider.notifier).selectFoundation(null);
+                      break;
+                    case 'logout':
+                      ref.read(authProvider.notifier).logout();
+                      break;
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    enabled: false,
+                    child: Text(
+                      profile?.name ?? 'Akun Saya',
+                      style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.black87),
+                    ),
                   ),
-                ),
-                PopupMenuItem(
-                  value: 'switch',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.swap_horiz, size: 20, color: Color(0xFF0D5C46)),
-                      const SizedBox(width: 8),
-                      Text('Ganti Yayasan', style: GoogleFonts.outfit()),
-                    ],
+                  const PopupMenuDivider(),
+                  PopupMenuItem(
+                    value: 'profile',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.person_outline, size: 20, color: Color(0xFF0D5C46)),
+                        const SizedBox(width: 8),
+                        Text('Profil Saya', style: GoogleFonts.outfit()),
+                      ],
+                    ),
                   ),
-                ),
-                const PopupMenuDivider(),
-                PopupMenuItem(
-                  value: 'logout',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.logout, size: 20, color: Colors.red),
-                      const SizedBox(width: 8),
-                      Text('Logout', style: GoogleFonts.outfit(color: Colors.red)),
-                    ],
+                  if (!isDesktop) ...[
+                    PopupMenuItem(
+                      value: 'members',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.people_outline, size: 20, color: Color(0xFF0D5C46)),
+                          const SizedBox(width: 8),
+                          Text('Anggota Yayasan', style: GoogleFonts.outfit()),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem(
+                      value: 'coa',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.account_tree_outlined, size: 20, color: Color(0xFF0D5C46)),
+                          const SizedBox(width: 8),
+                          Text('Bagan Akun (COA)', style: GoogleFonts.outfit()),
+                        ],
+                      ),
+                    ),
+                  ],
+                  PopupMenuItem(
+                    value: 'switch',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.swap_horiz, size: 20, color: Color(0xFF0D5C46)),
+                        const SizedBox(width: 8),
+                        Text('Ganti Yayasan', style: GoogleFonts.outfit()),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
+                  const PopupMenuDivider(),
+                  PopupMenuItem(
+                    value: 'logout',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.logout, size: 20, color: Colors.red),
+                        const SizedBox(width: 8),
+                        Text('Logout', style: GoogleFonts.outfit(color: Colors.red)),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
         ],
       ),
       body: Row(
