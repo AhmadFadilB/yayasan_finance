@@ -6,7 +6,6 @@ import '../../auth/providers/auth_provider.dart';
 import '../../auth/screens/login_screen.dart';
 import '../../dashboard/screens/main_navigation_screen.dart';
 import '../services/project_service.dart';
-import 'public_project_detail_screen.dart';
 
 class PublicProjectFeedScreen extends ConsumerStatefulWidget {
   const PublicProjectFeedScreen({super.key});
@@ -371,11 +370,9 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
-          Navigator.push(
+          Navigator.pushNamed(
             context,
-            MaterialPageRoute(
-              builder: (context) => PublicProjectDetailScreen(projectId: id),
-            ),
+            '/public/project?id=$id',
           );
         },
         child: Column(
