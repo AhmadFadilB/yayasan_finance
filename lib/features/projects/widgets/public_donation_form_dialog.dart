@@ -103,7 +103,7 @@ class _PublicDonationFormDialogState extends State<PublicDonationFormDialog> {
           _receiptFileName = file.name;
         });
 
-        final uploadUrl = await _service.uploadPublicReceipt(file.name, file.bytes!);
+        final uploadUrl = await _service.uploadPublicReceipt(widget.projectId, file.name, file.bytes!);
 
         setState(() {
           _uploadedReceiptUrl = uploadUrl;

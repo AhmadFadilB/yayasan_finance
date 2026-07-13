@@ -225,10 +225,10 @@ class ProjectService {
   }
 
   // Mengunggah file bukti transfer dari publik ke bucket 'receipts'
-  Future<String?> uploadPublicReceipt(String filename, Uint8List bytes) async {
+  Future<String?> uploadPublicReceipt(String projectId, String filename, Uint8List bytes) async {
     try {
       final cleanFilename = filename.replaceAll(RegExp(r'[^\w\s\.\-]'), '').replaceAll(' ', '_');
-      final String path = 'public/${DateTime.now().millisecondsSinceEpoch}_$cleanFilename';
+      final String path = '$projectId/${DateTime.now().millisecondsSinceEpoch}_$cleanFilename';
 
       await _supabase.storage
           .from('receipts')

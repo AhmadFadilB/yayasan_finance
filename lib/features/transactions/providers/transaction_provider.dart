@@ -41,6 +41,7 @@ final transactionServiceProvider = Provider<TransactionService>((ref) {
 class TransactionNotifier extends StateNotifier<TransactionState> {
   final TransactionService _service;
   final Ref _ref;
+  RealtimeChannel? _realtimeChannel;
 
   TransactionNotifier(this._service, this._ref) : super(TransactionState()) {
     // Dengarkan perubahan yayasan aktif. Jika berganti, load ulang transaksi.
@@ -48,6 +49,8 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
       if (next.activeFoundation != null) {
         loadTransactions(next.activeFoundation!.id);
       } else {
+        _realtimeChannel?.unsubscribe();
+        _realtimeChannel = null;
         state = TransactionState();
       }
     });
@@ -59,6 +62,43 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
     }
   }
 
+  @override
+  void dispose() {
+    _realtimeChannel?.unsubscribe();
+    super.dispose();
+  }
+
+  void _subscribeToRealtimeChanges(String foundationId) {
+    if (_realtimeChannel != null) {
+      _realtimeChannel!.unsubscribe();
+    }
+    
+    _realtimeChannel = Supabase.instance.client
+        .channel('public:transactions:foundation_id=eq.$foundationId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.all,
+          schema: 'public',
+          table: 'transactions',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'foundation_id',
+            value: foundationId,
+          ),
+          callback: (payload) {
+            // Ambil data terbaru di background secara senyap (tanpa loading spinner)
+            _service.getTransactions(foundationId).then((list) {
+              state = state.copyWith(
+                transactions: list,
+              );
+            }).catchError((_) {
+              // Abaikan error pembaruan background
+            });
+          },
+        );
+        
+    _realtimeChannel!.subscribe();
+  }
+
   // Mengambil daftar transaksi dari database
   Future<void> loadTransactions(String foundationId) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
@@ -68,6 +108,7 @@ class TransactionNotifier extends StateNotifier<TransactionState> {
         transactions: list,
         isLoading: false,
       );
+      _subscribeToRealtimeChanges(foundationId);
     } catch (e) {
       state = state.copyWith(
         isLoading: false,

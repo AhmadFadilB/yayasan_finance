@@ -45,8 +45,9 @@ class _PublicProjectDetailScreenState extends State<PublicProjectDetailScreen> {
         _isLoading = false;
       });
     } catch (e) {
+      print('Error loading project details: $e');
       setState(() {
-        _errorMessage = 'Gagal memuat detail proyek. Pastikan tautan benar dan koneksi internet Anda aktif.';
+        _errorMessage = 'Gagal memuat detail proyek: ${e.toString()}';
         _isLoading = false;
       });
     }
