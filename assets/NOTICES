@@ -3009,6 +3009,7 @@ SUCH DAMAGE.
 --------------------------------------------------------------------------------
 cross_file
 flutter_plugin_android_lifecycle
+go_router
 google_fonts
 path_provider_android
 url_launcher_linux
