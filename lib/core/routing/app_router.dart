@@ -31,8 +31,6 @@ final routerNotifierProvider = Provider((ref) => RouterTransitionNotifier(ref));
 
 final routerProvider = Provider<GoRouter>((ref) {
   final notifier = ref.read(routerNotifierProvider);
-  final authState = ref.watch(authProvider);
-  final foundationState = ref.watch(foundationProvider);
 
   return GoRouter(
     initialLocation: '/',
@@ -78,6 +76,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ],
     redirect: (context, state) {
+      final authState = ref.read(authProvider);
+      final foundationState = ref.read(foundationProvider);
       final loggedIn = authState.isAuthenticated;
       final hasFoundation = foundationState.activeFoundation != null;
 
