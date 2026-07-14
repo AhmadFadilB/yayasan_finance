@@ -506,7 +506,7 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
-          context.push('/public/project?id=$id');
+          context.go('/public/project?id=$id');
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -529,7 +529,7 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
                 children: [
                   GestureDetector(
                     onTap: () {
-                      context.push('/public/foundation?id=$foundationId');
+                      context.go('/public/foundation?id=$foundationId');
                     },
                     child: MouseRegion(
                       cursor: SystemMouseCursors.click,

@@ -143,28 +143,38 @@ class _PublicProjectDetailScreenState extends State<PublicProjectDetailScreen> {
               color: Colors.white,
               child: Row(
                 children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFE6F0EC),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Center(
-                      child: Icon(Icons.account_balance, color: Color(0xFF0F5A47)),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Text(
-                      'Yayasan Finance Crowdfunding',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF0F5A47),
+                  MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: GestureDetector(
+                      onTap: () => context.go('/'),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 40,
+                            height: 40,
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFE6F0EC),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Center(
+                              child: Icon(Icons.account_balance, color: Color(0xFF0F5A47)),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            'Yayasan Finance Crowdfunding',
+                            style: GoogleFonts.outfit(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xFF0F5A47),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
+                  const Spacer(),
                   if (_project!.isPublic)
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -208,7 +218,7 @@ class _PublicProjectDetailScreenState extends State<PublicProjectDetailScreen> {
                         cursor: SystemMouseCursors.click,
                         child: GestureDetector(
                           onTap: () {
-                            context.push('/public/foundation?id=${_project!.foundationId}');
+                            context.go('/public/foundation?id=${_project!.foundationId}');
                           },
                           child: Row(
                             mainAxisSize: MainAxisSize.min,

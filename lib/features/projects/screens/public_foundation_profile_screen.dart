@@ -298,7 +298,7 @@ class _PublicFoundationProfileScreenState extends State<PublicFoundationProfileS
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
-          context.push('/public/project?id=${proj['id']}');
+          context.go('/public/project?id=${proj['id']}');
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
