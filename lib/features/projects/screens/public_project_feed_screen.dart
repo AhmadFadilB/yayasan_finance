@@ -87,35 +87,52 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9FBF9),
-      body: Column(
-        children: [
-          // Elegant Top Header / Navigation bar
-          if (widget.showNavbar) ...[
-            _buildNavbar(authState),
-            const Divider(height: 1, color: Color(0xFFEEEEEE)),
+      body: RefreshIndicator(
+        onRefresh: _loadProjects,
+        color: const Color(0xFF0F5A47),
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            // Elegant Top Header / Navigation bar
+            if (widget.showNavbar)
+              SliverToBoxAdapter(
+                child: Column(
+                  children: [
+                    _buildNavbar(authState),
+                    const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                  ],
+                ),
+              ),
+
+            // Hero Search Section
+            SliverToBoxAdapter(
+              child: _buildHeroSection(isDesktop),
+            ),
+
+            // Main Feed Grid/List
+            if (_isLoading)
+              const SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(color: Color(0xFF0F5A47)),
+                      SizedBox(height: 16),
+                      Text('Memuat proyek publik...', style: TextStyle(color: Colors.grey)),
+                    ],
+                  ),
+                ),
+              )
+            else if (_errorMessage != null)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: _buildErrorPlaceholder(),
+              )
+            else
+              _buildSliverFeedContent(isDesktop),
           ],
-
-          // Hero Search Section
-          _buildHeroSection(isDesktop),
-
-          // Main Feed Grid/List
-          Expanded(
-            child: _isLoading
-                ? const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CircularProgressIndicator(color: Color(0xFF0F5A47)),
-                        SizedBox(height: 16),
-                        Text('Memuat proyek publik...', style: TextStyle(color: Colors.grey)),
-                      ],
-                    ),
-                  )
-                : _errorMessage != null
-                    ? _buildErrorPlaceholder()
-                    : _buildFeedContent(isDesktop),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -321,7 +338,7 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
       ),
       padding: EdgeInsets.symmetric(
         horizontal: 24,
-        vertical: isDesktop ? 48 : 32,
+        vertical: isDesktop ? 40 : 16,
       ),
       child: Center(
         child: ConstrainedBox(
@@ -333,32 +350,34 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
                 'Dukung Proyek Sosial Secara Transparan',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.outfit(
-                  fontSize: isDesktop ? 28 : 22,
+                  fontSize: isDesktop ? 26 : 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Donasi Anda tersalurkan langsung ke rekening yayasan terkait tanpa potongan perantara.',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.outfit(
-                  fontSize: isDesktop ? 14 : 12,
-                  color: Colors.white.withOpacity(0.85),
+              if (isDesktop) ...[
+                const SizedBox(height: 8),
+                Text(
+                  'Donasi Anda tersalurkan langsung ke rekening yayasan terkait tanpa potongan perantara.',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.outfit(
+                    fontSize: 14,
+                    color: Colors.white.withOpacity(0.85),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
+              ],
+              SizedBox(height: isDesktop ? 20 : 12),
               
               // Search Input
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
                     ),
                   ],
                 ),
@@ -366,17 +385,17 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
                   controller: _searchController,
                   decoration: InputDecoration(
                     hintText: 'Cari nama proyek, deskripsi, atau yayasan...',
-                    prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                    prefixIcon: const Icon(Icons.search, color: Colors.grey, size: 20),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
-                            icon: const Icon(Icons.clear),
+                            icon: const Icon(Icons.clear, size: 18),
                             onPressed: () {
                               _searchController.clear();
                             },
                           )
                         : null,
                     border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: isDesktop ? 16 : 12),
                   ),
                 ),
               ),
@@ -431,43 +450,45 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
     );
   }
 
-  Widget _buildFeedContent(bool isDesktop) {
+  Widget _buildSliverFeedContent(bool isDesktop) {
     if (_filteredProjects.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.search_off_outlined, size: 64, color: Colors.grey),
-              const SizedBox(height: 16),
-              Text(
-                'Tidak menemukan proyek publik yang cocok.',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.outfit(color: Colors.grey, fontSize: 15),
-              ),
-            ],
+      return SliverFillRemaining(
+        hasScrollBody: false,
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.search_off_outlined, size: 64, color: Colors.grey),
+                const SizedBox(height: 16),
+                Text(
+                  'Tidak menemukan proyek publik yang cocok.',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.outfit(color: Colors.grey, fontSize: 15),
+                ),
+              ],
+            ),
           ),
         ),
       );
     }
 
-    return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 1000),
-        child: GridView.builder(
-          padding: const EdgeInsets.all(24),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: isDesktop ? 3 : 1,
-            crossAxisSpacing: 20,
-            mainAxisSpacing: 20,
-            mainAxisExtent: 380,
-          ),
-          itemCount: _filteredProjects.length,
-          itemBuilder: (context, index) {
+    return SliverPadding(
+      padding: const EdgeInsets.all(24),
+      sliver: SliverGrid(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: isDesktop ? 3 : 1,
+          crossAxisSpacing: 20,
+          mainAxisSpacing: 20,
+          mainAxisExtent: 380,
+        ),
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
             final proj = _filteredProjects[index];
             return _buildProjectCard(proj);
           },
+          childCount: _filteredProjects.length,
         ),
       ),
     );
