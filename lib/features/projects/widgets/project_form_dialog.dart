@@ -136,149 +136,155 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
         isEdit ? 'Ubah Proyek' : 'Tambah Proyek',
         style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
       ),
-      content: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Field Nama Proyek
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nama Proyek',
-                  hintText: 'Renovasi Panti Asuhan',
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Nama proyek tidak boleh kosong';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Field Deskripsi
-              TextFormField(
-                controller: _descController,
-                decoration: const InputDecoration(
-                  labelText: 'Deskripsi Proyek',
-                  hintText: 'Renovasi gedung utama yayasan...',
-                ),
-                maxLines: 3,
-              ),
-              const SizedBox(height: 16),
-
-              // Date Pickers
-              Row(
-                children: [
-                  // Tanggal Mulai
-                  Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                      onPressed: () => _pickDate(true),
-                      child: Column(
-                        children: [
-                          const Icon(Icons.calendar_month, size: 20),
-                          const SizedBox(height: 4),
-                          Text(
-                            _startDate == null ? 'Mulai (Pilih)' : Formatter.formatTanggalPendek(_startDate!),
-                            style: GoogleFonts.outfit(fontSize: 12),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  // Tanggal Selesai
-                  Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      ),
-                      onPressed: () => _pickDate(false),
-                      child: Column(
-                        children: [
-                          const Icon(Icons.event, size: 20),
-                          const SizedBox(height: 4),
-                          Text(
-                            _endDate == null ? 'Selesai (Pilih)' : Formatter.formatTanggalPendek(_endDate!),
-                            style: GoogleFonts.outfit(fontSize: 12),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Dropdown Status
-              DropdownButtonFormField<String>(
-                value: _status,
-                decoration: const InputDecoration(
-                  labelText: 'Status Proyek',
-                  prefixIcon: Icon(Icons.info_outline),
-                ),
-                items: const [
-                  DropdownMenuItem(value: 'planned', child: Text('Direncanakan (Planned)')),
-                  DropdownMenuItem(value: 'active', child: Text('Berjalan (Active)')),
-                  DropdownMenuItem(value: 'completed', child: Text('Selesai (Completed)')),
-                ],
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() {
-                      _status = value;
-                    });
-                  }
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Switch Publik
-              SwitchListTile(
-                value: _isPublic,
-                title: const Text('Jadikan Proyek Publik'),
-                subtitle: const Text('Donatur publik dapat melihat proyek ini tanpa login'),
-                activeColor: const Color(0xFF0D5C46),
-                contentPadding: EdgeInsets.zero,
-                onChanged: (val) {
-                  setState(() {
-                    _isPublic = val;
-                  });
-                },
-              ),
-
-              // Target Amount (jika publik)
-              if (_isPublic) ...[
-                const SizedBox(height: 8),
+      content: Container(
+        width: 450,
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.6,
+        ),
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Field Nama Proyek
                 TextFormField(
-                  controller: _targetAmountController,
-                  keyboardType: TextInputType.number,
+                  controller: _nameController,
                   decoration: const InputDecoration(
-                    labelText: 'Target Dana Crowdfunding (Rp)',
-                    hintText: '5.000.000',
-                    prefixText: 'Rp ',
-                    prefixIcon: Icon(Icons.monetization_on_outlined),
+                    labelText: 'Nama Proyek',
+                    hintText: 'Renovasi Panti Asuhan',
                   ),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    _RupiahInputFormatter(),
-                  ],
                   validator: (value) {
-                    if (_isPublic && (value == null || value.trim().isEmpty)) {
-                      return 'Target dana wajib diisi jika proyek diset publik';
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Nama proyek tidak boleh kosong';
                     }
                     return null;
                   },
                 ),
+                const SizedBox(height: 16),
+
+                // Field Deskripsi
+                TextFormField(
+                  controller: _descController,
+                  decoration: const InputDecoration(
+                    labelText: 'Deskripsi Proyek',
+                    hintText: 'Renovasi gedung utama yayasan...',
+                  ),
+                  maxLines: 3,
+                ),
+                const SizedBox(height: 16),
+
+                // Date Pickers
+                Row(
+                  children: [
+                    // Tanggal Mulai
+                    Expanded(
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                        onPressed: () => _pickDate(true),
+                        child: Column(
+                          children: [
+                            const Icon(Icons.calendar_month, size: 20),
+                            const SizedBox(height: 4),
+                            Text(
+                              _startDate == null ? 'Mulai (Pilih)' : Formatter.formatTanggalPendek(_startDate!),
+                              style: GoogleFonts.outfit(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    // Tanggal Selesai
+                    Expanded(
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        ),
+                        onPressed: () => _pickDate(false),
+                        child: Column(
+                          children: [
+                            const Icon(Icons.event, size: 20),
+                            const SizedBox(height: 4),
+                            Text(
+                              _endDate == null ? 'Selesai (Pilih)' : Formatter.formatTanggalPendek(_endDate!),
+                              style: GoogleFonts.outfit(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Dropdown Status
+                DropdownButtonFormField<String>(
+                  value: _status,
+                  decoration: const InputDecoration(
+                    labelText: 'Status Proyek',
+                    prefixIcon: Icon(Icons.info_outline),
+                  ),
+                  items: const [
+                    DropdownMenuItem(value: 'planned', child: Text('Direncanakan (Planned)')),
+                    DropdownMenuItem(value: 'active', child: Text('Berjalan (Active)')),
+                    DropdownMenuItem(value: 'completed', child: Text('Selesai (Completed)')),
+                  ],
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _status = value;
+                      });
+                    }
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // Switch Publik
+                SwitchListTile(
+                  value: _isPublic,
+                  title: const Text('Jadikan Proyek Publik'),
+                  subtitle: const Text('Donatur publik dapat melihat proyek ini tanpa login'),
+                  activeColor: const Color(0xFF0D5C46),
+                  contentPadding: EdgeInsets.zero,
+                  onChanged: (val) {
+                    setState(() {
+                      _isPublic = val;
+                    });
+                  },
+                ),
+
+                // Target Amount (jika publik)
+                if (_isPublic) ...[
+                  const SizedBox(height: 8),
+                  TextFormField(
+                    controller: _targetAmountController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: 'Target Dana Crowdfunding (Rp)',
+                      hintText: '5.000.000',
+                      prefixText: 'Rp ',
+                      prefixIcon: Icon(Icons.monetization_on_outlined),
+                    ),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      _RupiahInputFormatter(),
+                    ],
+                    validator: (value) {
+                      if (_isPublic && (value == null || value.trim().isEmpty)) {
+                        return 'Target dana wajib diisi jika proyek diset publik';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
