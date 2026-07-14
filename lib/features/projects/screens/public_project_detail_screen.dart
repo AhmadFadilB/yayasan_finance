@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/utils/formatter.dart';
 import '../models/project_model.dart';
 import '../models/donation_model.dart';
@@ -207,10 +208,7 @@ class _PublicProjectDetailScreenState extends State<PublicProjectDetailScreen> {
                         cursor: SystemMouseCursors.click,
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              '/public/foundation?id=${_project!.foundationId}',
-                            );
+                            context.push('/public/foundation?id=${_project!.foundationId}');
                           },
                           child: Row(
                             mainAxisSize: MainAxisSize.min,

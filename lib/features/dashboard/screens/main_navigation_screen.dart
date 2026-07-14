@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../foundations/providers/foundation_provider.dart';
@@ -13,7 +14,6 @@ import '../../transactions/screens/transaction_list_screen.dart';
 import '../../audit_logs/screens/audit_log_screen.dart';
 import '../../transactions/screens/approval_list_screen.dart';
 import '../../notifications/providers/notification_provider.dart';
-import '../../coa/screens/coa_list_screen.dart';
 import '../../../core/utils/formatter.dart';
 import 'dashboard_screen.dart';
 
@@ -657,10 +657,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
               icon: const Icon(Icons.account_tree_outlined),
               tooltip: 'Bagan Akun (COA)',
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const CoaListScreen()),
-                );
+                context.push('/dashboard/coa');
               },
             ),
           ],
@@ -707,10 +704,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                       _showFoundationMembersDialog(activeFoundation.name);
                       break;
                     case 'coa':
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const CoaListScreen()),
-                      );
+                      context.push('/dashboard/coa');
                       break;
                     case 'switch':
                       ref.read(foundationProvider.notifier).selectFoundation(null);

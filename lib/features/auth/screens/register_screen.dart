@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../providers/auth_provider.dart';
 
@@ -39,7 +40,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             backgroundColor: Color(0xFF0D5C46),
           ),
         );
-        Navigator.pop(context);
+        if (context.mounted) {
+          try {
+            context.pop();
+          } catch (_) {}
+        }
       }
     }
   }
@@ -52,7 +57,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
         ),
       ),
       body: Center(
@@ -208,7 +213,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         style: GoogleFonts.outfit(color: const Color(0xFF6B7F79)),
                       ),
                       TextButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => context.pop(),
                         child: const Text('Masuk'),
                       ),
                     ],

@@ -3,14 +3,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
+import 'core/routing/app_router.dart';
 import 'core/theme/app_theme.dart';
-import 'features/auth/providers/auth_provider.dart';
-import 'features/dashboard/screens/main_navigation_screen.dart';
-import 'features/foundations/providers/foundation_provider.dart';
-import 'features/foundations/screens/foundation_select_screen.dart';
-import 'features/projects/screens/public_project_detail_screen.dart';
-import 'features/projects/screens/public_project_feed_screen.dart';
-import 'features/projects/screens/public_foundation_profile_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,102 +42,13 @@ class YayasanFinanceApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authProvider);
-    final foundationState = ref.watch(foundationProvider);
+    final router = ref.watch(routerProvider);
 
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Yayasan Finance',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: _getHomeScreen(authState, foundationState),
-      onGenerateRoute: (settings) {
-        final name = settings.name;
-        if (name != null) {
-          if (name.contains('/public/project')) {
-            final uri = Uri.parse(name);
-            final projectId = uri.queryParameters['id'];
-            if (projectId != null && projectId.isNotEmpty) {
-              return MaterialPageRoute(
-                settings: settings,
-                builder: (context) => PublicProjectDetailScreen(projectId: projectId),
-              );
-            }
-          } else if (name.contains('/public/foundation')) {
-            final uri = Uri.parse(name);
-            final foundationId = uri.queryParameters['id'];
-            if (foundationId != null && foundationId.isNotEmpty) {
-              return MaterialPageRoute(
-                settings: settings,
-                builder: (context) => PublicFoundationProfileScreen(foundationId: foundationId),
-              );
-            }
-          }
-        }
-        return null;
-      },
+      routerConfig: router,
     );
-  }
-
-  // Pengendali Alur Routing Reaktif
-  Widget _getHomeScreen(AuthState authState, FoundationState foundationState) {
-    // 0. Interseptor URL Publik (Bypass Auth untuk Crowdfunding)
-    final uri = Uri.base;
-    final isPublicProjectRoute = uri.path.contains('/public/project') || uri.fragment.contains('/public/project');
-    if (isPublicProjectRoute) {
-      String? projectId;
-      if (uri.path.contains('/public/project')) {
-        projectId = uri.queryParameters['id'];
-      } else if (uri.fragment.contains('/public/project')) {
-        final fragmentUri = Uri.parse(uri.fragment);
-        projectId = fragmentUri.queryParameters['id'];
-      }
-      if (projectId != null && projectId.isNotEmpty) {
-        return PublicProjectDetailScreen(projectId: projectId);
-      }
-    }
-
-    final isPublicFoundationRoute = uri.path.contains('/public/foundation') || uri.fragment.contains('/public/foundation');
-    if (isPublicFoundationRoute) {
-      String? foundationId;
-      if (uri.path.contains('/public/foundation')) {
-        foundationId = uri.queryParameters['id'];
-      } else if (uri.fragment.contains('/public/foundation')) {
-        final fragmentUri = Uri.parse(uri.fragment);
-        foundationId = fragmentUri.queryParameters['id'];
-      }
-      if (foundationId != null && foundationId.isNotEmpty) {
-        return PublicFoundationProfileScreen(foundationId: foundationId);
-      }
-    }
-
-    // A. Jika belum masuk/login, tampilkan halaman Feed Proyek Publik (Kickstarter-like)
-    if (!authState.isAuthenticated) {
-      return const PublicProjectFeedScreen();
-    }
-
-    // B. Jika sudah masuk, pastikan data profil terisi sebelum memproses yayasan
-    if (authState.profile == null) {
-      return const Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('Memuat profil Anda...', style: TextStyle(color: Colors.grey)),
-            ],
-          ),
-        ),
-      );
-    }
-
-    // C. Jika sudah login tetapi belum memilih yayasan aktif (atau yayasan null),
-    // tampilkan halaman pemilihan/pembuatan yayasan
-    if (foundationState.activeFoundation == null) {
-      return const FoundationSelectScreen();
-    }
-
-    // D. Jika sudah login dan memiliki yayasan aktif, masuk ke aplikasi utama
-    return const MainNavigationScreen();
   }
 }

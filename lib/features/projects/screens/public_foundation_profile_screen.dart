@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/utils/formatter.dart';
@@ -297,10 +298,7 @@ class _PublicFoundationProfileScreenState extends State<PublicFoundationProfileS
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
-          Navigator.pushNamed(
-            context,
-            '/public/project?id=${proj['id']}',
-          );
+          context.push('/public/project?id=${proj['id']}');
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

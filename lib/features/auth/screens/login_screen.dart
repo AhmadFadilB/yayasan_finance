@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../providers/auth_provider.dart';
-import 'register_screen.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -37,7 +37,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             backgroundColor: Color(0xFF0D5C46),
           ),
         );
-        Navigator.pop(context);
+        if (context.mounted) {
+          try {
+            context.pop();
+          } catch (_) {
+            // Redirect will handle if it cannot pop
+          }
+        }
       }
     }
   }
@@ -242,10 +248,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
                               TextButton(
                                 onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (_) => const RegisterScreen()),
-                                  );
+                                  context.push('/register');
                                 },
                                 child: const Text('Daftar Sekarang'),
                               ),

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/utils/formatter.dart';
 import '../../auth/providers/auth_provider.dart';
-import '../../auth/screens/login_screen.dart';
-import '../../dashboard/screens/main_navigation_screen.dart';
-import '../../foundations/screens/foundation_select_screen.dart';
 import '../../foundations/providers/foundation_provider.dart';
 import '../../auth/widgets/user_profile_dialog.dart';
 import '../services/project_service.dart';
@@ -191,10 +189,7 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
                   ),
                   onSelected: (value) {
                     if (value == 'login') {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const LoginScreen()),
-                      );
+                      context.push('/login');
                     }
                   },
                   itemBuilder: (context) => [
@@ -262,15 +257,9 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
                       break;
                     case 'dashboard':
                       if (active == null) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => const FoundationSelectScreen()),
-                        );
+                        context.go('/select-foundation');
                       } else {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
-                        );
+                        context.go('/dashboard');
                       }
                       break;
                     case 'logout':
@@ -517,10 +506,7 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
-          Navigator.pushNamed(
-            context,
-            '/public/project?id=$id',
-          );
+          context.push('/public/project?id=$id');
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -543,10 +529,7 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        '/public/foundation?id=$foundationId',
-                      );
+                      context.push('/public/foundation?id=$foundationId');
                     },
                     child: MouseRegion(
                       cursor: SystemMouseCursors.click,
