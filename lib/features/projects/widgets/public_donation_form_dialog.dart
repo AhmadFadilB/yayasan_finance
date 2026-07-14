@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../../../core/utils/formatter.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../services/project_service.dart';
 
-class PublicDonationFormDialog extends StatefulWidget {
+class PublicDonationFormDialog extends ConsumerStatefulWidget {
   final String projectId;
   final VoidCallback onSuccess;
 
@@ -15,10 +17,19 @@ class PublicDonationFormDialog extends StatefulWidget {
   });
 
   @override
-  State<PublicDonationFormDialog> createState() => _PublicDonationFormDialogState();
+  ConsumerState<PublicDonationFormDialog> createState() => _PublicDonationFormDialogState();
 }
 
-class _PublicDonationFormDialogState extends State<PublicDonationFormDialog> {
+class _PublicDonationFormDialogState extends ConsumerState<PublicDonationFormDialog> {
+  @override
+  void initState() {
+    super.initState();
+    final authState = ref.read(authProvider);
+    if (authState.isAuthenticated) {
+      _nameController.text = authState.profile?.name ?? '';
+      _emailController.text = authState.session?.user.email ?? '';
+    }
+  }
   final ProjectService _service = ProjectService();
   final _formKey = GlobalKey<FormState>();
 
