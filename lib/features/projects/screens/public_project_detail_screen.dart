@@ -143,38 +143,43 @@ class _PublicProjectDetailScreenState extends State<PublicProjectDetailScreen> {
               color: Colors.white,
               child: Row(
                 children: [
-                  MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: GestureDetector(
-                      onTap: () => context.go('/'),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFE6F0EC),
-                              shape: BoxShape.circle,
+                  Expanded(
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: GestureDetector(
+                        onTap: () => context.go('/'),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFE6F0EC),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Center(
+                                child: Icon(Icons.account_balance, color: Color(0xFF0F5A47)),
+                              ),
                             ),
-                            child: const Center(
-                              child: Icon(Icons.account_balance, color: Color(0xFF0F5A47)),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'Yayasan Finance Crowdfunding',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.outfit(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF0F5A47),
+                                ),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            'Yayasan Finance Crowdfunding',
-                            style: GoogleFonts.outfit(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: const Color(0xFF0F5A47),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                  const Spacer(),
+                  const SizedBox(width: 12),
                   if (_project!.isPublic)
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
