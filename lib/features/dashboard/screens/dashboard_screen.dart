@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/utils/formatter.dart';
+import '../../../core/theme/ui_constants.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/components/app_card.dart';
+import '../../../core/components/money_text.dart';
 import '../../foundations/providers/foundation_provider.dart';
 import '../../transactions/providers/transaction_provider.dart';
 import '../widgets/financial_chart.dart';
@@ -77,11 +81,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             children: [
                               Text(
                                 'Ringkasan Keuangan',
-                                style: GoogleFonts.outfit(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF1A2A25),
-                                ),
+                                style: Theme.of(context).textTheme.headlineMedium,
                               ),
                               SegmentedButton<DashboardFilter>(
                                 segments: const [
@@ -110,11 +110,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             children: [
                               Text(
                                 'Ringkasan Keuangan',
-                                style: GoogleFonts.outfit(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF1A2A25),
-                                ),
+                                style: Theme.of(context).textTheme.headlineMedium,
                               ),
                               const SizedBox(height: 12),
                               SizedBox(
@@ -281,73 +277,67 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     required IconData icon,
     bool isHighlight = false,
   }) {
-    final formatVal = Formatter.formatRupiah(amount);
-
-    return Card(
-      elevation: isHighlight ? 4 : 0,
-      shadowColor: isHighlight ? color.withAlpha(51) : Colors.transparent,
-      color: isHighlight ? color : Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Row(
-          children: [
-            CircleAvatar(
-              backgroundColor: isHighlight ? Colors.white.withAlpha(38) : color.withAlpha(26),
-              foregroundColor: isHighlight ? Colors.white : color,
-              child: Icon(icon),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: GoogleFonts.outfit(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: isHighlight ? Colors.white70 : const Color(0xFF6B7F79),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      formatVal,
-                      style: GoogleFonts.outfit(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: isHighlight ? Colors.white : const Color(0xFF1A2A25),
+    return AppCard(
+      color: isHighlight ? AppTheme.primaryColor : Colors.white,
+      hasBorder: !isHighlight,
+      hasShadow: isHighlight,
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: isHighlight ? Colors.white.withAlpha(38) : color.withAlpha(26),
+            foregroundColor: isHighlight ? Colors.white : color,
+            child: Icon(icon),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: isHighlight ? Colors.white70 : AppTheme.textLight,
+                        fontWeight: FontWeight.w500,
                       ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 4),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: isHighlight 
+                      ? Text(
+                          Formatter.formatRupiah(amount).replaceAll('Rp', 'Rp '),
+                          style: GoogleFonts.inter(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
+                        )
+                      : MoneyText(
+                          amount: amount,
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          styleType: title.contains('Debit') 
+                              ? MoneyTextStyleType.debit 
+                              : (title.contains('Kredit') ? MoneyTextStyleType.credit : MoneyTextStyleType.neutral),
+                        ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildRecentTransactionsList(List<dynamic> recentTxs) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withAlpha(26), width: 1),
-      ),
+    return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Transaksi Terbaru',
-            style: GoogleFonts.outfit(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF1A2A25),
-            ),
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 16),
           if (recentTxs.isEmpty)
@@ -356,7 +346,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               child: Center(
                 child: Text(
                   'Belum ada transaksi.',
-                  style: GoogleFonts.outfit(color: Colors.grey, fontSize: 14),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppTheme.textLight),
                 ),
               ),
             )
@@ -365,20 +355,24 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: recentTxs.length,
-              separatorBuilder: (_, __) => Divider(color: Colors.grey.withAlpha(26)),
+              separatorBuilder: (_, __) => const Divider(color: Color(0xFFEBEBEB), height: 1),
               itemBuilder: (context, index) {
                 final tx = recentTxs[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: Row(
                     children: [
                       CircleAvatar(
-                        radius: 18,
-                        backgroundColor: tx.isIncome ? const Color(0xFF0D5C46).withAlpha(18) : const Color(0xFFE53935).withAlpha(18),
-                        foregroundColor: tx.isIncome ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
+                        radius: 20,
+                        backgroundColor: tx.isIncome 
+                            ? AppTheme.colorSuccess.withAlpha(26) 
+                            : AppTheme.colorError.withAlpha(26),
+                        foregroundColor: tx.isIncome 
+                            ? AppTheme.colorSuccess 
+                            : AppTheme.colorError,
                         child: Icon(
-                          tx.isIncome ? Icons.arrow_downward : Icons.arrow_upward,
-                          size: 16,
+                          tx.isIncome ? Icons.account_balance_wallet_rounded : Icons.receipt_long_rounded,
+                          size: 18,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -390,53 +384,51 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               tx.description?.isNotEmpty == true ? tx.description! : tx.category,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.outfit(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF1A2A25),
-                              ),
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
-                            const SizedBox(height: 2),
-                            Row(
+                            const SizedBox(height: 4),
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: 8,
+                              runSpacing: 4,
                               children: [
                                 Text(
                                   Formatter.formatTanggalPendek(tx.transactionDate),
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 11,
-                                    color: const Color(0xFF6B7F79),
-                                  ),
+                                  style: Theme.of(context).textTheme.bodySmall,
                                 ),
-                                if (tx.projectName != null) ...[
-                                  const SizedBox(width: 6),
+                                if (tx.projectName != null)
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                                    constraints: const BoxConstraints(maxWidth: 100),
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                     decoration: BoxDecoration(
-                                      color: Colors.blue.withAlpha(26),
-                                      borderRadius: BorderRadius.circular(4),
+                                      color: AppTheme.secondaryColor.withAlpha(26),
+                                      borderRadius: AppRadius.radiusPill,
                                     ),
                                     child: Text(
                                       tx.projectName!,
-                                      style: GoogleFonts.outfit(
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.inter(
                                         fontSize: 9,
-                                        color: Colors.blue[800],
-                                        fontWeight: FontWeight.w500,
+                                        color: AppTheme.secondaryColor,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ),
-                                ],
                               ],
                             ),
                           ],
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        '${tx.isIncome ? '+' : '-'}${Formatter.formatRupiah(tx.amount)}',
-                        style: GoogleFonts.outfit(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: tx.isIncome ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
-                        ),
+                      MoneyText(
+                        amount: tx.amount,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        styleType: tx.isIncome ? MoneyTextStyleType.debit : MoneyTextStyleType.credit,
+                        showSign: true,
                       ),
                     ],
                   ),

@@ -27,6 +27,7 @@ alter table public.transactions add column if not exists approved_at timestamptz
 -- Pembaruan (UPDATE) hanya diizinkan untuk admin (Pimpinan) untuk semua transaksi, atau bendahara untuk transaksinya sendiri (jika masih pending)
 drop policy if exists "Allow admins to update all transactions" on public.transactions;
 drop policy if exists "Allow members to update own pending transactions" on public.transactions;
+drop policy if exists "Allow members to update/approve transactions based on role" on public.transactions;
 
 create policy "Allow members to update/approve transactions based on role"
   on public.transactions for update
@@ -52,3 +53,17 @@ create policy "Allow members to update/approve transactions based on role"
       and transactions.status = 'pending'
     )
   );
+
+-- 5. Aktifkan Supabase Realtime untuk tabel transactions agar update donasi/pengeluaran terkirim instan ke aplikasi
+do $$
+begin
+  if exists (select 1 from pg_publication where pubname = 'supabase_realtime') then
+    -- Pastikan tidak error jika tabel sudah terdaftar
+    if not exists (
+      select 1 from pg_publication_tables 
+      where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'transactions'
+    ) then
+      alter publication supabase_realtime add table public.transactions;
+    end if;
+  end if;
+end $$;

@@ -2,6 +2,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/utils/formatter.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/components/app_card.dart';
 
 class FinancialChart extends StatelessWidget {
   final double totalIncome;
@@ -23,13 +25,7 @@ class FinancialChart extends StatelessWidget {
       builder: (context, constraints) {
         final isMobile = constraints.maxWidth < 450;
 
-        return Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey.withAlpha(26), width: 1),
-          ),
+        return AppCard(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -37,20 +33,16 @@ class FinancialChart extends StatelessWidget {
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                         Text(
                           'Perbandingan Keuangan',
-                          style: GoogleFonts.outfit(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1A2A25),
-                          ),
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            _buildLegendItem('Debit', const Color(0xFF0D5C46)),
+                            _buildLegendItem(context, 'Debit', AppTheme.colorSuccess),
                             const SizedBox(width: 12),
-                            _buildLegendItem('Kredit', const Color(0xFFE53935)),
+                            _buildLegendItem(context, 'Kredit', AppTheme.colorError),
                           ],
                         ),
                       ],
@@ -60,18 +52,14 @@ class FinancialChart extends StatelessWidget {
                       children: [
                         Text(
                           'Perbandingan Keuangan',
-                          style: GoogleFonts.outfit(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF1A2A25),
-                          ),
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
                         // Legenda
                         Row(
                           children: [
-                            _buildLegendItem('Debit', const Color(0xFF0D5C46)),
+                            _buildLegendItem(context, 'Debit', AppTheme.colorSuccess),
                             const SizedBox(width: 12),
-                            _buildLegendItem('Kredit', const Color(0xFFE53935)),
+                            _buildLegendItem(context, 'Kredit', AppTheme.colorError),
                           ],
                         ),
                       ],
@@ -119,14 +107,12 @@ class FinancialChart extends StatelessWidget {
                               return SideTitleWidget(
                                 axisSide: meta.axisSide,
                                 space: 8,
-                                child: Text(
-                                  text,
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: const Color(0xFF6B7F79),
+                                  child: Text(
+                                    text,
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                   ),
-                                ),
                               );
                             },
                           ),
@@ -173,7 +159,7 @@ class FinancialChart extends StatelessWidget {
                           barRods: [
                             BarChartRodData(
                               toY: totalIncome,
-                              color: const Color(0xFF0D5C46),
+                              color: AppTheme.colorSuccess,
                               width: 32,
                               borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(8),
@@ -187,7 +173,7 @@ class FinancialChart extends StatelessWidget {
                           barRods: [
                             BarChartRodData(
                               toY: totalExpense,
-                              color: const Color(0xFFE53935),
+                              color: AppTheme.colorError,
                               width: 32,
                               borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(8),
@@ -207,7 +193,7 @@ class FinancialChart extends StatelessWidget {
     );
   }
 
-  Widget _buildLegendItem(String label, Color color) {
+  Widget _buildLegendItem(BuildContext context, String label, Color color) {
     return Row(
       children: [
         Container(
@@ -221,11 +207,9 @@ class FinancialChart extends StatelessWidget {
         const SizedBox(width: 6),
         Text(
           label,
-          style: GoogleFonts.outfit(
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            color: const Color(0xFF6B7F79),
-          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
         ),
       ],
     );

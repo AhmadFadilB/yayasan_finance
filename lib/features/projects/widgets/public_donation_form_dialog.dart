@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/ui_constants.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
@@ -185,7 +186,7 @@ class _PublicDonationFormDialogState extends ConsumerState<PublicDonationFormDia
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusLg),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 450),
         child: SingleChildScrollView(

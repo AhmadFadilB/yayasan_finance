@@ -4,7 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/foundation_provider.dart';
-import '../../auth/widgets/user_profile_dialog.dart';
+import '../../../core/components/profile_menu_anchor.dart';
+import '../../../core/components/app_card.dart';
+import '../../../core/components/app_button.dart';
+import '../../../core/components/app_modal.dart';
+import '../../../core/theme/ui_constants.dart';
+import '../../../core/theme/app_theme.dart';
 
 class FoundationSelectScreen extends ConsumerStatefulWidget {
   const FoundationSelectScreen({super.key});
@@ -26,90 +31,93 @@ class _FoundationSelectScreenState extends ConsumerState<FoundationSelectScreen>
   }
 
   void _showCreateFoundationDialog() {
-    showDialog(
+    AppModal.show<void>(
       context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            'Buat Yayasan Baru',
-            style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
-          ),
-          content: Form(
+      title: const Text('Buat Yayasan Baru'),
+      subtitle: 'Mulai yayasan baru untuk mengelola keuangan program sosial Anda',
+      content: Consumer(
+        builder: (context, ref, child) {
+          final foundationState = ref.watch(foundationProvider);
+          return Form(
             key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextFormField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Nama Yayasan',
-                      hintText: 'Yayasan Al-Manar',
-                    ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Nama yayasan tidak boleh kosong';
-                      }
-                      return null;
-                    },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextFormField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Nama Yayasan',
+                    hintText: 'Yayasan Al-Manar',
                   ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _descController,
-                    decoration: const InputDecoration(
-                      labelText: 'Deskripsi (Opsional)',
-                      hintText: 'Deskripsi singkat mengenai yayasan',
-                    ),
-                    maxLines: 3,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Nama yayasan tidak boleh kosong';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _descController,
+                  decoration: const InputDecoration(
+                    labelText: 'Deskripsi (Opsional)',
+                    hintText: 'Deskripsi singkat mengenai yayasan',
                   ),
-                ],
-              ),
+                  maxLines: 3,
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    AppButton(
+                      text: 'Batal',
+                      style: AppButtonStyle.outline,
+                      onPressed: () {
+                        _nameController.clear();
+                        _descController.clear();
+                        Navigator.pop(context);
+                      },
+                    ),
+                    const SizedBox(width: 12),
+                    AppButton(
+                      text: 'Buat',
+                      style: AppButtonStyle.primary,
+                      isLoading: foundationState.isLoading,
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          final name = _nameController.text.trim();
+                          final desc = _descController.text.trim();
+                          
+                          final navigator = Navigator.of(context);
+                          final messenger = ScaffoldMessenger.of(context);
+                          
+                          final success = await ref.read(foundationProvider.notifier).createFoundation(
+                                name,
+                                desc.isEmpty ? null : desc,
+                              );
+                          
+                          if (success && mounted) {
+                            navigator.pop();
+                            _nameController.clear();
+                            _descController.clear();
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text('Yayasan "$name" berhasil dibuat!'),
+                                backgroundColor: AppTheme.colorSuccess,
+                              ),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                _nameController.clear();
-                _descController.clear();
-                Navigator.pop(context);
-              },
-              child: const Text('Batal'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  final name = _nameController.text.trim();
-                  final desc = _descController.text.trim();
-                  
-                  final navigator = Navigator.of(context);
-                  final messenger = ScaffoldMessenger.of(context);
-                  
-                  // Tutup dialog terlebih dahulu untuk menghindari crash navigasi/rebuild
-                  navigator.pop();
-                  _nameController.clear();
-                  _descController.clear();
-
-                  final success = await ref.read(foundationProvider.notifier).createFoundation(
-                        name,
-                        desc.isEmpty ? null : desc,
-                      );
-                  
-                  if (success && mounted) {
-                    messenger.showSnackBar(
-                      SnackBar(
-                        content: Text('Yayasan "$name" berhasil dibuat!'),
-                        backgroundColor: const Color(0xFF0D5C46),
-                      ),
-                    );
-                  }
-                }
-              },
-              child: const Text('Buat'),
-            ),
-          ],
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
@@ -144,7 +152,7 @@ class _FoundationSelectScreenState extends ConsumerState<FoundationSelectScreen>
 
               final avatarWidget = CircleAvatar(
                 radius: 16,
-                backgroundColor: const Color(0xFF0D5C46),
+                backgroundColor: AppTheme.primaryColor,
                 backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
                 child: avatarUrl == null
                     ? Text(
@@ -158,9 +166,7 @@ class _FoundationSelectScreenState extends ConsumerState<FoundationSelectScreen>
                     : null,
               );
 
-              return PopupMenuButton<String>(
-                tooltip: 'Menu Akun',
-                offset: const Offset(0, 48),
+              return ProfileMenuAnchor(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12.0),
                   child: MouseRegion(
@@ -168,49 +174,6 @@ class _FoundationSelectScreenState extends ConsumerState<FoundationSelectScreen>
                     child: avatarWidget,
                   ),
                 ),
-                onSelected: (value) {
-                  switch (value) {
-                    case 'profile':
-                      showDialog(
-                        context: context,
-                        builder: (_) => const UserProfileDialog(),
-                      );
-                      break;
-                    case 'logout':
-                      ref.read(authProvider.notifier).logout();
-                      break;
-                  }
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    enabled: false,
-                    child: Text(
-                      currentProfile?.name ?? 'Akun Saya',
-                      style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.black87),
-                    ),
-                  ),
-                  const PopupMenuDivider(),
-                  PopupMenuItem(
-                    value: 'profile',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.person_outline, size: 20, color: Color(0xFF0D5C46)),
-                        const SizedBox(width: 8),
-                        Text('Edit Profil', style: GoogleFonts.outfit()),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'logout',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.logout, size: 20, color: Colors.red),
-                        const SizedBox(width: 8),
-                        Text('Logout', style: GoogleFonts.outfit(color: Colors.red)),
-                      ],
-                    ),
-                  ),
-                ],
               );
             },
           ),
@@ -226,10 +189,10 @@ class _FoundationSelectScreenState extends ConsumerState<FoundationSelectScreen>
               // Header Profil
               Card(
                 elevation: 0,
-                color: const Color(0xFF0D5C46).withAlpha(15),
+                color: AppTheme.primaryColor.withAlpha(15),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  side: const BorderSide(color: Color(0xFF0D5C46), width: 0.5),
+                  borderRadius: AppRadius.radiusMd,
+                  side: const BorderSide(color: AppColors.divider, width: 1),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
@@ -237,7 +200,7 @@ class _FoundationSelectScreenState extends ConsumerState<FoundationSelectScreen>
                     children: [
                       CircleAvatar(
                         radius: 28,
-                        backgroundColor: const Color(0xFF0D5C46),
+                        backgroundColor: AppTheme.primaryColor,
                         backgroundImage: profile?.avatarUrl != null 
                             ? NetworkImage(profile!.avatarUrl!) 
                             : null,
@@ -298,7 +261,7 @@ class _FoundationSelectScreenState extends ConsumerState<FoundationSelectScreen>
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFFEBEE),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: AppRadius.radiusSm,
                   ),
                   child: Text(
                     foundationState.errorMessage!,
@@ -332,10 +295,11 @@ class _FoundationSelectScreenState extends ConsumerState<FoundationSelectScreen>
                                   ),
                                 ),
                                 const SizedBox(height: 24),
-                                ElevatedButton.icon(
+                                 AppButton(
                                   onPressed: _showCreateFoundationDialog,
-                                  icon: const Icon(Icons.add),
-                                  label: const Text('Buat Yayasan Pertama'),
+                                  icon: Icons.add,
+                                  text: 'Buat Yayasan Pertama',
+                                  style: AppButtonStyle.primary,
                                 ),
                               ],
                             ),
@@ -350,69 +314,66 @@ class _FoundationSelectScreenState extends ConsumerState<FoundationSelectScreen>
                             itemCount: foundationState.foundations.length,
                             itemBuilder: (context, index) {
                               final f = foundationState.foundations[index];
-                              return Card(
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(16),
-                                  onTap: () {
-                                    ref.read(foundationProvider.notifier).selectFoundation(f);
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            const Icon(
-                                              Icons.account_balance,
-                                              color: Color(0xFF0D5C46),
-                                            ),
-                                            const SizedBox(width: 12),
-                                            Expanded(
-                                              child: Text(
-                                                f.name,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: GoogleFonts.outfit(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: const Color(0xFF1A2A25),
-                                                ),
-                                              ),
-                                            ),
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(
-                                                horizontal: 8,
-                                                vertical: 4,
-                                              ),
-                                              decoration: BoxDecoration(
-                                                color: const Color(0xFF0D5C46).withAlpha(26),
-                                                borderRadius: BorderRadius.circular(8),
-                                              ),
-                                              child: Text(
-                                                (f.currentUserRole ?? 'viewer').toUpperCase(),
-                                                style: GoogleFonts.outfit(
-                                                  fontSize: 10,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: const Color(0xFF0D5C46),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          f.description ?? 'Tidak ada deskripsi',
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: GoogleFonts.outfit(
-                                            fontSize: 13,
-                                            color: const Color(0xFF6B7F79),
+                              return AppCard(
+                                onTap: () {
+                                  ref.read(foundationProvider.notifier).selectFoundation(f);
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.account_balance,
+                                            color: AppTheme.primaryColor,
                                           ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Text(
+                                              f.name,
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: GoogleFonts.plusJakartaSans(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                                color: AppTheme.textDark,
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: AppTheme.primaryColor.withAlpha(26),
+                                              borderRadius: AppRadius.radiusPill,
+                                            ),
+                                            child: Text(
+                                              (f.currentUserRole ?? 'viewer').toUpperCase(),
+                                              style: GoogleFonts.plusJakartaSans(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                                color: AppTheme.primaryColor,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        f.description ?? 'Tidak ada deskripsi',
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: GoogleFonts.inter(
+                                          fontSize: 13,
+                                          color: AppTheme.textLight,
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               );
@@ -423,10 +384,11 @@ class _FoundationSelectScreenState extends ConsumerState<FoundationSelectScreen>
               
               // Tombol Tambah Yayasan di bagian bawah (jika sudah ada yayasan)
               if (foundationState.foundations.isNotEmpty && !foundationState.isLoading)
-                ElevatedButton.icon(
+                AppButton(
                   onPressed: _showCreateFoundationDialog,
-                  icon: const Icon(Icons.add),
-                  label: const Text('Buat Yayasan Baru'),
+                  icon: Icons.add,
+                  text: 'Buat Yayasan Baru',
+                  style: AppButtonStyle.primary,
                 ),
             ],
           ),

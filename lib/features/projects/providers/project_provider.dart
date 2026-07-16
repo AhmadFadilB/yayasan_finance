@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/utils/error_handler.dart';
 import '../../foundations/providers/foundation_provider.dart';
@@ -82,7 +83,12 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
     DateTime? endDate,
     required String status,
     bool isPublic = false,
-    double targetAmount = 0.0,
+    double? targetAmount,
+    Uint8List? coverBytes,
+    String? coverName,
+    List<Uint8List>? galleryBytesList,
+    List<String>? galleryNamesList,
+    String? videoUrl,
   }) async {
     final activeFoundation = _ref.read(foundationProvider).activeFoundation;
     if (activeFoundation == null) {
@@ -102,10 +108,41 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
         status: status,
         isPublic: isPublic,
         targetAmount: targetAmount,
+        coverImageUrl: null,
+        galleryUrls: null,
+        videoUrl: videoUrl,
         createdAt: DateTime.now(),
       );
 
-      await _service.createProject(newProj);
+      var createdProj = await _service.createProject(newProj);
+
+      // Upload Cover
+      String? coverUrl;
+      if (coverBytes != null && coverName != null) {
+        coverUrl = await _service.uploadProjectMedia(createdProj.id, coverName, coverBytes);
+      }
+
+      // Upload Gallery
+      List<String> galleryUrls = [];
+      if (galleryBytesList != null && galleryNamesList != null) {
+        for (int i = 0; i < galleryBytesList.length; i++) {
+          final url = await _service.uploadProjectMedia(
+            createdProj.id,
+            galleryNamesList[i],
+            galleryBytesList[i],
+          );
+          if (url != null) galleryUrls.add(url);
+        }
+      }
+
+      if (coverUrl != null || galleryUrls.isNotEmpty) {
+        createdProj = createdProj.copyWith(
+          coverImageUrl: coverUrl,
+          galleryUrls: galleryUrls.isNotEmpty ? galleryUrls : null,
+        );
+        await _service.updateProject(createdProj);
+      }
+
       await loadProjects(activeFoundation.id);
       return true;
     } catch (e) {
@@ -126,13 +163,43 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
     DateTime? endDate,
     required String status,
     bool isPublic = false,
-    double targetAmount = 0.0,
+    double? targetAmount,
+    bool setTargetAmountToNull = false,
+    Uint8List? coverBytes,
+    String? coverName,
+    String? existingCoverUrl,
+    bool deleteCoverImage = false,
+    List<Uint8List>? galleryBytesList,
+    List<String>? galleryNamesList,
+    List<String>? existingGalleryUrls,
+    String? videoUrl,
   }) async {
     final activeFoundation = _ref.read(foundationProvider).activeFoundation;
     if (activeFoundation == null) return false;
 
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
+      // 1. Upload cover baru jika ada
+      String? coverUrl = existingCoverUrl;
+      if (deleteCoverImage) {
+        coverUrl = null;
+      } else if (coverBytes != null && coverName != null) {
+        coverUrl = await _service.uploadProjectMedia(id, coverName, coverBytes);
+      }
+
+      // 2. Upload gallery baru jika ada
+      List<String> galleryUrls = existingGalleryUrls != null ? List<String>.from(existingGalleryUrls) : [];
+      if (galleryBytesList != null && galleryNamesList != null) {
+        for (int i = 0; i < galleryBytesList.length; i++) {
+          final url = await _service.uploadProjectMedia(
+            id,
+            galleryNamesList[i],
+            galleryBytesList[i],
+          );
+          if (url != null) galleryUrls.add(url);
+        }
+      }
+
       final proj = ProjectModel(
         id: id,
         foundationId: activeFoundation.id,
@@ -143,6 +210,9 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
         status: status,
         isPublic: isPublic,
         targetAmount: targetAmount,
+        coverImageUrl: coverUrl,
+        galleryUrls: galleryUrls.isNotEmpty ? galleryUrls : null,
+        videoUrl: videoUrl,
         createdAt: DateTime.now(), // Diabaikan oleh DB update
       );
 

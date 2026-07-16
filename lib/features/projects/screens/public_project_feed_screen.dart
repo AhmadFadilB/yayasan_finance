@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../../core/utils/formatter.dart';
+import '../../../../core/theme/ui_constants.dart';
+import '../../../../core/theme/app_theme.dart';
+import '../../../../core/components/app_logo.dart';
+import '../../../../core/components/profile_menu_anchor.dart';
+import '../widgets/project_card.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../foundations/providers/foundation_provider.dart';
-import '../../auth/widgets/user_profile_dialog.dart';
 import '../services/project_service.dart';
 
 class PublicProjectFeedScreen extends ConsumerStatefulWidget {
@@ -84,10 +87,10 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
     final isDesktop = size.width > 800;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FBF9),
+      backgroundColor: AppTheme.backgroundColor,
       body: RefreshIndicator(
         onRefresh: _loadProjects,
-        color: const Color(0xFF0F5A47),
+        color: AppTheme.primaryColor,
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
@@ -143,168 +146,65 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // Logo & Name
-          Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: const BoxDecoration(
-                  color: Color(0xFFE6F0EC),
-                  shape: BoxShape.circle,
-                ),
-                child: const Center(
-                  child: Icon(Icons.volunteer_activism, color: Color(0xFF0F5A47), size: 24),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'Yayasan Crowdfund',
-                style: GoogleFonts.outfit(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF0F5A47),
-                ),
-              ),
-            ],
-          ),
+          const AppLogo(showText: true, fontSize: 18),
           
           // Action Account Avatar Menu / Login Trigger
           Consumer(
             builder: (context, ref, child) {
               final auth = ref.watch(authProvider);
-              if (!auth.isAuthenticated) {
-                // Not logged in: show grey profile avatar that opens login dropdown
-                final avatarWidget = const CircleAvatar(
-                  radius: 18,
-                  backgroundColor: Color(0xFFE5E7EB),
-                  child: Icon(Icons.person, color: Color(0xFF9CA3AF), size: 20),
-                );
+              final activeFoundation = ref.watch(foundationProvider).activeFoundation;
+              
+              final avatarWidget = auth.isAuthenticated
+                  ? CircleAvatar(
+                      radius: 18,
+                      backgroundColor: AppTheme.primaryColor,
+                      backgroundImage: auth.profile?.avatarUrl != null 
+                          ? NetworkImage(auth.profile!.avatarUrl!) 
+                          : null,
+                      child: auth.profile?.avatarUrl == null
+                          ? Text(
+                              auth.profile?.name.isNotEmpty == true 
+                                  ? auth.profile!.name.substring(0, 1).toUpperCase() 
+                                  : '?',
+                              style: GoogleFonts.plusJakartaSans(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                          : null,
+                    )
+                  : const CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Color(0xFFE5E7EB),
+                      child: Icon(Icons.person, color: Color(0xFF9CA3AF), size: 20),
+                    );
 
-                return PopupMenuButton<String>(
-                  tooltip: 'Menu Akun',
-                  offset: const Offset(0, 48),
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: avatarWidget,
-                  ),
-                  onSelected: (value) {
-                    if (value == 'login') {
-                      context.push('/login');
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      enabled: false,
-                      child: Text(
-                        'Belum Masuk',
-                        style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.black54),
-                      ),
-                    ),
-                    const PopupMenuDivider(),
-                    PopupMenuItem(
-                      value: 'login',
-                      child: Row(
-                        children: [
-                          const Icon(Icons.login, size: 20, color: Color(0xFF0F5A47)),
-                          const SizedBox(width: 8),
-                          Text('Login', style: GoogleFonts.outfit()),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              }
-
-              // Logged in: show account settings dropdown
-              final profile = auth.profile;
-              final avatarUrl = profile?.avatarUrl;
-              final initials = profile?.name.isNotEmpty == true 
-                  ? profile!.name.substring(0, 1).toUpperCase() 
-                  : '?';
-
-              final avatarWidget = CircleAvatar(
-                radius: 18,
-                backgroundColor: const Color(0xFF0F5A47),
-                backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
-                child: avatarUrl == null
-                    ? Text(
-                        initials,
-                        style: GoogleFonts.outfit(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
+              return Row(
+                children: [
+                  if (auth.isAuthenticated && activeFoundation != null)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusSm),
+                          foregroundColor: AppTheme.primaryColor,
+                          side: const BorderSide(color: AppTheme.primaryColor, width: 1.5),
                         ),
-                      )
-                    : null,
-              );
-
-              final active = ref.watch(foundationProvider).activeFoundation;
-
-              return PopupMenuButton<String>(
-                tooltip: 'Menu Akun',
-                offset: const Offset(0, 48),
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: avatarWidget,
-                ),
-                onSelected: (value) {
-                  switch (value) {
-                    case 'profile':
-                      showDialog(
-                        context: context,
-                        builder: (_) => const UserProfileDialog(),
-                      );
-                      break;
-                    case 'dashboard':
-                      if (active == null) {
-                        context.go('/select-foundation');
-                      } else {
-                        context.go('/dashboard');
-                      }
-                      break;
-                    case 'logout':
-                      ref.read(authProvider.notifier).logout();
-                      break;
-                  }
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    enabled: false,
-                    child: Text(
-                      profile?.name ?? 'Akun Saya',
-                      style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.black87),
+                        onPressed: () => context.go('/dashboard'),
+                        icon: const Icon(Icons.dashboard_outlined, size: 16),
+                        label: Text(
+                          'Kembali ke ${activeFoundation.name}',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  const PopupMenuDivider(),
-                  PopupMenuItem(
-                    value: 'profile',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.person_outline, size: 20, color: Color(0xFF0F5A47)),
-                        const SizedBox(width: 8),
-                        Text('Edit Profil', style: GoogleFonts.outfit()),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'dashboard',
-                    child: Row(
-                      children: [
-                        Icon(active == null ? Icons.account_balance : Icons.dashboard, size: 20, color: const Color(0xFF0F5A47)),
-                        const SizedBox(width: 8),
-                        Text(active == null ? 'Pilih Yayasan' : 'Ke Dasbor', style: GoogleFonts.outfit()),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: 'logout',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.logout, size: 20, color: Colors.red),
-                        const SizedBox(width: 8),
-                        Text('Logout', style: GoogleFonts.outfit(color: Colors.red)),
-                      ],
-                    ),
+                  ProfileMenuAnchor(
+                    child: avatarWidget,
                   ),
                 ],
               );
@@ -320,7 +220,7 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
       width: double.infinity,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF0F5A47), Color(0xFF1D7860)],
+          colors: [AppTheme.primaryColor, Color(0xFF1D7860)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -338,7 +238,7 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
               Text(
                 'Dukung Proyek Sosial Secara Transparan',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.outfit(
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: isDesktop ? 26 : 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -349,9 +249,9 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
                 Text(
                   'Donasi Anda tersalurkan langsung ke rekening yayasan terkait tanpa potongan perantara.',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.outfit(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 14,
-                    color: Colors.white.withOpacity(0.85),
+                    color: Colors.white.withAlpha(217),
                   ),
                 ),
               ],
@@ -361,10 +261,10 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: AppRadius.radiusSm,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
+                      color: Colors.black.withAlpha(20),
                       blurRadius: 8,
                       offset: const Offset(0, 3),
                     ),
@@ -403,10 +303,10 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: AppRadius.radiusLg,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withAlpha(13),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -426,9 +326,9 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
             ElevatedButton(
               onPressed: _loadProjects,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0F5A47),
+                backgroundColor: AppTheme.primaryColor,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: AppRadius.radiusSm,
                 ),
               ),
               child: const Text('Coba Lagi', style: TextStyle(color: Colors.white)),
@@ -454,7 +354,7 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
                 Text(
                   'Tidak menemukan proyek publik yang cocok.',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.outfit(color: Colors.grey, fontSize: 15),
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppTheme.textLight),
                 ),
               ],
             ),
@@ -489,194 +389,27 @@ class _PublicProjectFeedScreenState extends ConsumerState<PublicProjectFeedScree
     final String foundationName = (proj['foundations'] != null && proj['foundations']['name'] != null)
         ? proj['foundations']['name'] as String
         : 'Yayasan';
-    final double target = (proj['target_amount'] as num?)?.toDouble() ?? 0.0;
+    final double? target = proj['target_amount'] != null ? (proj['target_amount'] as num).toDouble() : null;
     final double raised = (proj['total_income'] as num?)?.toDouble() ?? 0.0;
-    final double progress = target > 0 ? (raised / target).clamp(0.0, 1.0) : 0.0;
-    final int percent = (progress * 100).round();
     final String id = proj['id'] as String;
-    final String foundationId = proj['foundation_id'] as String;
+    final String? coverImageUrl = proj['cover_image_url'] as String?;
 
-    return Card(
-      elevation: 0,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: Color(0xFFEBEBEB)),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: () {
-          context.go('/public/project?id=$id');
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Top Section (Card Header style)
-            Container(
-              height: 100,
-              width: double.infinity,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFE6F0EC), Color(0xFFD4E8E0)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      context.go('/public/foundation?id=$foundationId');
-                    },
-                    child: MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF0F5A47).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          foundationName.toUpperCase(),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.outfit(
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF0F5A47),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            // Middle section
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.outfit(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      desc ?? 'Tidak ada deskripsi.',
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.outfit(
-                        fontSize: 12,
-                        color: Colors.black54,
-                        height: 1.4,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            
-            // Bottom section stats
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  // Progress bar
-                  Stack(
-                    children: [
-                      Container(
-                        height: 6,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF1F1F1),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      LayoutBuilder(
-                        builder: (context, constraints) {
-                          return Container(
-                            height: 6,
-                            width: constraints.maxWidth * progress,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF0F5A47), Color(0xFF4CAF50)],
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  
-                  // Statistics
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            Formatter.formatRupiah(raised),
-                            style: GoogleFonts.outfit(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                              color: const Color(0xFF0F5A47),
-                            ),
-                          ),
-                          Text(
-                            'terkumpul',
-                            style: GoogleFonts.outfit(fontSize: 10, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        '$percent%',
-                        style: GoogleFonts.outfit(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            target > 0 ? Formatter.formatRupiah(target) : 'Tak Terbatas',
-                            style: GoogleFonts.outfit(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 11,
-                              color: Colors.black54,
-                            ),
-                          ),
-                          Text(
-                            'target',
-                            style: GoogleFonts.outfit(fontSize: 10, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+    return ProjectCard(
+      id: id,
+      name: name,
+      description: desc,
+      coverImageUrl: coverImageUrl,
+      isPublic: true,
+      status: 'active',
+      foundationName: foundationName,
+      targetAmount: target,
+      totalIncome: raised,
+      totalExpense: 0,
+      balance: 0,
+      isAdmin: false,
+      onTap: () {
+        context.go('/public/project?id=$id');
+      },
     );
   }
 }

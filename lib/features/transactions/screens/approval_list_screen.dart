@@ -3,6 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/utils/formatter.dart';
+import '../../../core/theme/ui_constants.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/components/app_card.dart';
+import '../../../core/components/app_button.dart';
+import '../../../core/components/money_text.dart';
+import '../../../core/components/empty_state_view.dart';
+import '../../../core/components/status_badge.dart';
+import '../../../core/components/app_modal.dart';
 import '../../foundations/providers/foundation_provider.dart';
 import '../models/transaction_model.dart';
 import '../providers/transaction_provider.dart';
@@ -31,151 +39,119 @@ class ApprovalListScreen extends ConsumerWidget {
 
     void handleApprove(TransactionModel tx) {
       final isIncome = tx.isIncome;
-      showDialog(
+      AppModal.show(
         context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(
-              isIncome ? 'Verifikasi Donasi Masuk' : 'Setujui Transaksi',
-              style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
-            ),
-            content: Text(
-              isIncome
-                  ? 'Apakah Anda yakin ingin memverifikasi donasi "${tx.description ?? tx.category}" senilai ${Formatter.formatRupiah(tx.amount)}? Saldo kas yayasan akan bertambah secara resmi.'
-                  : 'Apakah Anda yakin ingin menyetujui pengeluaran "${tx.description ?? tx.category}" senilai ${Formatter.formatRupiah(tx.amount)}? Saldo yayasan akan dipotong secara resmi.',
-              style: GoogleFonts.outfit(),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('Batal', style: GoogleFonts.outfit(color: Colors.grey)),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0D5C46),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                onPressed: () async {
-                  Navigator.pop(context);
-                  final success = await ref
-                      .read(transactionProvider.notifier)
-                      .approveTransaction(tx.id);
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(success
-                            ? (isIncome ? 'Donasi berhasil diverifikasi!' : 'Transaksi berhasil disetujui!')
-                            : 'Gagal memproses transaksi.'),
-                        backgroundColor: success ? const Color(0xFF0D5C46) : Colors.red,
-                      ),
-                    );
-                  }
-                },
-                child: Text(isIncome ? 'Verifikasi' : 'Setujui', style: GoogleFonts.outfit()),
-              ),
-            ],
-          );
-        },
+        title: Text(isIncome ? 'Verifikasi Donasi Masuk' : 'Setujui Transaksi'),
+        subtitle: isIncome ? 'Verifikasi pemasukan ke kas yayasan' : 'Persetujuan pengeluaran kas yayasan',
+        content: Text(
+          isIncome
+              ? 'Apakah Anda yakin ingin memverifikasi donasi "${tx.description ?? tx.category}" senilai ${Formatter.formatRupiah(tx.amount)}? Saldo kas yayasan akan bertambah secara resmi.'
+              : 'Apakah Anda yakin ingin menyetujui pengeluaran "${tx.description ?? tx.category}" senilai ${Formatter.formatRupiah(tx.amount)}? Saldo yayasan akan dipotong secara resmi.',
+          style: GoogleFonts.inter(),
+        ),
+        actions: [
+          AppButton(
+            text: 'Batal',
+            style: AppButtonStyle.outline,
+            onPressed: () => Navigator.pop(context),
+          ),
+          AppButton(
+            text: isIncome ? 'Verifikasi' : 'Setujui',
+            style: AppButtonStyle.primary,
+            onPressed: () async {
+              final success = await ref
+                  .read(transactionProvider.notifier)
+                  .approveTransaction(tx.id);
+              if (context.mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(success
+                        ? (isIncome ? 'Donasi berhasil diverifikasi!' : 'Transaksi berhasil disetujui!')
+                        : 'Gagal memproses transaksi.'),
+                    backgroundColor: success ? AppTheme.colorSuccess : AppTheme.colorError,
+                  ),
+                );
+              }
+            },
+          ),
+        ],
       );
     }
 
     void handleReject(TransactionModel tx) {
       final isIncome = tx.isIncome;
-      showDialog(
+      AppModal.show(
         context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(
-              isIncome ? 'Tolak Donasi Masuk' : 'Tolak Transaksi',
-              style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
-            ),
-            content: Text(
-              isIncome
-                  ? 'Apakah Anda yakin ingin menolak donasi "${tx.description ?? tx.category}" senilai ${Formatter.formatRupiah(tx.amount)}? Donasi ini akan ditandai ditolak.'
-                  : 'Apakah Anda yakin ingin menolak pengeluaran "${tx.description ?? tx.category}" senilai ${Formatter.formatRupiah(tx.amount)}? Transaksi ini akan ditandai ditolak.',
-              style: GoogleFonts.outfit(),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('Batal', style: GoogleFonts.outfit(color: Colors.grey)),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFC62828),
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                onPressed: () async {
-                  Navigator.pop(context);
-                  final success = await ref
-                      .read(transactionProvider.notifier)
-                      .rejectTransaction(tx.id);
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(success
-                            ? 'Transaksi ditolak!'
-                            : 'Gagal memproses penolakan.'),
-                        backgroundColor: success ? const Color(0xFFC62828) : Colors.red,
-                      ),
-                    );
-                  }
-                },
-                child: Text(isIncome ? 'Tolak Donasi' : 'Tolak Transaksi', style: GoogleFonts.outfit()),
-              ),
-            ],
-          );
-        },
+        title: Text(isIncome ? 'Tolak Donasi Masuk' : 'Tolak Transaksi'),
+        subtitle: 'Pemasukan/pengeluaran ini akan ditandai ditolak',
+        content: Text(
+          isIncome
+              ? 'Apakah Anda yakin ingin menolak donasi "${tx.description ?? tx.category}" senilai ${Formatter.formatRupiah(tx.amount)}? Donasi ini akan ditandai ditolak.'
+              : 'Apakah Anda yakin ingin menolak pengeluaran "${tx.description ?? tx.category}" senilai ${Formatter.formatRupiah(tx.amount)}? Transaksi ini akan ditandai ditolak.',
+          style: GoogleFonts.inter(),
+        ),
+        actions: [
+          AppButton(
+            text: 'Batal',
+            style: AppButtonStyle.outline,
+            onPressed: () => Navigator.pop(context),
+          ),
+          AppButton(
+            text: isIncome ? 'Tolak Donasi' : 'Tolak Transaksi',
+            style: AppButtonStyle.secondary, // Accent/Amber/Red style
+            onPressed: () async {
+              final success = await ref
+                  .read(transactionProvider.notifier)
+                  .rejectTransaction(tx.id);
+              if (context.mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(success
+                        ? 'Transaksi ditolak!'
+                        : 'Gagal memproses penolakan.'),
+                    backgroundColor: success ? AppTheme.colorError : Colors.red,
+                  ),
+                );
+              }
+            },
+          ),
+        ],
       );
     }
 
     Widget buildEmptyState() {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.fact_check_outlined, size: 80, color: Color(0xFFB0BEC5)),
-            const SizedBox(height: 20),
-            Text(
-              'Semua Transaksi Bersih!',
-              style: GoogleFonts.outfit(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF1A2A25),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Tidak ada pengajuan pengeluaran atau donasi masuk baru yang membutuhkan persetujuan.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.outfit(color: const Color(0xFF6B7F79), fontSize: 14),
-            ),
-          ],
-        ),
+      return const EmptyStateView(
+        icon: Icons.fact_check_outlined,
+        title: 'Semua Transaksi Bersih!',
+        description: 'Tidak ada pengajuan pengeluaran atau donasi masuk baru yang membutuhkan persetujuan.',
       );
     }
 
     Widget buildDesktopTable() {
-      return Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.withAlpha(26)),
-        ),
+      return AppCard(
+        padding: EdgeInsets.zero,
         child: SingleChildScrollView(
-          child: DataTable(
-            columnSpacing: 24,
-            columns: [
-              DataColumn(label: Text('Tanggal', style: GoogleFonts.outfit(fontWeight: FontWeight.bold))),
-              DataColumn(label: Text('Tipe', style: GoogleFonts.outfit(fontWeight: FontWeight.bold))),
-              DataColumn(label: Text('Kategori Akun', style: GoogleFonts.outfit(fontWeight: FontWeight.bold))),
-              DataColumn(label: Text('Nominal', style: GoogleFonts.outfit(fontWeight: FontWeight.bold))),
-              DataColumn(label: Text('Proyek', style: GoogleFonts.outfit(fontWeight: FontWeight.bold))),
-              DataColumn(label: Text('Keterangan', style: GoogleFonts.outfit(fontWeight: FontWeight.bold))),
-              DataColumn(label: Text('Diajukan Oleh', style: GoogleFonts.outfit(fontWeight: FontWeight.bold))),
-              DataColumn(label: Text('Persetujuan', style: GoogleFonts.outfit(fontWeight: FontWeight.bold))),
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              dividerColor: AppColors.divider.withAlpha(80),
+              colorScheme: Theme.of(context).colorScheme.copyWith(
+                outline: AppColors.divider.withAlpha(80),
+                outlineVariant: AppColors.divider.withAlpha(80),
+              ),
+            ),
+            child: DataTable(
+              columnSpacing: 24,
+              columns: [
+              DataColumn(label: Text('Tanggal', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold))),
+              DataColumn(label: Text('Tipe', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold))),
+              DataColumn(label: Text('Kategori Akun', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold))),
+              DataColumn(label: Text('Nominal', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold))),
+              DataColumn(label: Text('Proyek', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold))),
+              DataColumn(label: Text('Keterangan', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold))),
+              DataColumn(label: Text('Diajukan Oleh', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold))),
+              DataColumn(label: Text('Persetujuan', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold))),
             ],
             rows: pendingTxs.map((tx) {
               final isIncome = tx.isIncome;
@@ -183,30 +159,18 @@ class ApprovalListScreen extends ConsumerWidget {
                 cells: [
                   DataCell(Text(Formatter.formatTanggalPendek(tx.transactionDate))),
                   DataCell(
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: isIncome ? const Color(0xFFE8F5E9) : const Color(0xFFFFEBEE),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        isIncome ? 'Pemasukan' : 'Pengeluaran',
-                        style: GoogleFonts.outfit(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: isIncome ? const Color(0xFF2E7D32) : const Color(0xFFC62828),
-                        ),
-                      ),
+                    StatusBadge(
+                      status: isIncome ? 'approved' : 'rejected',
+                      label: isIncome ? 'Pemasukan' : 'Pengeluaran',
                     ),
                   ),
                   DataCell(Text(tx.category)),
                   DataCell(
-                    Text(
-                      Formatter.formatRupiah(tx.amount),
-                      style: GoogleFonts.outfit(
-                        fontWeight: FontWeight.bold,
-                        color: isIncome ? const Color(0xFF2E7D32) : const Color(0xFFC62828),
-                      ),
+                    MoneyText(
+                      amount: tx.amount,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      styleType: isIncome ? MoneyTextStyleType.debit : MoneyTextStyleType.credit,
                     ),
                   ),
                   DataCell(Text(tx.projectName ?? '-')),
@@ -216,7 +180,7 @@ class ApprovalListScreen extends ConsumerWidget {
                       children: [
                         if (tx.receiptUrl != null) ...[
                           IconButton(
-                            icon: const Icon(Icons.attachment_outlined, size: 16, color: Color(0xFF0D5C46)),
+                            icon: const Icon(Icons.attachment_outlined, size: 16, color: AppTheme.primaryColor),
                             onPressed: () async {
                               final uri = Uri.parse(tx.receiptUrl!);
                               if (await canLaunchUrl(uri)) {
@@ -239,28 +203,18 @@ class ApprovalListScreen extends ConsumerWidget {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF0D5C46),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                          ),
+                        AppButton(
+                          text: isIncome ? 'Verifikasi' : 'Setujui',
+                          style: AppButtonStyle.primary,
+                          height: 32,
                           onPressed: () => handleApprove(tx),
-                          icon: const Icon(Icons.check, size: 14),
-                          label: Text(isIncome ? 'Verifikasi' : 'Setujui', style: GoogleFonts.outfit(fontSize: 12)),
                         ),
                         const SizedBox(width: 8),
-                        OutlinedButton.icon(
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: const Color(0xFFC62828),
-                            side: const BorderSide(color: Color(0xFFC62828)),
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                          ),
+                        AppButton(
+                          text: 'Tolak',
+                          style: AppButtonStyle.outline,
+                          height: 32,
                           onPressed: () => handleReject(tx),
-                          icon: const Icon(Icons.close, size: 14),
-                          label: Text('Tolak', style: GoogleFonts.outfit(fontSize: 12)),
                         ),
                       ],
                     ),
@@ -270,8 +224,9 @@ class ApprovalListScreen extends ConsumerWidget {
             }).toList(),
           ),
         ),
-      );
-    }
+      ),
+    );
+  }
 
     Widget buildMobileList() {
       return ListView.separated(
@@ -280,127 +235,109 @@ class ApprovalListScreen extends ConsumerWidget {
         itemBuilder: (context, index) {
           final tx = pendingTxs[index];
           final isIncome = tx.isIncome;
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        Formatter.formatTanggal(tx.transactionDate),
-                        style: GoogleFonts.outfit(fontSize: 12, color: Colors.grey),
-                      ),
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: isIncome ? const Color(0xFFE8F5E9) : const Color(0xFFFFEBEE),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              isIncome ? 'Pemasukan' : 'Pengeluaran',
-                              style: GoogleFonts.outfit(
-                                fontSize: 9,
-                                fontWeight: FontWeight.bold,
-                                color: isIncome ? const Color(0xFF2E7D32) : const Color(0xFFC62828),
-                              ),
-                            ),
-                          ),
-                          if (tx.receiptUrl != null) ...[
-                            const SizedBox(width: 8),
-                            GestureDetector(
-                              onTap: () async {
-                                final uri = Uri.parse(tx.receiptUrl!);
-                                if (await canLaunchUrl(uri)) {
-                                  await launchUrl(uri);
-                                }
-                              },
-                              child: const Icon(Icons.attachment_outlined, size: 18, color: Color(0xFF0D5C46)),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    tx.description?.isNotEmpty == true ? tx.description! : tx.category,
-                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16, color: const Color(0xFF1A2A25)),
-                  ),
-                  if (tx.description?.isNotEmpty == true) ...[
-                    const SizedBox(height: 2),
+          return AppCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
                     Text(
-                      'Akun: ${tx.category}',
-                      style: GoogleFonts.outfit(fontSize: 12, color: const Color(0xFF6B7F79)),
+                      Formatter.formatTanggal(tx.transactionDate),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    Row(
+                      children: [
+                        StatusBadge(
+                          status: isIncome ? 'approved' : 'rejected',
+                          label: isIncome ? 'Pemasukan' : 'Pengeluaran',
+                        ),
+                        if (tx.receiptUrl != null) ...[
+                          const SizedBox(width: 8),
+                          GestureDetector(
+                            onTap: () async {
+                              final uri = Uri.parse(tx.receiptUrl!);
+                              if (await canLaunchUrl(uri)) {
+                                await launchUrl(uri);
+                              }
+                            },
+                            child: const Icon(Icons.attachment_outlined, size: 18, color: AppTheme.primaryColor),
+                          ),
+                        ],
+                      ],
                     ),
                   ],
-                  const SizedBox(height: 4),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Diajukan: ${tx.creatorName ?? "Donatur Publik"}',
-                        style: GoogleFonts.outfit(fontSize: 12, color: const Color(0xFF6B7F79)),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  tx.description?.isNotEmpty == true ? tx.description! : tx.category,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
-                      if (tx.projectName != null)
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.withAlpha(26),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            tx.projectName!,
-                            style: GoogleFonts.outfit(fontSize: 9, color: Colors.blue[800]),
-                          ),
-                        ),
-                    ],
-                  ),
-                  const Divider(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        Formatter.formatRupiah(tx.amount),
-                        style: GoogleFonts.outfit(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: isIncome ? const Color(0xFF2E7D32) : const Color(0xFFC62828),
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: const Color(0xFFC62828),
-                              side: const BorderSide(color: Color(0xFFC62828)),
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                            ),
-                            onPressed: () => handleReject(tx),
-                            child: Text('Tolak', style: GoogleFonts.outfit(fontSize: 12)),
-                          ),
-                          const SizedBox(width: 8),
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF0D5C46),
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                            ),
-                            onPressed: () => handleApprove(tx),
-                            child: Text(isIncome ? 'Verifikasi' : 'Setujui', style: GoogleFonts.outfit(fontSize: 12)),
-                          ),
-                        ],
-                      ),
-                    ],
+                ),
+                if (tx.description?.isNotEmpty == true) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    'Akun: ${tx.category}',
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
-              ),
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Diajukan: ${tx.creatorName ?? "Donatur Publik"}',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    if (tx.projectName != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppTheme.secondaryColor.withAlpha(26),
+                          borderRadius: AppRadius.radiusPill,
+                        ),
+                        child: Text(
+                          tx.projectName!,
+                          style: GoogleFonts.inter(
+                            fontSize: 9,
+                            color: AppTheme.secondaryColor,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const Divider(height: 24, color: AppColors.divider),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    MoneyText(
+                      amount: tx.amount,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      styleType: isIncome ? MoneyTextStyleType.debit : MoneyTextStyleType.credit,
+                    ),
+                    Row(
+                      children: [
+                        AppButton(
+                          text: 'Tolak',
+                          style: AppButtonStyle.outline,
+                          height: 36,
+                          onPressed: () => handleReject(tx),
+                        ),
+                        const SizedBox(width: 8),
+                        AppButton(
+                          text: isIncome ? 'Verifikasi' : 'Setujui',
+                          style: AppButtonStyle.primary,
+                          height: 36,
+                          onPressed: () => handleApprove(tx),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
             ),
           );
         },
@@ -408,24 +345,24 @@ class ApprovalListScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FBFB),
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Persetujuan Transaksi',
-              style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18),
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             Text(
               'Otorisasi Keuangan & Donasi Yayasan',
-              style: GoogleFonts.outfit(fontSize: 12, color: const Color(0xFF6B7F79)),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
         ),
       ),
       body: transactionState.isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF0D5C46)))
+          ? const Center(child: CircularProgressIndicator(color: AppTheme.primaryColor))
           : transactionState.errorMessage != null
               ? Center(
                   child: Padding(
@@ -433,24 +370,24 @@ class ApprovalListScreen extends ConsumerWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.error_outline, size: 64, color: Colors.redAccent),
+                        const Icon(Icons.error_outline, size: 64, color: AppTheme.colorError),
                         const SizedBox(height: 16),
                         Text(
                           'Gagal Memuat Persetujuan',
-                          style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 8),
                         Text(
                           transactionState.errorMessage!,
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.outfit(color: Colors.black54),
+                          style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         const SizedBox(height: 24),
-                        ElevatedButton(
+                        AppButton(
+                          text: 'Coba Lagi',
                           onPressed: () => ref
                               .read(transactionProvider.notifier)
                               .loadTransactions(activeFoundation.id),
-                          child: const Text('Coba Lagi'),
                         ),
                       ],
                     ),

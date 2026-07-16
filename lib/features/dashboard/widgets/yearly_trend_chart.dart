@@ -2,6 +2,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/utils/formatter.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/components/app_card.dart';
 import '../../transactions/models/transaction_model.dart';
 
 class YearlyTrendChart extends StatefulWidget {
@@ -74,13 +76,7 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
       'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
     ];
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withAlpha(26), width: 1),
-      ),
+    return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -89,21 +85,17 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
             children: [
               Text(
                 'Tren Keuangan Bulanan',
-                style: GoogleFonts.outfit(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1A2A25),
-                ),
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               DropdownButton<int>(
                 value: _selectedYear,
                 underline: const SizedBox(),
-                style: GoogleFonts.outfit(
-                  color: const Color(0xFF0D5C46),
+                style: GoogleFonts.plusJakartaSans(
+                  color: AppTheme.primaryColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
                 ),
-                icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF0D5C46)),
+                icon: const Icon(Icons.arrow_drop_down, color: AppTheme.primaryColor),
                 items: _availableYears.map((year) {
                   return DropdownMenuItem(
                     value: year,
@@ -123,9 +115,9 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
           const SizedBox(height: 12),
           Row(
             children: [
-              _buildLegendItem('Debit', const Color(0xFF0D5C46)),
+              _buildLegendItem('Debit', AppTheme.colorSuccess),
               const SizedBox(width: 16),
-              _buildLegendItem('Kredit', const Color(0xFFE53935)),
+              _buildLegendItem('Kredit', AppTheme.colorError),
             ],
           ),
           const SizedBox(height: 32),
@@ -163,11 +155,9 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
                             space: 8,
                             child: Text(
                               monthLabels[idx],
-                              style: GoogleFonts.outfit(
-                                fontSize: 10,
-                                color: const Color(0xFF6B7F79),
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                             ),
                           );
                         }
@@ -208,8 +198,8 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
                         final isIncome = spot.barIndex == 0;
                         return LineTooltipItem(
                           '${isIncome ? 'Debit' : 'Kredit'}\n${Formatter.formatRupiah(spot.y)}',
-                          GoogleFonts.outfit(
-                            color: isIncome ? const Color(0xFF4CAF50) : const Color(0xFFE53935),
+                          GoogleFonts.inter(
+                            color: isIncome ? AppTheme.colorSuccess : AppTheme.colorError,
                             fontWeight: FontWeight.bold,
                             fontSize: 12,
                           ),
@@ -223,7 +213,7 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
                   LineChartBarData(
                     spots: List.generate(12, (i) => FlSpot(i.toDouble(), monthlyIncome[i])),
                     isCurved: false,
-                    color: const Color(0xFF0D5C46),
+                    color: AppTheme.colorSuccess,
                     barWidth: 3,
                     isStrokeCapRound: true,
                     dotData: FlDotData(
@@ -233,19 +223,19 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
                         radius: 4,
                         color: Colors.white,
                         strokeWidth: 2.5,
-                        strokeColor: const Color(0xFF0D5C46),
+                        strokeColor: AppTheme.colorSuccess,
                       ),
                     ),
                     belowBarData: BarAreaData(
                       show: true,
-                      color: const Color(0xFF0D5C46).withAlpha(20),
+                      color: AppTheme.colorSuccess.withAlpha(20),
                     ),
                   ),
                   // Line Pengeluaran (Red)
                   LineChartBarData(
                     spots: List.generate(12, (i) => FlSpot(i.toDouble(), monthlyExpense[i])),
                     isCurved: false,
-                    color: const Color(0xFFE53935),
+                    color: AppTheme.colorError,
                     barWidth: 3,
                     isStrokeCapRound: true,
                     dotData: FlDotData(
@@ -255,12 +245,12 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
                         radius: 4,
                         color: Colors.white,
                         strokeWidth: 2.5,
-                        strokeColor: const Color(0xFFE53935),
+                        strokeColor: AppTheme.colorError,
                       ),
                     ),
                     belowBarData: BarAreaData(
                       show: true,
-                      color: const Color(0xFFE53935).withAlpha(15),
+                      color: AppTheme.colorError.withAlpha(15),
                     ),
                   ),
                 ],
@@ -286,11 +276,9 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
         const SizedBox(width: 6),
         Text(
           label,
-          style: GoogleFonts.outfit(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF6B7F79),
-          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
         ),
       ],
     );

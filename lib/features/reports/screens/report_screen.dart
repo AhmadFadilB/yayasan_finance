@@ -4,6 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:printing/printing.dart';
 import '../../../core/utils/formatter.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../../core/theme/ui_constants.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/components/empty_state_view.dart';
 import '../../foundations/providers/foundation_provider.dart';
 import '../../projects/providers/project_provider.dart';
 import '../../transactions/models/transaction_model.dart';
@@ -164,8 +167,8 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
       return Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.withAlpha(26)),
+          borderRadius: AppRadius.radiusMd,
+          border: Border.all(color: AppColors.divider),
         ),
         child: Column(
           children: [
@@ -175,8 +178,8 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
               decoration: BoxDecoration(
                 color: Colors.grey[50],
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
+                  topLeft: Radius.circular(AppRadius.md),
+                  topRight: Radius.circular(AppRadius.md),
                 ),
               ),
               child: Table(
@@ -190,18 +193,18 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                 children: [
                   TableRow(
                     children: [
-                      Text('Tanggal', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: const Color(0xFF37474F), fontSize: 13)),
+                       Text('Tanggal', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: const Color(0xFF37474F), fontSize: 13)),
                       Text('Keterangan / Proyek', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: const Color(0xFF37474F), fontSize: 13)),
                       Align(
-                        alignment: Alignment.centerRight,
+                        alignment: Alignment.centerLeft,
                         child: Text('Debit (Masuk)', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: const Color(0xFF37474F), fontSize: 13)),
                       ),
                       Align(
-                        alignment: Alignment.centerRight,
+                        alignment: Alignment.centerLeft,
                         child: Text('Kredit (Keluar)', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: const Color(0xFF37474F), fontSize: 13)),
                       ),
                       Align(
-                        alignment: Alignment.centerRight,
+                        alignment: Alignment.centerLeft,
                         child: Text('Saldo', style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: const Color(0xFF37474F), fontSize: 13)),
                       ),
                     ],
@@ -209,13 +212,13 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                 ],
               ),
             ),
-            const Divider(height: 1, thickness: 1),
+            const Divider(height: 1, thickness: 1, color: AppColors.divider),
             // Isi Tabel
             ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: chronologicalTxs.length,
-              separatorBuilder: (_, __) => Divider(color: Colors.grey.withAlpha(26), height: 1),
+              separatorBuilder: (_, __) => const Divider(color: AppColors.divider, height: 1),
               itemBuilder: (context, index) {
                 final tx = chronologicalTxs[index];
                 final runningBal = runningBalances[index];
@@ -261,7 +264,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                           ),
                           // Uang Masuk
                           Align(
-                            alignment: Alignment.centerRight,
+                            alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 4.0),
                               child: Text(
@@ -276,7 +279,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                           ),
                           // Uang Keluar
                           Align(
-                            alignment: Alignment.centerRight,
+                            alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 4.0),
                               child: Text(
@@ -291,7 +294,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                           ),
                           // Saldo
                           Align(
-                            alignment: Alignment.centerRight,
+                            alignment: Alignment.centerLeft,
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 4.0),
                               child: Text(
@@ -320,14 +323,14 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
       return Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.withAlpha(26)),
+          borderRadius: AppRadius.radiusMd,
+          border: Border.all(color: AppColors.divider),
         ),
         child: ListView.separated(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: chronologicalTxs.length,
-          separatorBuilder: (_, __) => Divider(color: Colors.grey.withAlpha(26), height: 1),
+          separatorBuilder: (_, __) => const Divider(color: AppColors.divider, height: 1),
           itemBuilder: (context, index) {
             final tx = chronologicalTxs[index];
             final runningBal = runningBalances[index];
@@ -439,13 +442,13 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                                 child: OutlinedButton.icon(
                                   style: OutlinedButton.styleFrom(
                                     padding: const EdgeInsets.symmetric(vertical: 16),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusSm),
                                   ),
                                   onPressed: () => _pickDate(true),
                                   icon: const Icon(Icons.date_range),
                                   label: Text(
                                     'Mulai: ${Formatter.formatTanggalPendek(_startDate)}',
-                                    style: GoogleFonts.outfit(fontSize: 13),
+                                    style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               ),
@@ -455,13 +458,13 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                                 child: OutlinedButton.icon(
                                   style: OutlinedButton.styleFrom(
                                     padding: const EdgeInsets.symmetric(vertical: 16),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                    shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusSm),
                                   ),
                                   onPressed: () => _pickDate(false),
                                   icon: const Icon(Icons.event),
                                   label: Text(
                                     'Akhir: ${Formatter.formatTanggalPendek(_endDate)}',
-                                    style: GoogleFonts.outfit(fontSize: 13),
+                                    style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               ),
@@ -473,26 +476,26 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                               OutlinedButton.icon(
                                 style: OutlinedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                  shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusSm),
                                 ),
                                 onPressed: () => _pickDate(true),
                                 icon: const Icon(Icons.date_range),
                                 label: Text(
                                   'Mulai: ${Formatter.formatTanggalPendek(_startDate)}',
-                                  style: GoogleFonts.outfit(fontSize: 13),
+                                  style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.bold),
                                 ),
                               ),
                               const SizedBox(height: 12),
                               OutlinedButton.icon(
                                 style: OutlinedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                  shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusSm),
                                 ),
                                 onPressed: () => _pickDate(false),
                                 icon: const Icon(Icons.event),
                                 label: Text(
                                   'Akhir: ${Formatter.formatTanggalPendek(_endDate)}',
-                                  style: GoogleFonts.outfit(fontSize: 13),
+                                  style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.bold),
                                 ),
                               ),
                             ],
@@ -528,8 +531,8 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.grey.withAlpha(26)),
+                borderRadius: AppRadius.radiusMd,
+                border: Border.all(color: AppColors.divider),
               ),
               child: Column(
                 children: [
@@ -788,26 +791,10 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
             const SizedBox(height: 16),
 
             if (filteredTxs.isEmpty)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(32),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.grey.withAlpha(26)),
-                ),
-                child: Center(
-                  child: Column(
-                    children: [
-                      const Icon(Icons.receipt_long_outlined, size: 48, color: Colors.grey),
-                      const SizedBox(height: 12),
-                      Text(
-                        'Tidak ada transaksi pada kriteria filter ini.',
-                        style: GoogleFonts.outfit(color: Colors.grey, fontSize: 13),
-                      ),
-                    ],
-                  ),
-                ),
+              EmptyStateView(
+                icon: Icons.receipt_long_outlined,
+                title: 'Tidak ada transaksi',
+                description: 'Tidak ada transaksi pada kriteria filter ini.',
               )
             else
               isDesktop ? buildDesktopTable() : buildMobileList(),

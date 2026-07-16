@@ -155,3 +155,9 @@ ALTER TABLE public.foundations ADD COLUMN IF NOT EXISTS banner_url text;
 -- H. Kolom Profil Perorangan & Avatar Donatur
 ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS avatar_url text;
 ALTER TABLE public.donations ADD COLUMN IF NOT EXISTS donor_profile_id uuid REFERENCES public.profiles(id) ON DELETE SET NULL;
+
+-- I. Kolom Media & Target Opsional untuk Tabel Projects
+ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS cover_image_url text;
+ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS gallery_urls text[];
+ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS video_url text;
+ALTER TABLE public.projects ALTER COLUMN target_amount DROP NOT NULL;

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../core/theme/ui_constants.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/components/app_logo.dart';
+import '../../../core/components/app_button.dart';
 import '../providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -34,7 +38,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Berhasil masuk!'),
-            backgroundColor: Color(0xFF0D5C46),
+            backgroundColor: AppTheme.colorSuccess,
           ),
         );
         if (context.mounted) {
@@ -61,22 +65,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           if (isDesktop)
             Expanded(
               child: Container(
-                color: const Color(0xFF0D5C46),
+                color: AppTheme.primaryColor,
                 child: Padding(
                   padding: const EdgeInsets.all(64.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
-                        Icons.account_balance_wallet,
-                        size: 72,
-                        color: Color(0xFF2EC4B6),
-                      ),
+                      // Unified branding logo mark in white
+                      const AppLogo(size: 72, color: Colors.white),
                       const SizedBox(height: 24),
                       Text(
                         'Yayasan Finance',
-                        style: GoogleFonts.outfit(
+                        style: GoogleFonts.plusJakartaSans(
                           fontSize: 48,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -85,8 +86,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       const SizedBox(height: 16),
                       Text(
                         'Aplikasi Manajemen Keuangan Transparan dan Akuntabel untuk Masa Depan Yayasan yang Lebih Baik.',
-                        style: GoogleFonts.outfit(
-                          fontSize: 18,
+                        style: GoogleFonts.inter(
+                          fontSize: 16,
                           color: Colors.white70,
                         ),
                       ),
@@ -98,7 +99,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           // Form Login Kanan / Tengah
           Expanded(
             child: Container(
-              color: const Color(0xFFF7FBF9),
+              color: const Color(0xFFF7F6F2),
               child: Center(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(32.0),
@@ -112,19 +113,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         children: [
                           // Logo untuk Mobile
                           if (!isDesktop) ...[
-                            const Icon(
-                              Icons.account_balance_wallet,
-                              size: 64,
-                              color: Color(0xFF0D5C46),
+                            const Center(
+                              child: AppLogo(size: 64),
                             ),
                             const SizedBox(height: 16),
                             Text(
                               'Yayasan Finance',
                               textAlign: TextAlign.center,
-                              style: GoogleFonts.outfit(
+                              style: GoogleFonts.plusJakartaSans(
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFF0D5C46),
+                                color: AppTheme.primaryColor,
                               ),
                             ),
                             const SizedBox(height: 32),
@@ -132,18 +131,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           
                           Text(
                             'Selamat Datang',
-                            style: GoogleFonts.outfit(
+                            style: GoogleFonts.plusJakartaSans(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
-                              color: const Color(0xFF1A2A25),
+                              color: AppTheme.textDark,
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'Masuk menggunakan akun Anda untuk mengelola keuangan yayasan.',
-                            style: GoogleFonts.outfit(
+                            style: GoogleFonts.inter(
                               fontSize: 14,
-                              color: const Color(0xFF6B7F79),
+                              color: AppTheme.textLight,
                             ),
                           ),
                           const SizedBox(height: 32),
@@ -154,12 +153,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                               decoration: BoxDecoration(
                                 color: const Color(0xFFFFEBEE),
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: AppRadius.radiusSm,
                                 border: Border.all(color: const Color(0xFFEF9A9A)),
                               ),
                               child: Text(
                                 authState.errorMessage!,
-                                style: GoogleFonts.outfit(
+                                style: GoogleFonts.inter(
                                   color: const Color(0xFFC62828),
                                   fontSize: 14,
                                 ),
@@ -180,7 +179,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
-                                return 'Alamat email tidak boleh kosong';
+                                  return 'Alamat email tidak boleh kosong';
                               }
                               if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value.trim())) {
                                 return 'Format email tidak valid';
@@ -222,19 +221,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                           const SizedBox(height: 24),
 
-                          // Tombol Login
-                          ElevatedButton(
+                          // Tombol Login menggunakan AppButton
+                          AppButton(
+                            text: 'Masuk',
+                            style: AppButtonStyle.primary,
+                            isLoading: authState.isLoading,
                             onPressed: authState.isLoading ? null : _handleLogin,
-                            child: authState.isLoading
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                    ),
-                                  )
-                                : const Text('Masuk'),
                           ),
                           const SizedBox(height: 24),
 
@@ -244,7 +236,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             children: [
                               Text(
                                 'Belum memiliki akun? ',
-                                style: GoogleFonts.outfit(color: const Color(0xFF6B7F79)),
+                                style: GoogleFonts.inter(color: AppTheme.textLight),
                               ),
                               TextButton(
                                 onPressed: () {

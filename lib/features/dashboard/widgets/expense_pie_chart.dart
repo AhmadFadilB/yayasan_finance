@@ -2,6 +2,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/utils/formatter.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/components/app_card.dart';
 import '../../transactions/models/transaction_model.dart';
 
 class ExpensePieChart extends StatefulWidget {
@@ -20,12 +22,12 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
   int _touchedIndex = -1;
 
   final List<Color> _palette = const [
-    Color(0xFF0D5C46), // Primary Emerald
-    Color(0xFFE53935), // Red
-    Color(0xFF1E88E5), // Blue
-    Color(0xFFFBC02D), // Yellow
+    AppTheme.primaryColor,
+    AppTheme.secondaryColor,
+    AppTheme.colorError,
+    AppTheme.primaryLight,
+    AppTheme.colorWarning,
     Color(0xFF8E24AA), // Purple
-    Color(0xFFF57C00), // Orange
     Color(0xFF00ACC1), // Cyan
     Color(0xFF43A047), // Green
     Color(0xFFD81B60), // Pink
@@ -52,23 +54,13 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
     final sortedCategories = categoryMap.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withAlpha(26), width: 1),
-      ),
+    return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Analisis Kategori Pengeluaran',
-            style: GoogleFonts.outfit(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF1A2A25),
-            ),
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 24),
           totalExpense == 0
@@ -106,13 +98,13 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
                               ),
                               borderData: FlBorderData(show: false),
                               sectionsSpace: 2,
-                              centerSpaceRadius: 45,
+                              centerSpaceRadius: 0,
                               sections: List.generate(sortedCategories.length, (i) {
                                 final isTouched = i == _touchedIndex;
                                 final entry = sortedCategories[i];
                                 final percentage = (entry.value / totalExpense) * 100;
                                 final color = _palette[i % _palette.length];
-                                final radius = isTouched ? 25.0 : 18.0;
+                                final radius = isTouched ? 85.0 : 75.0;
 
                                 return PieChartSectionData(
                                   color: color,
@@ -164,22 +156,18 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
                                   Expanded(
                                     child: Text(
                                       entry.key,
-                                      style: GoogleFonts.outfit(
-                                        fontSize: 13,
-                                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                                        color: const Color(0xFF1A2A25),
-                                      ),
+                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                                          ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
                                   Text(
                                     '${percentage.toStringAsFixed(1)}% (${Formatter.formatRupiah(entry.value)})',
-                                    style: GoogleFonts.outfit(
-                                      fontSize: 12,
-                                      color: const Color(0xFF6B7F79),
-                                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                    ),
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                        ),
                                   ),
                                 ],
                               ),

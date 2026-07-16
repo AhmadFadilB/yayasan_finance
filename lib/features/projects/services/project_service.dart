@@ -299,4 +299,25 @@ class ProjectService {
       rethrow;
     }
   }
+
+  // Mengunggah file media proyek ke bucket 'receipts' (virtual folder 'projects/')
+  Future<String?> uploadProjectMedia(String projectId, String filename, Uint8List bytes) async {
+    try {
+      final extension = filename.split('.').length > 1 ? filename.split('.').last : 'png';
+      final cleanExtension = extension.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+      final String path = 'projects/$projectId/asset_${DateTime.now().millisecondsSinceEpoch}.${cleanExtension.isEmpty ? "png" : cleanExtension}';
+
+      await _supabase.storage
+          .from('receipts')
+          .uploadBinary(path, bytes);
+
+      final String publicUrl = _supabase.storage
+          .from('receipts')
+          .getPublicUrl(path);
+
+      return publicUrl;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

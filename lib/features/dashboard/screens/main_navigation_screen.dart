@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../core/theme/ui_constants.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/components/app_logo.dart';
+import '../../../core/components/profile_menu_anchor.dart';
+import '../../foundations/widgets/foundation_members_dialog.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../foundations/providers/foundation_provider.dart';
-import '../../foundations/widgets/add_member_dialog.dart';
 import '../../projects/screens/project_list_screen.dart';
 import '../../projects/screens/public_project_feed_screen.dart';
 import '../../foundations/screens/foundation_profile_edit_screen.dart';
-import '../../auth/widgets/user_profile_dialog.dart';
 import '../../reports/screens/report_screen.dart';
 import '../../transactions/screens/transaction_list_screen.dart';
 import '../../audit_logs/screens/audit_log_screen.dart';
@@ -163,100 +166,231 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
     );
   }
 
-  void _showUserProfileDialog() {
-    showDialog(
-      context: context,
-      builder: (_) => const UserProfileDialog(),
-    );
-  }
+
 
   Widget _buildMobileDrawer(dynamic activeFoundation, bool isAdmin) {
-    // Menu items list
-    final List<Map<String, dynamic>> menuItems = [
-      {'title': 'Dasbor', 'icon': Icons.dashboard_outlined, 'selectedIcon': Icons.dashboard},
-      {'title': 'Jelajah', 'icon': Icons.explore_outlined, 'selectedIcon': Icons.explore},
-      {'title': 'Proyek', 'icon': Icons.business_outlined, 'selectedIcon': Icons.business},
-      {'title': 'Transaksi', 'icon': Icons.receipt_long_outlined, 'selectedIcon': Icons.receipt_long},
+    final List<SidebarItem> operasionalItems = [
+      SidebarItem(title: 'Dashboard', icon: Icons.dashboard_outlined, index: 0),
+      SidebarItem(title: 'Jelajah', icon: Icons.explore_outlined, index: 1),
+      SidebarItem(title: 'Proyek', icon: Icons.business_outlined, index: 2),
+      SidebarItem(title: 'Transaksi', icon: Icons.receipt_long_outlined, index: 3),
       if (isAdmin)
-        {'title': 'Validasi', 'icon': Icons.rule_outlined, 'selectedIcon': Icons.rule},
-      {'title': 'Laporan', 'icon': Icons.analytics_outlined, 'selectedIcon': Icons.analytics},
-      {'title': 'Audit', 'icon': Icons.history_toggle_off_outlined, 'selectedIcon': Icons.history_toggle_off},
-      {'title': 'Profil Yayasan', 'icon': Icons.business_outlined, 'selectedIcon': Icons.business},
+        SidebarItem(title: 'Persetujuan', icon: Icons.rule_outlined, index: 4),
     ];
 
-    final initials = activeFoundation.name.isNotEmpty 
-        ? activeFoundation.name.substring(0, 1).toUpperCase() 
-        : '?';
+    final List<SidebarItem> administratifItems = [
+      SidebarItem(title: 'Laporan', icon: Icons.analytics_outlined, index: isAdmin ? 5 : 4),
+      SidebarItem(title: 'Log Audit', icon: Icons.history_toggle_off_outlined, index: isAdmin ? 6 : 5),
+      SidebarItem(title: 'Profil Yayasan', icon: Icons.apartment_outlined, index: isAdmin ? 7 : 6),
+    ];
 
     return Drawer(
       backgroundColor: Colors.white,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Drawer Header with Emerald theme
-          Container(
-            width: double.infinity,
+          // Header logo + Close button
+          Padding(
             padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top + 24,
-              bottom: 24,
+              top: MediaQuery.of(context).padding.top + 16,
               left: 20,
               right: 20,
-            ),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF0F5A47), Color(0xFF0D5C46)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              bottom: 12,
             ),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CircleAvatar(
-                  radius: 28,
-                  backgroundColor: Colors.white.withAlpha(51),
-                  backgroundImage: activeFoundation.logoUrl != null 
-                      ? NetworkImage(activeFoundation.logoUrl!) 
-                      : null,
-                  child: activeFoundation.logoUrl == null
-                      ? Text(
-                          initials,
-                          style: GoogleFonts.outfit(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        )
-                      : null,
+                const AppLogo(showText: true, fontSize: 16),
+                IconButton(
+                  icon: const Icon(Icons.close, color: Color(0xFF6B7570), size: 20),
+                  onPressed: () => Navigator.pop(context),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
+              ],
+            ),
+          ),
+          const Divider(height: 1, color: Color(0xFFEBEBEB)),
+          
+          // Foundation switcher card
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF7F6F2),
+                borderRadius: AppRadius.radiusMd,
+              ),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 14,
+                    backgroundColor: AppTheme.primaryColor,
+                    child: Text(
+                      activeFoundation.name.substring(0, 1).toUpperCase(),
+                      style: GoogleFonts.outfit(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          activeFoundation.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.textDark),
+                        ),
+                        Text(
+                          (activeFoundation.currentUserRole ?? 'viewer').toUpperCase(),
+                          style: GoogleFonts.outfit(fontSize: 8, fontWeight: FontWeight.bold, color: const Color(0xFF6B7570)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const Divider(height: 1, color: Color(0xFFEBEBEB)),
+          const SizedBox(height: 12),
+
+          // Scrollable Menu List
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Group 1: Operasional
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                    child: Text(
+                      'OPERASIONAL',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF6B7570),
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ),
+                  ...operasionalItems.map((item) => HoverSidebarItem(
+                        title: item.title,
+                        icon: item.icon,
+                        isSelected: _selectedIndex == item.index,
+                        onTap: () {
+                          Navigator.pop(context); // Close Drawer
+                          if (item.title == 'Jelajah') {
+                            context.go('/');
+                          } else {
+                            setState(() => _selectedIndex = item.index);
+                          }
+                        },
+                      )),
+                  const SizedBox(height: 16),
+                  
+                  // Group 2: Administratif
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                    child: Text(
+                      'ADMINISTRATIF',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF6B7570),
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ),
+                  ...administratifItems.map((item) => HoverSidebarItem(
+                        title: item.title,
+                        icon: item.icon,
+                        isSelected: _selectedIndex == item.index,
+                        onTap: () {
+                          Navigator.pop(context); // Close Drawer
+                          setState(() => _selectedIndex = item.index);
+                        },
+                      )),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+
+  Widget _buildDesktopSidebar(BuildContext context, dynamic activeFoundation, bool isAdmin) {
+    final List<SidebarItem> operasionalItems = [
+      SidebarItem(title: 'Dashboard', icon: Icons.dashboard_outlined, index: 0),
+      SidebarItem(title: 'Jelajah', icon: Icons.explore_outlined, index: 1),
+      SidebarItem(title: 'Proyek', icon: Icons.business_outlined, index: 2),
+      SidebarItem(title: 'Transaksi', icon: Icons.receipt_long_outlined, index: 3),
+      if (isAdmin)
+        SidebarItem(title: 'Persetujuan', icon: Icons.rule_outlined, index: 4),
+    ];
+
+    final List<SidebarItem> administratifItems = [
+      SidebarItem(title: 'Laporan', icon: Icons.analytics_outlined, index: isAdmin ? 5 : 4),
+      SidebarItem(title: 'Log Audit', icon: Icons.history_toggle_off_outlined, index: isAdmin ? 6 : 5),
+      SidebarItem(title: 'Profil Yayasan', icon: Icons.apartment_outlined, index: isAdmin ? 7 : 6),
+    ];
+
+    return Container(
+      width: 250,
+      height: double.infinity,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          right: BorderSide(color: Color(0xFFEBEBEB), width: 1),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Header logo
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const AppLogo(showText: true, fontSize: 16),
+                const SizedBox(height: 16),
+                // Foundation info card
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF7F6F2),
+                    borderRadius: AppRadius.radiusMd,
+                  ),
+                  child: Row(
                     children: [
-                      Text(
-                        activeFoundation.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.outfit(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                      CircleAvatar(
+                        radius: 14,
+                        backgroundColor: AppTheme.primaryColor,
+                        child: Text(
+                          activeFoundation.name.substring(0, 1).toUpperCase(),
+                          style: GoogleFonts.outfit(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withAlpha(51),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          (activeFoundation.currentUserRole ?? 'viewer').toUpperCase(),
-                          style: GoogleFonts.outfit(
-                            color: Colors.white,
-                            fontSize: 9,
-                            fontWeight: FontWeight.bold,
-                          ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              activeFoundation.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.textDark),
+                            ),
+                            Text(
+                              (activeFoundation.currentUserRole ?? 'viewer').toUpperCase(),
+                              style: GoogleFonts.outfit(fontSize: 8, fontWeight: FontWeight.bold, color: const Color(0xFF6B7570)),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -265,168 +399,81 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
               ],
             ),
           ),
-
-          // Scrollable Menu List
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-              itemCount: menuItems.length,
-              itemBuilder: (context, index) {
-                final item = menuItems[index];
-                final isSelected = _selectedIndex == index;
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: ListTile(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+          const Divider(height: 1, color: Color(0xFFEBEBEB)),
+          const SizedBox(height: 12),
+          // Group 1: Operasional
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+            child: Text(
+              'OPERASIONAL',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF6B7570),
+                letterSpacing: 1.2,
+              ),
+            ),
+          ),
+          ...operasionalItems.map((item) => HoverSidebarItem(
+                title: item.title,
+                icon: item.icon,
+                isSelected: _selectedIndex == item.index,
+                onTap: () {
+                  if (item.title == 'Jelajah') {
+                    context.go('/');
+                  } else {
+                    setState(() => _selectedIndex = item.index);
+                  }
+                },
+              )),
+          const SizedBox(height: 16),
+          // Group 2: Administratif
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+            child: Text(
+              'ADMINISTRATIF',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF6B7570),
+                letterSpacing: 1.2,
+              ),
+            ),
+          ),
+          ...administratifItems.map((item) => HoverSidebarItem(
+                title: item.title,
+                icon: item.icon,
+                isSelected: _selectedIndex == item.index,
+                onTap: () => setState(() => _selectedIndex = item.index),
+              )),
+          const Spacer(),
+          // Bottom area: Switch / logout quick action
+          const Divider(height: 1, color: Color(0xFFEBEBEB)),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextButton.icon(
+                    style: TextButton.styleFrom(
+                      foregroundColor: const Color(0xFF6B7570),
+                      alignment: Alignment.centerLeft,
                     ),
-                    selected: isSelected,
-                    selectedTileColor: const Color(0xFF0D5C46).withAlpha(18),
-                    selectedColor: const Color(0xFF0D5C46),
-                    iconColor: const Color(0xFF6B7F79),
-                    textColor: const Color(0xFF1A2A25),
-                    leading: Icon(
-                      isSelected ? item['selectedIcon'] : item['icon'],
-                    ),
-                    title: Text(
-                      item['title'],
-                      style: GoogleFonts.outfit(
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                        fontSize: 14,
-                      ),
-                    ),
-                    onTap: () {
-                      setState(() {
-                        _selectedIndex = index;
-                      });
-                      Navigator.pop(context); // Close Drawer
+                    onPressed: () {
+                      ref.read(foundationProvider.notifier).selectFoundation(null);
                     },
+                    icon: const Icon(Icons.swap_horiz, size: 18),
+                    label: Text(
+                      'Ganti Yayasan',
+                      style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w600),
+                    ),
                   ),
-                );
-              },
+                ),
+              ],
             ),
           ),
         ],
       ),
-    );
-  }
-
-  void _showFoundationMembersDialog(String foundationName) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return Consumer(
-          builder: (context, ref, child) {
-            final membersAsync = ref.watch(foundationMembersProvider);
-            final activeF = ref.read(foundationProvider).activeFoundation;
-            final isAdmin = activeF?.currentUserRole == 'admin';
-
-            return AlertDialog(
-              title: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Anggota $foundationName',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18),
-                    ),
-                  ),
-                  if (isAdmin)
-                    IconButton(
-                      icon: const Icon(Icons.person_add_alt_1, color: Color(0xFF0D5C46)),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        showDialog(
-                          context: context,
-                          builder: (_) => const AddMemberDialog(),
-                        );
-                      },
-                    ),
-                ],
-              ),
-              content: SizedBox(
-                width: double.maxFinite,
-                height: 300,
-                child: membersAsync.when(
-                  data: (members) {
-                    if (members.isEmpty) {
-                      return const Center(child: Text('Tidak ada anggota terdaftar.'));
-                    }
-                    return ListView.separated(
-                      shrinkWrap: true,
-                      itemCount: members.length,
-                      separatorBuilder: (_, __) => const Divider(height: 1),
-                      itemBuilder: (context, index) {
-                        final member = members[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              CircleAvatar(
-                                radius: 16,
-                                backgroundColor: const Color(0xFF0D5C46),
-                                backgroundImage: member.avatarUrl != null 
-                                    ? NetworkImage(member.avatarUrl!) 
-                                    : null,
-                                child: member.avatarUrl == null
-                                    ? Text(
-                                        member.name.isNotEmpty 
-                                            ? member.name.substring(0, 1).toUpperCase() 
-                                            : '?',
-                                        style: GoogleFonts.outfit(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      )
-                                    : null,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  member.name,
-                                  style: GoogleFonts.outfit(fontWeight: FontWeight.w500),
-                                ),
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF0D5C46).withAlpha(18),
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  member.role.toUpperCase(),
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 10,
-                                    color: const Color(0xFF0D5C46),
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (e, __) => Center(child: Text('Error: ${e.toString()}')),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Tutup'),
-                ),
-              ],
-            );
-          },
-        );
-      },
     );
   }
 
@@ -504,91 +551,31 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
 
 
 
-    final railDestinations = [
-      const NavigationRailDestination(
-        icon: Icon(Icons.dashboard_outlined),
-        selectedIcon: Icon(Icons.dashboard),
-        label: Text('Dashboard'),
-      ),
-      const NavigationRailDestination(
-        icon: Icon(Icons.explore_outlined),
-        selectedIcon: Icon(Icons.explore),
-        label: Text('Jelajah'),
-      ),
-      const NavigationRailDestination(
-        icon: Icon(Icons.business_outlined),
-        selectedIcon: Icon(Icons.business),
-        label: Text('Proyek'),
-      ),
-      const NavigationRailDestination(
-        icon: Icon(Icons.receipt_long_outlined),
-        selectedIcon: Icon(Icons.receipt_long),
-        label: Text('Transaksi'),
-      ),
-      if (isAdmin)
-        const NavigationRailDestination(
-          icon: Icon(Icons.rule_outlined),
-          selectedIcon: Icon(Icons.rule),
-          label: Text('Persetujuan'),
-        ),
-      const NavigationRailDestination(
-        icon: Icon(Icons.analytics_outlined),
-        selectedIcon: Icon(Icons.analytics),
-        label: Text('Laporan'),
-      ),
-      const NavigationRailDestination(
-        icon: Icon(Icons.history_toggle_off_outlined),
-        selectedIcon: Icon(Icons.history_toggle_off),
-        label: Text('Log Audit'),
-      ),
-      const NavigationRailDestination(
-        icon: Icon(Icons.business),
-        selectedIcon: Icon(Icons.business),
-        label: Text('Profil Yayasan'),
-      ),
-    ];
+    String getActivePageTitle() {
+      final List<String> pageTitles = [
+        'Dashboard',
+        'Jelajah Proyek Sosial',
+        'Manajemen Proyek',
+        'Transaksi Keuangan',
+        if (isAdmin) 'Persetujuan Transaksi',
+        'Laporan Keuangan',
+        'Log Audit Keamanan',
+        'Profil Yayasan',
+      ];
+      if (_selectedIndex >= 0 && _selectedIndex < pageTitles.length) {
+        return pageTitles[_selectedIndex];
+      }
+      return 'Yayasan Finance';
+    }
 
     Widget buildAppBarTitle() {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                activeFoundation.name,
-                style: GoogleFonts.outfit(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF1A2A25),
-                ),
-              ),
-              const SizedBox(width: 8),
-              // Role Badge
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF0D5C46).withAlpha(26),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  (activeFoundation.currentUserRole ?? 'viewer').toUpperCase(),
-                  style: GoogleFonts.outfit(
-                    fontSize: 8,
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF0D5C46),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Text(
-            'Kelola Keuangan Yayasan',
-            style: GoogleFonts.outfit(
-              fontSize: 12,
-              color: const Color(0xFF6B7F79),
-            ),
-          ),
-        ],
+      return Text(
+        getActivePageTitle(),
+        style: GoogleFonts.plusJakartaSans(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: const Color(0xFF1A1F1C),
+        ),
       );
     }
 
@@ -596,6 +583,11 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
       drawer: !isDesktop ? _buildMobileDrawer(activeFoundation, isAdmin) : null,
       appBar: AppBar(
         centerTitle: !isDesktop ? true : null,
+        elevation: 0,
+        backgroundColor: Colors.white,
+        shape: const Border(
+          bottom: BorderSide(color: Color(0xFFEBEBEB), width: 1),
+        ),
         leading: !isDesktop
             ? Builder(
                 builder: (context) => IconButton(
@@ -613,19 +605,19 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
               return Stack(
                 alignment: Alignment.center,
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.notifications_outlined),
+                  HoverIconButton(
+                    icon: const Icon(Icons.notifications_outlined, color: Color(0xFF6B7570)),
                     tooltip: 'Notifikasi',
                     onPressed: _showNotificationCenter,
                   ),
                   if (unreadCount > 0)
                     Positioned(
-                      right: 8,
-                      top: 8,
+                      right: 4,
+                      top: 4,
                       child: Container(
                         padding: const EdgeInsets.all(2),
                         decoration: const BoxDecoration(
-                          color: Colors.red,
+                          color: AppTheme.colorError,
                           shape: BoxShape.circle,
                         ),
                         constraints: const BoxConstraints(
@@ -648,19 +640,22 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
             },
           ),
           if (isDesktop) ...[
-            IconButton(
-              icon: const Icon(Icons.people_outline),
+            const SizedBox(width: 8),
+            HoverIconButton(
+              icon: const Icon(Icons.people_outline, color: Color(0xFF6B7570)),
               tooltip: 'Anggota Yayasan',
-              onPressed: () => _showFoundationMembersDialog(activeFoundation.name),
+              onPressed: () => FoundationMembersDialog.show(context, activeFoundation.name),
             ),
-            IconButton(
-              icon: const Icon(Icons.account_tree_outlined),
+            const SizedBox(width: 8),
+            HoverIconButton(
+              icon: const Icon(Icons.account_tree_outlined, color: Color(0xFF6B7570)),
               tooltip: 'Bagan Akun (COA)',
               onPressed: () {
                 context.push('/dashboard/coa');
               },
             ),
           ],
+          const SizedBox(width: 8),
           Consumer(
             builder: (context, ref, child) {
               final profile = ref.watch(authProvider).profile;
@@ -671,7 +666,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
 
               final avatarWidget = CircleAvatar(
                 radius: 16,
-                backgroundColor: const Color(0xFF0D5C46),
+                backgroundColor: AppTheme.primaryColor,
                 backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
                 child: avatarUrl == null
                     ? Text(
@@ -685,140 +680,183 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                     : null,
               );
 
-              return PopupMenuButton<String>(
-                tooltip: 'Menu Akun',
-                offset: const Offset(0, 48),
+              return ProfileMenuAnchor(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12.0),
                   child: MouseRegion(
                     cursor: SystemMouseCursors.click,
-                    child: avatarWidget,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        avatarWidget,
+                        const SizedBox(width: 4),
+                        const Icon(Icons.arrow_drop_down, size: 18, color: Color(0xFF6B7570)),
+                      ],
+                    ),
                   ),
                 ),
-                onSelected: (value) {
-                  switch (value) {
-                    case 'profile':
-                      _showUserProfileDialog();
-                      break;
-                    case 'members':
-                      _showFoundationMembersDialog(activeFoundation.name);
-                      break;
-                    case 'coa':
-                      context.push('/dashboard/coa');
-                      break;
-                    case 'switch':
-                      ref.read(foundationProvider.notifier).selectFoundation(null);
-                      break;
-                    case 'logout':
-                      ref.read(authProvider.notifier).logout();
-                      break;
-                  }
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    enabled: false,
-                    child: Text(
-                      profile?.name ?? 'Akun Saya',
-                      style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.black87),
-                    ),
-                  ),
-                  const PopupMenuDivider(),
-                  PopupMenuItem(
-                    value: 'profile',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.person_outline, size: 20, color: Color(0xFF0D5C46)),
-                        const SizedBox(width: 8),
-                        Text('Profil Saya', style: GoogleFonts.outfit()),
-                      ],
-                    ),
-                  ),
-                  if (!isDesktop) ...[
-                    PopupMenuItem(
-                      value: 'members',
-                      child: Row(
-                        children: [
-                          const Icon(Icons.people_outline, size: 20, color: Color(0xFF0D5C46)),
-                          const SizedBox(width: 8),
-                          Text('Anggota Yayasan', style: GoogleFonts.outfit()),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'coa',
-                      child: Row(
-                        children: [
-                          const Icon(Icons.account_tree_outlined, size: 20, color: Color(0xFF0D5C46)),
-                          const SizedBox(width: 8),
-                          Text('Bagan Akun (COA)', style: GoogleFonts.outfit()),
-                        ],
-                      ),
-                    ),
-                  ],
-                  PopupMenuItem(
-                    value: 'switch',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.swap_horiz, size: 20, color: Color(0xFF0D5C46)),
-                        const SizedBox(width: 8),
-                        Text('Ganti Yayasan', style: GoogleFonts.outfit()),
-                      ],
-                    ),
-                  ),
-                  const PopupMenuDivider(),
-                  PopupMenuItem(
-                    value: 'logout',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.logout, size: 20, color: Colors.red),
-                        const SizedBox(width: 8),
-                        Text('Logout', style: GoogleFonts.outfit(color: Colors.red)),
-                      ],
-                    ),
-                  ),
-                ],
               );
             },
           ),
+          const SizedBox(width: 8),
         ],
       ),
       body: Row(
         children: [
           // Sidebar Navigasi untuk Desktop
           if (isDesktop) ...[
-            NavigationRail(
-              selectedIndex: _selectedIndex,
-              labelType: NavigationRailLabelType.all,
-              destinations: railDestinations,
-              onDestinationSelected: (index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
-              leading: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24.0),
-                child: CircleAvatar(
-                  backgroundColor: const Color(0xFF0D5C46),
-                  foregroundColor: Colors.white,
-                  child: Text(
-                    activeFoundation.name.substring(0, 1).toUpperCase(),
-                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-            ),
-            const VerticalDivider(thickness: 1, width: 1),
+            _buildDesktopSidebar(context, activeFoundation, isAdmin),
           ],
           // Halaman Utama
           Expanded(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 200),
-              child: screens[_selectedIndex],
+            child: Container(
+              color: const Color(0xFFF7F6F2),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: screens[_selectedIndex],
+              ),
             ),
           ),
         ],
       ),
       bottomNavigationBar: null,
+    );
+  }
+}
+
+class SidebarItem {
+  final String title;
+  final IconData icon;
+  final int index;
+
+  SidebarItem({
+    required this.title,
+    required this.icon,
+    required this.index,
+  });
+}
+
+class HoverSidebarItem extends StatefulWidget {
+  final String title;
+  final IconData icon;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const HoverSidebarItem({
+    super.key,
+    required this.title,
+    required this.icon,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  State<HoverSidebarItem> createState() => _HoverSidebarItemState();
+}
+
+class _HoverSidebarItemState extends State<HoverSidebarItem> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final isSelected = widget.isSelected;
+    
+    Color bgColor = Colors.transparent;
+    if (isSelected) {
+      bgColor = AppTheme.secondaryColor.withAlpha(20);
+    } else if (_isHovered) {
+      bgColor = const Color(0xFFF7F6F2);
+    }
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: Container(
+          height: 40,
+          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: AppRadius.radiusSm,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 3,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: isSelected ? AppTheme.secondaryColor : Colors.transparent,
+                  borderRadius: const BorderRadius.horizontal(right: Radius.circular(3)),
+                ),
+              ),
+              const SizedBox(width: 13),
+              Icon(
+                widget.icon,
+                color: isSelected ? AppTheme.primaryColor : const Color(0xFF6B7570),
+                size: 18,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  widget.title,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 13,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                    color: isSelected ? AppTheme.primaryColor : const Color(0xFF1A1F1C),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class HoverIconButton extends StatefulWidget {
+  final Widget icon;
+  final String? tooltip;
+  final VoidCallback onPressed;
+
+  const HoverIconButton({
+    super.key,
+    required this.icon,
+    this.tooltip,
+    required this.onPressed,
+  });
+
+  @override
+  State<HoverIconButton> createState() => _HoverIconButtonState();
+}
+
+class _HoverIconButtonState extends State<HoverIconButton> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: Tooltip(
+        message: widget.tooltip ?? '',
+        child: InkWell(
+          onTap: widget.onPressed,
+          borderRadius: BorderRadius.circular(100),
+          child: Container(
+            width: 38,
+            height: 38,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: _isHovered ? const Color(0xFFF7F6F2) : Colors.transparent,
+              shape: BoxShape.circle,
+            ),
+            child: widget.icon,
+          ),
+        ),
+      ),
     );
   }
 }
