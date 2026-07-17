@@ -18,6 +18,8 @@ import '../../audit_logs/screens/audit_log_screen.dart';
 import '../../transactions/screens/approval_list_screen.dart';
 import '../../notifications/providers/notification_provider.dart';
 import '../../../core/utils/formatter.dart';
+import '../../accounting/screens/journal_list_screen.dart';
+import '../../accounting/screens/isak35_reports_screen.dart';
 import 'dashboard_screen.dart';
 
 class MainNavigationScreen extends ConsumerStatefulWidget {
@@ -179,9 +181,11 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
     ];
 
     final List<SidebarItem> administratifItems = [
-      SidebarItem(title: 'Laporan', icon: Icons.analytics_outlined, index: isAdmin ? 5 : 4),
-      SidebarItem(title: 'Log Audit', icon: Icons.history_toggle_off_outlined, index: isAdmin ? 6 : 5),
-      SidebarItem(title: 'Profil Yayasan', icon: Icons.apartment_outlined, index: isAdmin ? 7 : 6),
+      SidebarItem(title: 'Jurnal Umum', icon: Icons.menu_book_outlined, index: isAdmin ? 5 : 4),
+      SidebarItem(title: 'Laporan', icon: Icons.analytics_outlined, index: isAdmin ? 6 : 5),
+      SidebarItem(title: 'Laporan ISAK 35', icon: Icons.table_chart_outlined, index: isAdmin ? 7 : 6),
+      SidebarItem(title: 'Log Audit', icon: Icons.history_toggle_off_outlined, index: isAdmin ? 8 : 7),
+      SidebarItem(title: 'Profil Yayasan', icon: Icons.apartment_outlined, index: isAdmin ? 9 : 8),
     ];
 
     return Drawer(
@@ -333,9 +337,11 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
     ];
 
     final List<SidebarItem> administratifItems = [
-      SidebarItem(title: 'Laporan', icon: Icons.analytics_outlined, index: isAdmin ? 5 : 4),
-      SidebarItem(title: 'Log Audit', icon: Icons.history_toggle_off_outlined, index: isAdmin ? 6 : 5),
-      SidebarItem(title: 'Profil Yayasan', icon: Icons.apartment_outlined, index: isAdmin ? 7 : 6),
+      SidebarItem(title: 'Jurnal Umum', icon: Icons.menu_book_outlined, index: isAdmin ? 5 : 4),
+      SidebarItem(title: 'Laporan', icon: Icons.analytics_outlined, index: isAdmin ? 6 : 5),
+      SidebarItem(title: 'Laporan ISAK 35', icon: Icons.table_chart_outlined, index: isAdmin ? 7 : 6),
+      SidebarItem(title: 'Log Audit', icon: Icons.history_toggle_off_outlined, index: isAdmin ? 8 : 7),
+      SidebarItem(title: 'Profil Yayasan', icon: Icons.apartment_outlined, index: isAdmin ? 9 : 8),
     ];
 
     return Container(
@@ -544,7 +550,9 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
       const ProjectListScreen(),
       const TransactionListScreen(),
       if (isAdmin) const ApprovalListScreen(),
+      const JournalListScreen(),
       const ReportScreen(),
+      const Isak35ReportsScreen(),
       const AuditLogScreen(),
       const FoundationProfileEditScreen(),
     ];
@@ -558,7 +566,9 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
         'Manajemen Proyek',
         'Transaksi Keuangan',
         if (isAdmin) 'Persetujuan Transaksi',
-        'Laporan Keuangan',
+        'Jurnal Umum (Double-Entry)',
+        'Laporan Transaksi',
+        'Laporan Keuangan ISAK 35',
         'Log Audit Keamanan',
         'Profil Yayasan',
       ];

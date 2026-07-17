@@ -97,6 +97,32 @@ begin
         v_old_values := to_jsonb(old);
       end if;
     end if;
+  elsif TG_TABLE_NAME = 'journal_entries' then
+    if TG_OP = 'DELETE' then
+      v_record_id := old.id;
+      v_foundation_id := old.foundation_id;
+      v_old_values := to_jsonb(old);
+    else
+      v_record_id := new.id;
+      v_foundation_id := new.foundation_id;
+      v_new_values := to_jsonb(new);
+      if TG_OP = 'UPDATE' then
+        v_old_values := to_jsonb(old);
+      end if;
+    end if;
+  elsif TG_TABLE_NAME = 'journal_items' then
+    if TG_OP = 'DELETE' then
+      v_record_id := old.id;
+      select foundation_id into v_foundation_id from public.journal_entries where id = old.entry_id;
+      v_old_values := to_jsonb(old);
+    else
+      v_record_id := new.id;
+      select foundation_id into v_foundation_id from public.journal_entries where id = new.entry_id;
+      v_new_values := to_jsonb(new);
+      if TG_OP = 'UPDATE' then
+        v_old_values := to_jsonb(old);
+      end if;
+    end if;
   end if;
 
   -- If foundation_id is null, we cannot associate it
@@ -148,4 +174,14 @@ create trigger audit_transactions_trigger
 drop trigger if exists audit_foundation_members_trigger on public.foundation_members;
 create trigger audit_foundation_members_trigger
   after insert or update or delete on public.foundation_members
+  for each row execute procedure public.log_audit_action();
+
+drop trigger if exists audit_journal_entries_trigger on public.journal_entries;
+create trigger audit_journal_entries_trigger
+  after insert or update or delete on public.journal_entries
+  for each row execute procedure public.log_audit_action();
+
+drop trigger if exists audit_journal_items_trigger on public.journal_items;
+create trigger audit_journal_items_trigger
+  after insert or update or delete on public.journal_items
   for each row execute procedure public.log_audit_action();

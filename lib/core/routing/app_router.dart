@@ -13,6 +13,7 @@ import '../../features/projects/screens/public_foundation_profile_screen.dart';
 import '../../features/projects/screens/public_project_detail_screen.dart';
 import '../../features/projects/screens/public_project_feed_screen.dart';
 import '../../features/projects/screens/project_form_screen.dart';
+import '../../features/accounting/screens/journal_form_screen.dart';
 
 // Listenable that triggers router refresh on Riverpod state changes
 class RouterTransitionNotifier extends ChangeNotifier {
@@ -84,6 +85,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final id = state.pathParameters['id'] ?? '';
           return ProjectFormScreen(projectId: id);
+        },
+      ),
+      GoRoute(
+        path: '/accounting/journal/form',
+        builder: (context, state) {
+          final id = state.uri.queryParameters['id'];
+          return JournalFormScreen(entryId: id);
         },
       ),
     ],
