@@ -289,3 +289,192 @@ BEGIN
   END LOOP;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 9. Automatic Transaction-to-Journal Trigger
+CREATE OR REPLACE FUNCTION public.post_transaction_to_journal()
+RETURNS TRIGGER AS $$
+DECLARE
+  v_cash_account_id uuid;
+  v_contra_account_id uuid;
+  v_entry_id uuid;
+  v_proof_number text;
+BEGIN
+  -- Only post if status is 'approved'
+  IF NEW.status = 'approved' AND (TG_OP = 'INSERT' OR OLD.status IS DISTINCT FROM 'approved') THEN
+     
+    -- 1. Find Kas Utama (code '1110')
+    SELECT id INTO v_cash_account_id 
+    FROM public.chart_of_accounts 
+    WHERE foundation_id = NEW.foundation_id AND code = '1110'
+    LIMIT 1;
+
+    IF v_cash_account_id IS NULL THEN
+      SELECT id INTO v_cash_account_id 
+      FROM public.chart_of_accounts 
+      WHERE foundation_id = NEW.foundation_id AND code LIKE '11%'
+      LIMIT 1;
+    END IF;
+
+    -- 2. Use selected account_id or match by category name
+    v_contra_account_id := NEW.account_id;
+
+    IF v_contra_account_id IS NULL THEN
+      SELECT id INTO v_contra_account_id 
+      FROM public.chart_of_accounts 
+      WHERE foundation_id = NEW.foundation_id AND name ILIKE NEW.category
+      LIMIT 1;
+    END IF;
+
+    -- Fallback
+    IF v_contra_account_id IS NULL THEN
+      IF NEW.type = 'income' THEN
+        SELECT id INTO v_contra_account_id 
+        FROM public.chart_of_accounts 
+        WHERE foundation_id = NEW.foundation_id AND code = '4110'
+        LIMIT 1;
+      ELSE
+        SELECT id INTO v_contra_account_id 
+        FROM public.chart_of_accounts 
+        WHERE foundation_id = NEW.foundation_id AND code = '5240'
+        LIMIT 1;
+      END IF;
+    END IF;
+
+    IF v_cash_account_id IS NULL OR v_contra_account_id IS NULL THEN
+      RETURN NEW;
+    END IF;
+
+    -- TX prefix proof number
+    v_proof_number := 'TX-' || substring(NEW.id::text from 1 for 8);
+
+    IF EXISTS (
+      SELECT 1 FROM public.journal_entries 
+      WHERE foundation_id = NEW.foundation_id AND proof_number = v_proof_number
+    ) THEN
+      RETURN NEW;
+    END IF;
+
+    -- Insert Header
+    INSERT INTO public.journal_entries (
+      foundation_id,
+      proof_number,
+      transaction_date,
+      description,
+      created_by
+    ) VALUES (
+      NEW.foundation_id,
+      v_proof_number,
+      NEW.transaction_date,
+      coalesce(NEW.description, 'Posting otomatis dari transaksi: ' || NEW.category),
+      NEW.created_by
+    ) RETURNING id INTO v_entry_id;
+
+    -- Insert Items
+    IF NEW.type = 'income' THEN
+      INSERT INTO public.journal_items (entry_id, account_id, debit, credit, project_id, memo)
+      VALUES 
+        (v_entry_id, v_cash_account_id, NEW.amount, 0.00, NEW.project_id, NEW.description),
+        (v_entry_id, v_contra_account_id, 0.00, NEW.amount, NEW.project_id, NEW.description);
+    ELSE
+      INSERT INTO public.journal_items (entry_id, account_id, debit, credit, project_id, memo)
+      VALUES 
+        (v_entry_id, v_contra_account_id, NEW.amount, 0.00, NEW.project_id, NEW.description),
+        (v_entry_id, v_cash_account_id, 0.00, NEW.amount, NEW.project_id, NEW.description);
+    END IF;
+
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_transaction_approved_post_journal_trigger ON public.transactions;
+CREATE TRIGGER on_transaction_approved_post_journal_trigger
+  AFTER INSERT OR UPDATE ON public.transactions
+  FOR EACH ROW EXECUTE PROCEDURE public.post_transaction_to_journal();
+
+-- 10. Historical Data One-Time Migration Block
+DO $$
+DECLARE
+  v_tx RECORD;
+  v_cash_account_id uuid;
+  v_contra_account_id uuid;
+  v_entry_id uuid;
+  v_proof_number text;
+BEGIN
+  FOR v_tx IN 
+    SELECT * FROM public.transactions WHERE status = 'approved'
+  LOOP
+    v_proof_number := 'TX-' || substring(v_tx.id::text from 1 for 8);
+
+    IF NOT EXISTS (
+      SELECT 1 FROM public.journal_entries 
+      WHERE foundation_id = v_tx.foundation_id AND proof_number = v_proof_number
+    ) THEN
+      SELECT id INTO v_cash_account_id 
+      FROM public.chart_of_accounts 
+      WHERE foundation_id = v_tx.foundation_id AND code = '1110'
+      LIMIT 1;
+
+      IF v_cash_account_id IS NULL THEN
+        SELECT id INTO v_cash_account_id 
+        FROM public.chart_of_accounts 
+        WHERE foundation_id = v_tx.foundation_id AND code LIKE '11%'
+        LIMIT 1;
+      END IF;
+
+      v_contra_account_id := v_tx.account_id;
+
+      IF v_contra_account_id IS NULL THEN
+        SELECT id INTO v_contra_account_id 
+        FROM public.chart_of_accounts 
+        WHERE foundation_id = v_tx.foundation_id AND name ILIKE v_tx.category
+        LIMIT 1;
+      END IF;
+
+      IF v_contra_account_id IS NULL THEN
+        IF v_tx.type = 'income' THEN
+          SELECT id INTO v_contra_account_id 
+          FROM public.chart_of_accounts 
+          WHERE foundation_id = v_tx.foundation_id AND code = '4110'
+          LIMIT 1;
+        ELSE
+          SELECT id INTO v_contra_account_id 
+          FROM public.chart_of_accounts 
+          WHERE foundation_id = v_tx.foundation_id AND code = '5240'
+          LIMIT 1;
+        END IF;
+      END IF;
+
+      IF v_cash_account_id IS NOT NULL AND v_contra_account_id IS NOT NULL THEN
+        INSERT INTO public.journal_entries (
+          foundation_id,
+          proof_number,
+          transaction_date,
+          description,
+          created_by,
+          created_at
+        ) VALUES (
+          v_tx.foundation_id,
+          v_proof_number,
+          v_tx.transaction_date,
+          coalesce(v_tx.description, 'Posting otomatis dari transaksi: ' || v_tx.category),
+          v_tx.created_by,
+          v_tx.created_at
+        ) RETURNING id INTO v_entry_id;
+
+        IF v_tx.type = 'income' THEN
+          INSERT INTO public.journal_items (entry_id, account_id, debit, credit, project_id, memo)
+          VALUES 
+            (v_entry_id, v_cash_account_id, v_tx.amount, 0.00, v_tx.project_id, v_tx.description),
+            (v_entry_id, v_contra_account_id, 0.00, v_tx.amount, v_tx.project_id, v_tx.description);
+        ELSE
+          INSERT INTO public.journal_items (entry_id, account_id, debit, credit, project_id, memo)
+          VALUES 
+            (v_entry_id, v_contra_account_id, v_tx.amount, 0.00, v_tx.project_id, v_tx.description),
+            (v_entry_id, v_cash_account_id, 0.00, v_tx.amount, v_tx.project_id, v_tx.description);
+        END IF;
+      END IF;
+    END IF;
+  END LOOP;
+END;
+$$;
