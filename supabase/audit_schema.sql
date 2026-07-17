@@ -20,6 +20,7 @@ create table if not exists public.audit_logs (
 alter table public.audit_logs enable row level security;
 
 -- 3. Policy: Members can view audit logs
+drop policy if exists "Members can view audit logs" on public.audit_logs;
 create policy "Members can view audit logs"
   on public.audit_logs for select
   to authenticated
