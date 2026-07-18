@@ -503,7 +503,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                     const SizedBox(height: 16),
                     // Dropdown Proyek
                     DropdownButtonFormField<String?>(
-                      value: _selectedProjectId,
+                      initialValue: _selectedProjectId,
                       decoration: const InputDecoration(
                         labelText: 'Proyek',
                         contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),

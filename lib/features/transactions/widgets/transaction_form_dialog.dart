@@ -283,7 +283,7 @@ class _TransactionFormDialogState extends ConsumerState<TransactionFormDialog> {
                   ),
                 )
               : DropdownButtonFormField<String>(
-                  value: _selectedAccountId,
+                  initialValue: _selectedAccountId,
                   decoration: const InputDecoration(
                     labelText: 'Kategori Akun (COA)',
                     prefixIcon: Icon(Icons.category_outlined),
@@ -314,7 +314,7 @@ class _TransactionFormDialogState extends ConsumerState<TransactionFormDialog> {
 
           // Dropdown Proyek
           DropdownButtonFormField<String?>(
-            value: _selectedProjectId,
+            initialValue: _selectedProjectId,
             decoration: const InputDecoration(
               labelText: 'Proyek Terkait (Opsional)',
               prefixIcon: Icon(Icons.business_outlined),

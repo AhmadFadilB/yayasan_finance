@@ -63,7 +63,7 @@ class _CoaListScreenState extends ConsumerState<CoaListScreen> with SingleTicker
               children: [
                 // Dropdown Kategori
                 DropdownButtonFormField<String>(
-                  value: selectedCategory,
+                  initialValue: selectedCategory,
                   decoration: const InputDecoration(
                     labelText: 'Kategori Akun',
                   ),
@@ -127,7 +127,7 @@ class _CoaListScreenState extends ConsumerState<CoaListScreen> with SingleTicker
                       style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textDark),
                     ),
                     value: isActive,
-                    activeColor: AppTheme.primaryColor,
+                    activeThumbColor: AppTheme.primaryColor,
                     contentPadding: EdgeInsets.zero,
                     onChanged: (val) {
                       setDialogState(() {
@@ -286,7 +286,7 @@ class _CoaListScreenState extends ConsumerState<CoaListScreen> with SingleTicker
               const SizedBox(width: 4),
               Switch(
                 value: showCoaCode,
-                activeColor: AppTheme.primaryColor,
+                activeThumbColor: AppTheme.primaryColor,
                 onChanged: (val) {
                   ref.read(showCoaCodeProvider.notifier).toggle(val);
                 },

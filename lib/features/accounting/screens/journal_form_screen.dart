@@ -309,7 +309,7 @@ class _JournalFormScreenState extends ConsumerState<JournalFormScreen> {
           Expanded(
             flex: 3,
             child: DropdownButtonFormField<String>(
-              value: item.accountId.isEmpty ? null : item.accountId,
+              initialValue: item.accountId.isEmpty ? null : item.accountId,
               isExpanded: true,
               decoration: const InputDecoration(labelText: 'Pilih Akun'),
               items: accounts.map((acc) {
@@ -368,7 +368,7 @@ class _JournalFormScreenState extends ConsumerState<JournalFormScreen> {
           Expanded(
             flex: 2,
             child: DropdownButtonFormField<String?>(
-              value: item.projectId,
+              initialValue: item.projectId,
               isExpanded: true,
               decoration: const InputDecoration(labelText: 'Proyek'),
               items: [

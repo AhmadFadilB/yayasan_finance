@@ -793,7 +793,7 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
   // Widget Dropdown Project untuk filter
   Widget _buildProjectDropdown(List<dynamic> projects) {
     return DropdownButtonFormField<String?>(
-      value: _selectedProjectId,
+      initialValue: _selectedProjectId,
       isExpanded: true,
       decoration: const InputDecoration(
         labelText: 'Proyek',
@@ -816,7 +816,7 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
   // Widget Dropdown Tipe untuk filter
   Widget _buildTypeDropdown() {
     return DropdownButtonFormField<String>(
-      value: _selectedType,
+      initialValue: _selectedType,
       isExpanded: true,
       decoration: const InputDecoration(
         labelText: 'Tipe',
@@ -846,7 +846,7 @@ class _TransactionListScreenState extends ConsumerState<TransactionListScreen> {
   // Widget Dropdown Kategori untuk filter
   Widget _buildCategoryDropdown() {
     return DropdownButtonFormField<String>(
-      value: _selectedCategory,
+      initialValue: _selectedCategory,
       isExpanded: true,
       decoration: const InputDecoration(
         labelText: 'Kategori',

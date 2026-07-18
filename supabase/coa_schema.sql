@@ -3,7 +3,7 @@
 -- YAYASAN FINANCE (ISAK 35 COMPLIANT)
 -- ----------------------------------------------------
 
--- 1. Create chart_of_accounts table
+-- 1. Create chart_of_accounts table. 
 create table if not exists public.chart_of_accounts (
   id uuid default gen_random_uuid() primary key,
   foundation_id uuid references public.foundations(id) on delete cascade not null,

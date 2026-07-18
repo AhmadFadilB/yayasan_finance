@@ -105,7 +105,7 @@ class _AddMemberDialogState extends ConsumerState<AddMemberDialog> {
 
           // Dropdown Peran (Role)
           DropdownButtonFormField<String>(
-            value: _selectedRole,
+            initialValue: _selectedRole,
             decoration: const InputDecoration(
               labelText: 'Peran Anggota',
               prefixIcon: Icon(Icons.shield_outlined),

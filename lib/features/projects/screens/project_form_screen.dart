@@ -609,7 +609,7 @@ class _ProjectFormScreenState extends ConsumerState<ProjectFormScreen> {
                         ),
                         const SizedBox(height: 16),
                         DropdownButtonFormField<String>(
-                          value: _status,
+                          initialValue: _status,
                           decoration: const InputDecoration(
                             labelText: 'Status Proyek',
                             prefixIcon: Icon(Icons.info_outline),
@@ -638,7 +638,7 @@ class _ProjectFormScreenState extends ConsumerState<ProjectFormScreen> {
                           value: _isPublic,
                           title: const Text('Jadikan Proyek Publik'),
                           subtitle: const Text('Donatur publik dapat melihat proyek ini tanpa login'),
-                          activeColor: AppTheme.primaryColor,
+                          activeThumbColor: AppTheme.primaryColor,
                           contentPadding: EdgeInsets.zero,
                           onChanged: (val) {
                             setState(() {
