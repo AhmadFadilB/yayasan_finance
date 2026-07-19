@@ -20,7 +20,7 @@ class AppCard extends StatelessWidget {
     this.color,
     this.radius,
     this.hasBorder = true,
-    this.hasShadow = true,
+    this.hasShadow = false,
     this.onTap,
   });
 

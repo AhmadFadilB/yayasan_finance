@@ -22,11 +22,11 @@ class JournalListScreen extends ConsumerWidget {
     final canModify = userRole == 'admin' || userRole == 'bendahara';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9F8),
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         title: Text(
           'Jurnal Umum (Double-Entry)',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18),
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         actions: [
           if (canModify)
@@ -145,10 +145,11 @@ class JournalListScreen extends ConsumerWidget {
                 const SizedBox(height: 2),
                 Text(
                   Formatter.formatRupiah(entry.totalDebit),
-                  style: GoogleFonts.inter(
+                  style: GoogleFonts.jetBrainsMono(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
-                    color: const Color(0xFF0F5A47),
+                    color: AppTheme.primaryColor,
+                    fontFeatures: const [FontFeature.tabularFigures()],
                   ),
                 ),
               ],
@@ -236,10 +237,11 @@ class JournalListScreen extends ConsumerWidget {
                         alignment: Alignment.centerRight,
                         child: Text(
                           item.debit > 0 ? Formatter.formatRupiah(item.debit) : '-',
-                          style: GoogleFonts.inter(
+                          style: GoogleFonts.jetBrainsMono(
                             fontSize: 12,
                             fontWeight: item.debit > 0 ? FontWeight.bold : FontWeight.normal,
-                            color: item.debit > 0 ? const Color(0xFF0F5A47) : Colors.black54,
+                            color: item.debit > 0 ? AppTheme.colorSuccess : AppTheme.textLight,
+                            fontFeatures: const [FontFeature.tabularFigures()],
                           ),
                         ),
                       ),
@@ -250,10 +252,11 @@ class JournalListScreen extends ConsumerWidget {
                         alignment: Alignment.centerRight,
                         child: Text(
                           item.credit > 0 ? Formatter.formatRupiah(item.credit) : '-',
-                          style: GoogleFonts.inter(
+                          style: GoogleFonts.jetBrainsMono(
                             fontSize: 12,
                             fontWeight: item.credit > 0 ? FontWeight.bold : FontWeight.normal,
-                            color: item.credit > 0 ? const Color(0xFFE53935) : Colors.black54,
+                            color: item.credit > 0 ? AppTheme.colorError : AppTheme.textLight,
+                            fontFeatures: const [FontFeature.tabularFigures()],
                           ),
                         ),
                       ),

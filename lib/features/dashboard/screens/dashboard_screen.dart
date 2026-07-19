@@ -277,55 +277,58 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     required IconData icon,
     bool isHighlight = false,
   }) {
-    return AppCard(
-      color: isHighlight ? AppTheme.primaryColor : Colors.white,
-      hasBorder: !isHighlight,
-      hasShadow: isHighlight,
-      child: Row(
-        children: [
-          CircleAvatar(
-            backgroundColor: isHighlight ? Colors.white.withAlpha(38) : color.withAlpha(26),
-            foregroundColor: isHighlight ? Colors.white : color,
-            child: Icon(icon),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: AppRadius.radiusMd,
+        border: Border.all(color: AppColors.divider, width: 1),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border(
+            left: BorderSide(color: isHighlight ? AppTheme.primaryColor : color, width: 4),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: isHighlight ? Colors.white70 : AppTheme.textLight,
-                        fontWeight: FontWeight.w500,
-                      ),
-                ),
-                const SizedBox(height: 4),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: isHighlight 
-                      ? Text(
-                          Formatter.formatRupiah(amount).replaceAll('Rp', 'Rp '),
-                          style: GoogleFonts.inter(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            fontFeatures: const [FontFeature.tabularFigures()],
-                          ),
-                        )
-                      : MoneyText(
-                          amount: amount,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          styleType: title.contains('Debit') 
-                              ? MoneyTextStyleType.debit 
-                              : (title.contains('Kredit') ? MoneyTextStyleType.credit : MoneyTextStyleType.neutral),
-                        ),
-                ),
-              ],
+        ),
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: isHighlight 
+                  ? AppTheme.primaryColor.withAlpha(26) 
+                  : color.withAlpha(26),
+              foregroundColor: isHighlight ? AppTheme.primaryColor : color,
+              child: Icon(icon),
             ),
-          ),
-        ],
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppTheme.textLight,
+                          fontWeight: FontWeight.w500,
+                        ),
+                  ),
+                  const SizedBox(height: 4),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: MoneyText(
+                      amount: amount,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      styleType: title.contains('Debit') 
+                          ? MoneyTextStyleType.debit 
+                          : (title.contains('Kredit') ? MoneyTextStyleType.credit : MoneyTextStyleType.neutral),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

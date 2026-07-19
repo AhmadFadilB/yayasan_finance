@@ -348,9 +348,9 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
       width: 250,
       height: double.infinity,
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.primaryColor,
         border: Border(
-          right: BorderSide(color: Color(0xFFEBEBEB), width: 1),
+          right: BorderSide(color: Colors.white12, width: 1),
         ),
       ),
       child: Column(
@@ -362,23 +362,23 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const AppLogo(showText: true, fontSize: 16),
+                const AppLogo(showText: true, fontSize: 16, color: Colors.white),
                 const SizedBox(height: 16),
                 // Foundation info card
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF7F6F2),
+                    color: Colors.white.withAlpha(15),
                     borderRadius: AppRadius.radiusMd,
                   ),
                   child: Row(
                     children: [
                       CircleAvatar(
                         radius: 14,
-                        backgroundColor: AppTheme.primaryColor,
+                        backgroundColor: AppTheme.secondaryColor,
                         child: Text(
                           activeFoundation.name.substring(0, 1).toUpperCase(),
-                          style: GoogleFonts.outfit(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                          style: GoogleFonts.outfit(color: AppTheme.primaryColor, fontSize: 10, fontWeight: FontWeight.bold),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -390,11 +390,11 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                               activeFoundation.name,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.textDark),
+                              style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
                             ),
                             Text(
                               (activeFoundation.currentUserRole ?? 'viewer').toUpperCase(),
-                              style: GoogleFonts.outfit(fontSize: 8, fontWeight: FontWeight.bold, color: const Color(0xFF6B7570)),
+                              style: GoogleFonts.outfit(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.white70),
                             ),
                           ],
                         ),
@@ -405,7 +405,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
               ],
             ),
           ),
-          const Divider(height: 1, color: Color(0xFFEBEBEB)),
+          const Divider(height: 1, color: Colors.white12),
           const SizedBox(height: 12),
           // Group 1: Operasional
           Padding(
@@ -415,7 +415,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF6B7570),
+                color: Colors.white30,
                 letterSpacing: 1.2,
               ),
             ),
@@ -441,7 +441,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF6B7570),
+                color: Colors.white30,
                 letterSpacing: 1.2,
               ),
             ),
@@ -454,7 +454,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
               )),
           const Spacer(),
           // Bottom area: Switch / logout quick action
-          const Divider(height: 1, color: Color(0xFFEBEBEB)),
+          const Divider(height: 1, color: Colors.white12),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -462,7 +462,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                 Expanded(
                   child: TextButton.icon(
                     style: TextButton.styleFrom(
-                      foregroundColor: const Color(0xFF6B7570),
+                      foregroundColor: Colors.white70,
                       alignment: Alignment.centerLeft,
                     ),
                     onPressed: () {
@@ -773,9 +773,9 @@ class _HoverSidebarItemState extends State<HoverSidebarItem> {
     
     Color bgColor = Colors.transparent;
     if (isSelected) {
-      bgColor = AppTheme.secondaryColor.withAlpha(20);
+      bgColor = Colors.white.withAlpha(26);
     } else if (_isHovered) {
-      bgColor = const Color(0xFFF7F6F2);
+      bgColor = Colors.white.withAlpha(13);
     }
 
     return MouseRegion(
@@ -804,7 +804,7 @@ class _HoverSidebarItemState extends State<HoverSidebarItem> {
               const SizedBox(width: 13),
               Icon(
                 widget.icon,
-                color: isSelected ? AppTheme.primaryColor : const Color(0xFF6B7570),
+                color: isSelected ? AppTheme.secondaryColor : Colors.white60,
                 size: 18,
               ),
               const SizedBox(width: 12),
@@ -814,7 +814,7 @@ class _HoverSidebarItemState extends State<HoverSidebarItem> {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 13,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                    color: isSelected ? AppTheme.primaryColor : const Color(0xFF1A1F1C),
+                    color: isSelected ? Colors.white : Colors.white70,
                   ),
                 ),
               ),

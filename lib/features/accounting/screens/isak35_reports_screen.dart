@@ -35,11 +35,11 @@ class _Isak35ReportsScreenState extends ConsumerState<Isak35ReportsScreen> with 
     final state = ref.watch(accountingProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9F8),
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         title: Text(
           'Laporan Keuangan ISAK 35',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18),
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         bottom: TabBar(
           controller: _tabController,
@@ -151,7 +151,7 @@ class _Isak35ReportsScreenState extends ConsumerState<Isak35ReportsScreen> with 
                 const SizedBox(height: 24),
                 const Divider(color: Colors.black38, thickness: 1.5),
                 const SizedBox(height: 8),
-                _buildTotalRow('TOTAL LIABILITAS DAN ASET NETO', totalLiabilities + totalNetAssets, highlightColor: const Color(0xFF0F5A47)),
+                _buildTotalRow('TOTAL LIABILITAS DAN ASET NETO', totalLiabilities + totalNetAssets, highlightColor: AppTheme.primaryColor),
               ],
             ),
           ),
@@ -241,7 +241,7 @@ class _Isak35ReportsScreenState extends ConsumerState<Isak35ReportsScreen> with 
                 const SizedBox(height: 24),
                 const Divider(color: Colors.black38, thickness: 1.5),
                 const SizedBox(height: 8),
-                _buildTotalRow('TOTAL PERUBAHAN ASET NETO', changeNetAssetsUnrestricted + changeNetAssetsRestricted, highlightColor: const Color(0xFF0F5A47)),
+                _buildTotalRow('TOTAL PERUBAHAN ASET NETO', changeNetAssetsUnrestricted + changeNetAssetsRestricted, highlightColor: AppTheme.primaryColor),
               ],
             ),
           ),
@@ -335,7 +335,7 @@ class _Isak35ReportsScreenState extends ConsumerState<Isak35ReportsScreen> with 
                 const SizedBox(height: 24),
                 const Divider(color: Colors.black38, thickness: 1.5),
                 const SizedBox(height: 8),
-                _buildTotalRow('TOTAL SALDO AKHIR ASET NETO', endingNetAssetsUnrestricted + endingNetAssetsRestricted, highlightColor: const Color(0xFF0F5A47)),
+                _buildTotalRow('TOTAL SALDO AKHIR ASET NETO', endingNetAssetsUnrestricted + endingNetAssetsRestricted, highlightColor: AppTheme.primaryColor),
               ],
             ),
           ),
@@ -421,7 +421,7 @@ class _Isak35ReportsScreenState extends ConsumerState<Isak35ReportsScreen> with 
                 const SizedBox(height: 8),
                 _buildTotalRow('KENAIKAN/(PENURUNAN) BERSIH KAS', netCashChange),
                 _buildReportRow('Kas dan Setara Kas Awal Periode', beginningCash),
-                _buildTotalRow('KAS DAN SETARA KAS AKHIR PERIODE', endingCash, highlightColor: const Color(0xFF0F5A47)),
+                _buildTotalRow('KAS DAN SETARA KAS AKHIR PERIODE', endingCash, highlightColor: AppTheme.primaryColor),
               ],
             ),
           ),
@@ -437,13 +437,13 @@ class _Isak35ReportsScreenState extends ConsumerState<Isak35ReportsScreen> with 
       children: [
         Text(
           activeFoundation?.name.toUpperCase() ?? 'YAYASAN FINANCE',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16, color: const Color(0xFF37474F)),
+          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16, color: AppTheme.textDark),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 4),
         Text(
           reportName,
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18, color: const Color(0xFF0F5A47)),
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 18, color: AppTheme.primaryColor),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 4),
@@ -482,15 +482,16 @@ class _Isak35ReportsScreenState extends ConsumerState<Isak35ReportsScreen> with 
           Expanded(
             child: Text(
               label,
-              style: GoogleFonts.outfit(fontSize: 13, color: const Color(0xFF555555)),
+              style: GoogleFonts.plusJakartaSans(fontSize: 13, color: AppTheme.textDark, fontWeight: FontWeight.w500),
             ),
           ),
           Text(
             amountVal == 0.0 ? 'Rp0' : (amountVal < 0 ? '(${Formatter.formatRupiah(amountVal.abs())})' : Formatter.formatRupiah(amountVal)),
-            style: GoogleFonts.inter(
+            style: GoogleFonts.jetBrainsMono(
               fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: amountVal < 0 ? const Color(0xFFE53935) : Colors.black87,
+              fontWeight: FontWeight.w600,
+              color: amountVal < 0 ? AppTheme.colorError : AppTheme.textDark,
+              fontFeatures: const [FontFeature.tabularFigures()],
             ),
           ),
         ],
@@ -508,19 +509,20 @@ class _Isak35ReportsScreenState extends ConsumerState<Isak35ReportsScreen> with 
           Expanded(
             child: Text(
               label,
-              style: GoogleFonts.outfit(
+              style: GoogleFonts.plusJakartaSans(
                 fontWeight: FontWeight.bold,
                 fontSize: isSubtotal ? 13 : 14,
-                color: highlightColor ?? const Color(0xFF37474F),
+                color: highlightColor ?? AppTheme.textDark,
               ),
             ),
           ),
           Text(
             amountVal == 0.0 ? 'Rp0' : (amountVal < 0 ? '(${Formatter.formatRupiah(amountVal.abs())})' : Formatter.formatRupiah(amountVal)),
-            style: GoogleFonts.inter(
+            style: GoogleFonts.jetBrainsMono(
               fontWeight: FontWeight.bold,
               fontSize: isSubtotal ? 13 : 14,
-              color: highlightColor ?? (amountVal < 0 ? const Color(0xFFE53935) : Colors.black87),
+              color: highlightColor ?? (amountVal < 0 ? AppTheme.colorError : AppTheme.textDark),
+              fontFeatures: const [FontFeature.tabularFigures()],
             ),
           ),
         ],

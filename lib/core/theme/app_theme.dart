@@ -20,22 +20,18 @@ class NoTransitionsBuilder extends PageTransitionsBuilder {
 }
 
 class AppColors {
-  static const Color divider = Color.fromARGB(255, 200, 200, 200);
+  static const Color divider = Color(0xFFE5E7EB);
 }
 
 class AppTheme {
   // Brand & Semantic Colors
-  static const Color primaryColor = Color(0xFF0F3D2E); // Deep Forest Green
-  static const Color primaryLight = Color(
-    0xFF1D5C49,
-  ); // Lighter variants for hover
-  static const Color primaryDark = Color(
-    0xFF08241A,
-  ); // Darker variant for pressed
-
+  static const Color primaryColor = Color(0xFF08241A); // Deep Forest Green (Minimalist)
+  static const Color primaryLight = Color(0xFF133F2F); // Lighter variant
+  static const Color primaryDark = Color(0xFF04120D); // Darker variant
+  
   static const Color secondaryColor = Color(0xFFC9972B); // Warm Amber Gold
 
-  static const Color backgroundColor = Color(0xFFF7F6F2); // Warm off-white
+  static const Color backgroundColor = Color(0xFFFAF9F5); // Warm Off-White
   static const Color cardColor = Colors.white;
 
   // Text Colors
@@ -153,19 +149,19 @@ class AppTheme {
         fillColor: Colors.white,
         contentPadding: const EdgeInsets.all(UIConstants.s16),
         border: OutlineInputBorder(
-          borderRadius: AppRadius.radiusSm,
-          borderSide: const BorderSide(color: AppColors.divider, width: 1),
+          borderRadius: AppRadius.radiusMd,
+          borderSide: const BorderSide(color: Color(0xFFD1D5DB), width: 1),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: AppRadius.radiusSm,
-          borderSide: const BorderSide(color: AppColors.divider, width: 1),
+          borderRadius: AppRadius.radiusMd,
+          borderSide: const BorderSide(color: Color(0xFFD1D5DB), width: 1),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: AppRadius.radiusSm,
+          borderRadius: AppRadius.radiusMd,
           borderSide: const BorderSide(color: primaryColor, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: AppRadius.radiusSm,
+          borderRadius: AppRadius.radiusMd,
           borderSide: const BorderSide(color: colorError, width: 1),
         ),
         labelStyle: GoogleFonts.inter(
@@ -182,7 +178,7 @@ class AppTheme {
           foregroundColor: Colors.white,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusSm),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusMd),
           textStyle: GoogleFonts.plusJakartaSans(
             fontSize: 15,
             fontWeight: FontWeight.bold,
@@ -194,7 +190,7 @@ class AppTheme {
           foregroundColor: primaryColor,
           side: const BorderSide(color: primaryColor, width: 1.5),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusSm),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusMd),
           textStyle: GoogleFonts.plusJakartaSans(
             fontSize: 15,
             fontWeight: FontWeight.bold,

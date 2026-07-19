@@ -100,11 +100,11 @@ class _JournalFormScreenState extends ConsumerState<JournalFormScreen> {
     final accountingState = ref.watch(accountingProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9F8),
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         title: Text(
           _isEdit ? 'Edit Voucher Jurnal' : 'Tambah Voucher Jurnal Baru',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18),
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         actions: [
           Padding(
@@ -115,7 +115,7 @@ class _JournalFormScreenState extends ConsumerState<JournalFormScreen> {
                 backgroundColor: AppTheme.primaryColor,
                 foregroundColor: Colors.white,
                 elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusSm),
+                shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusMd),
               ),
               child: Text(accountingState.isLoading ? 'Menyimpan...' : 'Simpan'),
             ),

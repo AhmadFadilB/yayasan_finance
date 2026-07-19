@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class AppRadius {
   static const double sm = 4.0;
-  static const double md = 6.0;
-  static const double lg = 8.0;
+  static const double md = 8.0;
+  static const double lg = 12.0;
   static const double pill = 9999.0;
 
   static BorderRadius get radiusSm => BorderRadius.circular(sm);
