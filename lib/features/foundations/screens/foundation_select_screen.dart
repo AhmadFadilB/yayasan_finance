@@ -7,7 +7,6 @@ import '../providers/foundation_provider.dart';
 import '../../../core/components/profile_menu_anchor.dart';
 import '../../../core/components/app_card.dart';
 import '../../../core/components/app_button.dart';
-import '../../../core/components/app_modal.dart';
 import '../../../core/theme/ui_constants.dart';
 import '../../../core/theme/app_theme.dart';
 
@@ -19,107 +18,6 @@ class FoundationSelectScreen extends ConsumerStatefulWidget {
 }
 
 class _FoundationSelectScreenState extends ConsumerState<FoundationSelectScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _descController = TextEditingController();
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _descController.dispose();
-    super.dispose();
-  }
-
-  void _showCreateFoundationDialog() {
-    AppModal.show<void>(
-      context: context,
-      title: const Text('Buat Yayasan Baru'),
-      subtitle: 'Mulai yayasan baru untuk mengelola keuangan program sosial Anda',
-      content: Consumer(
-        builder: (context, ref, child) {
-          final foundationState = ref.watch(foundationProvider);
-          return Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nama Yayasan',
-                    hintText: 'Yayasan Al-Manar',
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Nama yayasan tidak boleh kosong';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _descController,
-                  decoration: const InputDecoration(
-                    labelText: 'Deskripsi (Opsional)',
-                    hintText: 'Deskripsi singkat mengenai yayasan',
-                  ),
-                  maxLines: 3,
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    AppButton(
-                      text: 'Batal',
-                      style: AppButtonStyle.outline,
-                      onPressed: () {
-                        _nameController.clear();
-                        _descController.clear();
-                        Navigator.pop(context);
-                      },
-                    ),
-                    const SizedBox(width: 12),
-                    AppButton(
-                      text: 'Buat',
-                      style: AppButtonStyle.primary,
-                      isLoading: foundationState.isLoading,
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          final name = _nameController.text.trim();
-                          final desc = _descController.text.trim();
-                          
-                          final navigator = Navigator.of(context);
-                          final messenger = ScaffoldMessenger.of(context);
-                          
-                          final success = await ref.read(foundationProvider.notifier).createFoundation(
-                                name,
-                                desc.isEmpty ? null : desc,
-                              );
-                          
-                          if (success && mounted) {
-                            navigator.pop();
-                            _nameController.clear();
-                            _descController.clear();
-                            messenger.showSnackBar(
-                              SnackBar(
-                                content: Text('Yayasan "$name" berhasil dibuat!'),
-                                backgroundColor: AppTheme.colorSuccess,
-                              ),
-                            );
-                          }
-                        }
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -296,7 +194,9 @@ class _FoundationSelectScreenState extends ConsumerState<FoundationSelectScreen>
                                 ),
                                 const SizedBox(height: 24),
                                  AppButton(
-                                  onPressed: _showCreateFoundationDialog,
+                                  onPressed: () {
+                                    context.push('/foundations/create');
+                                  },
                                   icon: Icons.add,
                                   text: 'Buat Yayasan Pertama',
                                   style: AppButtonStyle.primary,
@@ -385,7 +285,9 @@ class _FoundationSelectScreenState extends ConsumerState<FoundationSelectScreen>
               // Tombol Tambah Yayasan di bagian bawah (jika sudah ada yayasan)
               if (foundationState.foundations.isNotEmpty && !foundationState.isLoading)
                 AppButton(
-                  onPressed: _showCreateFoundationDialog,
+                  onPressed: () {
+                    context.push('/foundations/create');
+                  },
                   icon: Icons.add,
                   text: 'Buat Yayasan Baru',
                   style: AppButtonStyle.primary,

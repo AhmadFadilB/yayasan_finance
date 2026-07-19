@@ -14,6 +14,7 @@ import '../../features/projects/screens/public_project_detail_screen.dart';
 import '../../features/projects/screens/public_project_feed_screen.dart';
 import '../../features/projects/screens/project_form_screen.dart';
 import '../../features/accounting/screens/journal_form_screen.dart';
+import '../../features/foundations/screens/foundation_create_screen.dart';
 
 // Listenable that triggers router refresh on Riverpod state changes
 class RouterTransitionNotifier extends ChangeNotifier {
@@ -94,6 +95,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           return JournalFormScreen(entryId: id);
         },
       ),
+      GoRoute(
+        path: '/foundations/create',
+        builder: (context, state) => const FoundationCreateScreen(),
+      ),
     ],
     redirect: (context, state) {
       final authState = ref.read(authProvider);
@@ -121,8 +126,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         return hasFoundation ? '/dashboard' : '/select-foundation';
       }
 
-      // If user is logged in but hasn't selected foundation, force select-foundation
-      if (path != '/select-foundation' && !isPublicRoute && !hasFoundation) {
+      // If user is logged in but hasn't selected foundation, force select-foundation (unless going to foundations/create)
+      if (path != '/select-foundation' && path != '/foundations/create' && !isPublicRoute && !hasFoundation) {
         return '/select-foundation';
       }
 
