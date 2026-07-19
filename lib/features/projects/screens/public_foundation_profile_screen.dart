@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/utils/formatter.dart';
+import '../../../core/theme/ui_constants.dart';
+import '../../../core/theme/app_theme.dart';
 
 class PublicFoundationProfileScreen extends StatefulWidget {
   final String foundationId;
@@ -87,15 +89,15 @@ class _PublicFoundationProfileScreenState extends State<PublicFoundationProfileS
     final isDesktop = size.width > 800;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FBFB),
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         title: Text(
           _foundation?['name'] ?? 'Profil Yayasan',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18),
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 18),
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF0F5A47)))
+          ? Center(child: CircularProgressIndicator(color: AppTheme.primaryColor))
           : _errorMessage != null
               ? Center(
                   child: Padding(
@@ -103,23 +105,23 @@ class _PublicFoundationProfileScreenState extends State<PublicFoundationProfileS
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.error_outline, size: 64, color: Colors.redAccent),
+                        Icon(Icons.error_outline, size: 64, color: AppTheme.colorError),
                         const SizedBox(height: 16),
                         Text(
                           'Gagal Memuat Profil',
-                          style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           _errorMessage!,
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.outfit(color: Colors.black54),
+                          style: GoogleFonts.inter(color: AppTheme.textLight),
                         ),
                         const SizedBox(height: 24),
                         ElevatedButton(
-                          style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0F5A47)),
+                          style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryColor),
                           onPressed: _loadFoundationProfile,
-                          child: Text('Coba Lagi', style: GoogleFonts.outfit(color: Colors.white)),
+                          child: Text('Coba Lagi', style: GoogleFonts.plusJakartaSans(color: Colors.white)),
                         ),
                       ],
                     ),
@@ -168,14 +170,14 @@ class _PublicFoundationProfileScreenState extends State<PublicFoundationProfileS
                               ),
                               child: CircleAvatar(
                                 radius: 50,
-                                backgroundColor: const Color(0xFF0F5A47),
+                                backgroundColor: AppTheme.primaryColor,
                                 backgroundImage: _foundation?['logo_url'] != null
                                     ? NetworkImage(_foundation!['logo_url'])
                                     : null,
                                 child: _foundation?['logo_url'] == null
                                     ? Text(
                                         (_foundation?['name'] as String).substring(0, 1).toUpperCase(),
-                                        style: GoogleFonts.outfit(color: Colors.white, fontSize: 36, fontWeight: FontWeight.bold),
+                                        style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 36, fontWeight: FontWeight.bold),
                                       )
                                     : null,
                               ),
@@ -193,10 +195,10 @@ class _PublicFoundationProfileScreenState extends State<PublicFoundationProfileS
                           children: [
                             Text(
                               _foundation?['name'] ?? '',
-                              style: GoogleFonts.outfit(
+                              style: GoogleFonts.plusJakartaSans(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFF1A2A25),
+                                color: AppTheme.textDark,
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -206,37 +208,37 @@ class _PublicFoundationProfileScreenState extends State<PublicFoundationProfileS
                                 padding: const EdgeInsets.all(20),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: const Color(0xFFEBEBEB)),
+                                  borderRadius: AppRadius.radiusMd,
+                                  border: Border.all(color: AppColors.divider),
                                 ),
                                 child: Text(
                                   _foundation!['description'],
-                                  style: GoogleFonts.outfit(
+                                  style: GoogleFonts.inter(
                                     fontSize: 15,
                                     height: 1.6,
-                                    color: const Color(0xFF4A5552),
+                                    color: AppTheme.textDark,
                                   ),
                                 ),
                               )
                             else
                               Text(
                                 'Belum ada deskripsi profil untuk yayasan ini.',
-                                style: GoogleFonts.outfit(fontStyle: FontStyle.italic, color: Colors.grey),
+                                style: GoogleFonts.inter(fontStyle: FontStyle.italic, color: Colors.grey),
                               ),
 
                             const SizedBox(height: 40),
                             Text(
                               'Kampanye Crowdfunding Publik',
-                              style: GoogleFonts.outfit(
+                              style: GoogleFonts.plusJakartaSans(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                color: const Color(0xFF1A2A25),
+                                color: AppTheme.textDark,
                               ),
                             ),
                             const SizedBox(height: 8),
                             Text(
                               'Daftar proyek aktif yang dapat Anda bantu donasikan',
-                              style: GoogleFonts.outfit(fontSize: 13, color: Colors.grey),
+                              style: GoogleFonts.inter(fontSize: 13, color: AppTheme.textLight),
                             ),
                             const SizedBox(height: 24),
 
@@ -251,7 +253,7 @@ class _PublicFoundationProfileScreenState extends State<PublicFoundationProfileS
                                           const SizedBox(height: 16),
                                           Text(
                                             'Tidak ada proyek publik aktif saat ini.',
-                                            style: GoogleFonts.outfit(color: Colors.grey),
+                                            style: GoogleFonts.inter(color: AppTheme.textLight),
                                           ),
                                         ],
                                       ),
@@ -327,14 +329,14 @@ class _PublicFoundationProfileScreenState extends State<PublicFoundationProfileS
                   children: [
                     Text(
                       proj['name'] ?? '',
-                      style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 16, color: const Color(0xFF1A2A25)),
+                      style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 16, color: AppTheme.textDark),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
                     Text(
                       proj['description'] ?? 'Tidak ada deskripsi',
-                      style: GoogleFonts.outfit(fontSize: 12, color: const Color(0xFF6B7F79)),
+                      style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textLight),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -344,11 +346,11 @@ class _PublicFoundationProfileScreenState extends State<PublicFoundationProfileS
                       children: [
                         Text(
                           'Terkumpul',
-                          style: GoogleFonts.outfit(fontSize: 11, color: const Color(0xFF6B7F79)),
+                          style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textLight),
                         ),
                         Text(
                           '$percent%',
-                          style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.bold, color: const Color(0xFF0F5A47)),
+                          style: GoogleFonts.jetBrainsMono(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
                         ),
                       ],
                     ),
@@ -358,7 +360,7 @@ class _PublicFoundationProfileScreenState extends State<PublicFoundationProfileS
                       child: LinearProgressIndicator(
                         value: progress,
                         backgroundColor: const Color(0xFFE6F0EC),
-                        valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF0F5A47)),
+                        valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
                         minHeight: 6,
                       ),
                     ),
@@ -368,11 +370,20 @@ class _PublicFoundationProfileScreenState extends State<PublicFoundationProfileS
                       children: [
                         Text(
                           Formatter.formatRupiah(raised),
-                          style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.bold, color: const Color(0xFF0F5A47)),
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.primaryColor,
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
                         ),
                         Text(
                           'Target: ${Formatter.formatRupiah(target)}',
-                          style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
+                          style: GoogleFonts.jetBrainsMono(
+                            fontSize: 11,
+                            color: Colors.grey,
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
                         ),
                       ],
                     ),

@@ -197,12 +197,12 @@ class _PublicProjectDetailScreenState extends State<PublicProjectDetailScreen> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(Icons.business, size: 16, color: Color(0xFF0F5A47)),
+                              const Icon(Icons.business, size: 16, color: AppTheme.primaryColor),
                               const SizedBox(width: 6),
                               Text(
                                 _foundationName!,
-                                style: GoogleFonts.outfit(
-                                  color: const Color(0xFF0F5A47),
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: AppTheme.primaryColor,
                                   fontWeight: FontWeight.bold,
                                   decoration: TextDecoration.underline,
                                   fontSize: 14,

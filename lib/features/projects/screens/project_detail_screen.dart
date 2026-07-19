@@ -51,7 +51,7 @@ class ProjectDetailScreen extends ConsumerWidget {
                   const SizedBox(width: 8),
                   Text(
                     label,
-                    style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.w500),
+                    style: GoogleFonts.plusJakartaSans(fontSize: 11, color: AppTheme.textLight, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -60,10 +60,11 @@ class ProjectDetailScreen extends ConsumerWidget {
                 fit: BoxFit.scaleDown,
                 child: Text(
                   Formatter.formatRupiah(amount),
-                  style: GoogleFonts.outfit(
+                  style: GoogleFonts.jetBrainsMono(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: color,
+                    fontFeatures: const [FontFeature.tabularFigures()],
                   ),
                 ),
               ),
@@ -76,16 +77,16 @@ class ProjectDetailScreen extends ConsumerWidget {
     Widget buildInfoRow(IconData icon, String label, String value) {
       return Row(
         children: [
-          Icon(icon, size: 16, color: Colors.grey),
+          Icon(icon, size: 16, color: AppTheme.textLight),
           const SizedBox(width: 8),
           Text(
             '$label: ',
-            style: GoogleFonts.outfit(fontSize: 13, color: Colors.grey, fontWeight: FontWeight.w500),
+            style: GoogleFonts.plusJakartaSans(fontSize: 13, color: AppTheme.textLight, fontWeight: FontWeight.w500),
           ),
           Expanded(
             child: Text(
               value,
-              style: GoogleFonts.outfit(fontSize: 13, color: const Color(0xFF1A2A25), fontWeight: FontWeight.w600),
+              style: GoogleFonts.plusJakartaSans(fontSize: 13, color: AppTheme.textDark, fontWeight: FontWeight.w600),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -137,17 +138,17 @@ class ProjectDetailScreen extends ConsumerWidget {
                   children: [
                     Text(
                       'Deskripsi Proyek',
-                      style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.bold, color: const Color(0xFF1A2A25)),
+                      style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.textDark),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0D5C46).withAlpha(26),
-                        borderRadius: BorderRadius.circular(6),
+                        color: AppTheme.primaryColor.withAlpha(26),
+                        borderRadius: AppRadius.radiusSm,
                       ),
                       child: Text(
                         currentProject.status.toUpperCase(),
-                        style: GoogleFonts.outfit(fontSize: 10, fontWeight: FontWeight.bold, color: const Color(0xFF0D5C46)),
+                        style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
                       ),
                     ),
                   ],
@@ -155,7 +156,7 @@ class ProjectDetailScreen extends ConsumerWidget {
                 const SizedBox(height: 8),
                 Text(
                   currentProject.description ?? 'Tidak ada deskripsi proyek.',
-                  style: GoogleFonts.outfit(fontSize: 14, color: const Color(0xFF6B7F79)),
+                  style: GoogleFonts.inter(fontSize: 14, color: AppTheme.textLight),
                 ),
                 const SizedBox(height: 20),
                 const Divider(height: 1),
@@ -200,14 +201,14 @@ class ProjectDetailScreen extends ConsumerWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Link crowdfunding proyek berhasil disalin!'),
-                            backgroundColor: Color(0xFF0D5C46),
+                            backgroundColor: AppTheme.colorSuccess,
                           ),
                         );
                       },
                       icon: const Icon(Icons.copy, size: 16, color: Colors.white),
                       label: const Text('Salin Link Donasi Publik', style: TextStyle(color: Colors.white)),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0D5C46),
+                        backgroundColor: AppTheme.primaryColor,
                         elevation: 0,
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusSm),
@@ -223,10 +224,11 @@ class ProjectDetailScreen extends ConsumerWidget {
     }
 
     return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         title: Text(
           currentProject.name,
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         actions: [
           IconButton(
@@ -342,7 +344,7 @@ class ProjectDetailScreen extends ConsumerWidget {
                       const SizedBox(height: 12),
                       Text(
                         'Belum ada transaksi tercatat untuk proyek ini.',
-                        style: GoogleFonts.outfit(color: Colors.grey, fontSize: 13),
+                        style: GoogleFonts.inter(color: AppTheme.textLight, fontSize: 13),
                       ),
                     ],
                   ),
@@ -365,23 +367,24 @@ class ProjectDetailScreen extends ConsumerWidget {
                     return ListTile(
                       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                       leading: CircleAvatar(
-                        backgroundColor: tx.isIncome ? const Color(0xFF0D5C46).withAlpha(18) : const Color(0xFFE53935).withAlpha(18),
-                        foregroundColor: tx.isIncome ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
+                        backgroundColor: tx.isIncome ? AppTheme.colorSuccess.withAlpha(26) : AppTheme.colorError.withAlpha(26),
+                        foregroundColor: tx.isIncome ? AppTheme.colorSuccess : AppTheme.colorError,
                         child: Icon(tx.isIncome ? Icons.arrow_downward : Icons.arrow_upward, size: 18),
                       ),
                       title: Text(
                         tx.description?.isNotEmpty == true ? tx.description! : tx.category,
-                        style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 14),
+                        style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 14),
                       ),
                       subtitle: Text(
                         '${Formatter.formatTanggal(tx.transactionDate)} • oleh ${tx.creatorName ?? "Umum"}',
-                        style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
+                        style: GoogleFonts.inter(fontSize: 11, color: AppTheme.textLight),
                       ),
                       trailing: Text(
                         '${tx.isIncome ? '+' : '-'}${Formatter.formatRupiah(tx.amount)}',
-                        style: GoogleFonts.outfit(
+                        style: GoogleFonts.jetBrainsMono(
                           fontWeight: FontWeight.bold,
-                          color: tx.isIncome ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
+                          color: tx.isIncome ? AppTheme.colorSuccess : AppTheme.colorError,
+                          fontFeatures: const [FontFeature.tabularFigures()],
                         ),
                       ),
                     );
