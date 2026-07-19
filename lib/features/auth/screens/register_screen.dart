@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../core/theme/ui_constants.dart';
+import '../../../core/theme/app_theme.dart';
+import '../../../core/components/app_card.dart';
+import '../../../core/components/app_button.dart';
 import '../providers/auth_provider.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
@@ -54,6 +58,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     final authState = ref.watch(authProvider);
 
     return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -64,161 +69,158 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(32.0),
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 400),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const Icon(
-                    Icons.account_balance_wallet,
-                    size: 64,
-                    color: Color(0xFF0D5C46),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Daftar Akun Baru',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.outfit(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF1A2A25),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Mulailah mengelola yayasan Anda dengan sistem keuangan yang rapi.',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.outfit(
-                      fontSize: 14,
-                      color: const Color(0xFF6B7F79),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-
-                  // Error Alert jika ada
-                  if (authState.errorMessage != null) ...[
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFFFEBEE),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xFFEF9A9A)),
-                      ),
-                      child: Text(
-                        authState.errorMessage!,
-                        style: GoogleFonts.outfit(
-                          color: const Color(0xFFC62828),
-                          fontSize: 14,
-                        ),
-                      ),
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: AppCard(
+              padding: const EdgeInsets.all(28.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Icon(
+                      Icons.account_balance_wallet_outlined,
+                      size: 48,
+                      color: AppTheme.primaryColor,
                     ),
                     const SizedBox(height: 16),
-                  ],
-
-                  // Field Nama Lengkap
-                  TextFormField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Nama Lengkap',
-                      prefixIcon: Icon(Icons.person_outline),
-                      hintText: 'Ahmad Abdullah',
+                    Text(
+                      'Daftar Akun Baru',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.textDark,
+                      ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Nama tidak boleh kosong';
-                      }
-                      if (value.length < 2) {
-                        return 'Nama minimal 2 karakter';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Field Email
-                  TextFormField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'Alamat Email',
-                      prefixIcon: Icon(Icons.email_outlined),
-                      hintText: 'nama@domain.com',
+                    const SizedBox(height: 8),
+                    Text(
+                      'Mulailah mengelola yayasan Anda dengan sistem keuangan yang rapi.',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        color: AppTheme.textLight,
+                      ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Alamat email tidak boleh kosong';
-                      }
-                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value.trim())) {
-                        return 'Format email tidak valid';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
+                    const SizedBox(height: 24),
 
-                  // Field Password
-                  TextFormField(
-                    controller: _passwordController,
-                    obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: 'Kata Sandi',
-                      prefixIcon: const Icon(Icons.lock_outlined),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                    // Error Alert jika ada
+                    if (authState.errorMessage != null) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: AppTheme.colorError.withAlpha(26),
+                          borderRadius: AppRadius.radiusSm,
+                          border: Border.all(color: AppTheme.colorError.withAlpha(51)),
                         ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
+                        child: Text(
+                          authState.errorMessage!,
+                          style: GoogleFonts.inter(
+                            color: AppTheme.colorError,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Kata sandi tidak boleh kosong';
-                      }
-                      if (value.length < 6) {
-                        return 'Kata sandi minimal 6 karakter';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Tombol Register
-                  ElevatedButton(
-                    onPressed: authState.isLoading ? null : _handleRegister,
-                    child: authState.isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
-                        : const Text('Daftar'),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // Link Kembali ke Login
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Sudah memiliki akun? ',
-                        style: GoogleFonts.outfit(color: const Color(0xFF6B7F79)),
-                      ),
-                      TextButton(
-                        onPressed: () => context.pop(),
-                        child: const Text('Masuk'),
-                      ),
+                      const SizedBox(height: 16),
                     ],
-                  ),
-                ],
+
+                    // Field Nama Lengkap
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Nama Lengkap',
+                        prefixIcon: Icon(Icons.person_outline),
+                        hintText: 'Ahmad Abdullah',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Nama tidak boleh kosong';
+                        }
+                        if (value.length < 2) {
+                          return 'Nama minimal 2 karakter';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Field Email
+                    TextFormField(
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(
+                        labelText: 'Alamat Email',
+                        prefixIcon: Icon(Icons.email_outlined),
+                        hintText: 'nama@domain.com',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Alamat email tidak boleh kosong';
+                        }
+                        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value.trim())) {
+                          return 'Format email tidak valid';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Field Password
+                    TextFormField(
+                      controller: _passwordController,
+                      obscureText: _obscurePassword,
+                      decoration: InputDecoration(
+                        labelText: 'Kata Sandi',
+                        prefixIcon: const Icon(Icons.lock_outlined),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Kata sandi tidak boleh kosong';
+                        }
+                        if (value.length < 6) {
+                          return 'Kata sandi minimal 6 karakter';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Tombol Register
+                    AppButton(
+                      text: 'Daftar',
+                      style: AppButtonStyle.primary,
+                      isLoading: authState.isLoading,
+                      onPressed: authState.isLoading ? null : _handleRegister,
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Link Kembali ke Login
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Sudah memiliki akun? ',
+                          style: GoogleFonts.inter(color: AppTheme.textLight),
+                        ),
+                        TextButton(
+                          onPressed: () => context.pop(),
+                          child: const Text('Masuk'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

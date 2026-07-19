@@ -52,7 +52,7 @@ class MoneyText extends StatelessWidget {
 
     return Text(
       '$sign$prettyFormatted',
-      style: GoogleFonts.inter(
+      style: GoogleFonts.jetBrainsMono(
         fontSize: fontSize,
         fontWeight: fontWeight,
         color: color,

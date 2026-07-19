@@ -79,7 +79,7 @@ class ProjectCard extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: Text(
             Formatter.formatRupiah(amount),
-            style: GoogleFonts.inter(
+            style: GoogleFonts.jetBrainsMono(
               fontSize: 11,
               fontWeight: FontWeight.bold,
               color: color,
@@ -310,7 +310,7 @@ class ProjectCard extends StatelessWidget {
                           const SizedBox(width: 4),
                           Text(
                             '${Formatter.formatRupiah(totalIncome)} terkumpul',
-                            style: GoogleFonts.inter(
+                            style: GoogleFonts.jetBrainsMono(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
                               color: AppTheme.textDark,

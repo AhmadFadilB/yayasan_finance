@@ -6,6 +6,7 @@ import '../../../core/theme/ui_constants.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/components/app_logo.dart';
 import '../../../core/components/app_button.dart';
+import '../../../core/components/app_card.dart';
 import '../providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -99,73 +100,76 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           // Form Login Kanan / Tengah
           Expanded(
             child: Container(
-              color: const Color(0xFFF7F6F2),
+              color: AppTheme.backgroundColor,
               child: Center(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.all(32.0),
                   child: Container(
-                    constraints: const BoxConstraints(maxWidth: 400),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // Logo untuk Mobile
-                          if (!isDesktop) ...[
-                            const Center(
-                              child: AppLogo(size: 64),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'Yayasan Finance',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.primaryColor,
+                    constraints: const BoxConstraints(maxWidth: 420),
+                    child: AppCard(
+                      padding: const EdgeInsets.all(28.0),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            // Logo untuk Mobile
+                            if (!isDesktop) ...[
+                              const Center(
+                                child: AppLogo(size: 64),
                               ),
-                            ),
-                            const SizedBox(height: 32),
-                          ],
-                          
-                          Text(
-                            'Selamat Datang',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: AppTheme.textDark,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Masuk menggunakan akun Anda untuk mengelola keuangan yayasan.',
-                            style: GoogleFonts.inter(
-                              fontSize: 14,
-                              color: AppTheme.textLight,
-                            ),
-                          ),
-                          const SizedBox(height: 32),
-                          
-                          // Error Alert jika ada
-                          if (authState.errorMessage != null) ...[
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFFEBEE),
-                                borderRadius: AppRadius.radiusSm,
-                                border: Border.all(color: const Color(0xFFEF9A9A)),
-                              ),
-                              child: Text(
-                                authState.errorMessage!,
-                                style: GoogleFonts.inter(
-                                  color: const Color(0xFFC62828),
-                                  fontSize: 14,
+                              const SizedBox(height: 16),
+                              Text(
+                                'Yayasan Finance',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.primaryColor,
                                 ),
                               ),
+                              const SizedBox(height: 32),
+                            ],
+                            
+                            Text(
+                              'Selamat Datang',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.textDark,
+                              ),
                             ),
-                            const SizedBox(height: 16),
-                          ],
+                            const SizedBox(height: 8),
+                            Text(
+                              'Masuk menggunakan akun Anda untuk mengelola keuangan yayasan.',
+                              style: GoogleFonts.inter(
+                                fontSize: 13,
+                                color: AppTheme.textLight,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            
+                            // Error Alert jika ada
+                            if (authState.errorMessage != null) ...[
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.colorError.withAlpha(26),
+                                  borderRadius: AppRadius.radiusSm,
+                                  border: Border.all(color: AppTheme.colorError.withAlpha(51)),
+                                ),
+                                child: Text(
+                                  authState.errorMessage!,
+                                  style: GoogleFonts.inter(
+                                    color: AppTheme.colorError,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                            ],
 
                           // Field Email
                           TextFormField(
@@ -250,6 +254,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                   ),
+                ),
                 ),
               ),
             ),

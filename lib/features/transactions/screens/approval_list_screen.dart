@@ -25,7 +25,7 @@ class ApprovalListScreen extends ConsumerWidget {
 
     if (activeFoundation == null) {
       return const Scaffold(
-        body: Center(child: CircularProgressIndicator(color: Color(0xFF0D5C46))),
+        body: Center(child: CircularProgressIndicator(color: AppTheme.primaryColor)),
       );
     }
 

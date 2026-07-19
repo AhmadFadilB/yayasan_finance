@@ -261,7 +261,7 @@ class _ProjectFormScreenState extends ConsumerState<ProjectFormScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: AppRadius.radiusMd,
-        border: Border.all(color: AppColors.divider, width: 1.5),
+        border: Border.all(color: AppColors.divider, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -276,10 +276,11 @@ class _ProjectFormScreenState extends ConsumerState<ProjectFormScreen> {
     final hasCover = _coverBytes != null || (_coverImageUrl != null && !_deleteCover);
 
     return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         title: Text(
           widget.projectId == null ? 'Tambah Proyek Baru' : 'Ubah Proyek',
-          style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         actions: [
           if (state.isLoading)

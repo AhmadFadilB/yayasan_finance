@@ -61,14 +61,15 @@ class StatusBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: UIConstants.s12, vertical: UIConstants.s4),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(UIConstants.rMax),
+        borderRadius: AppRadius.radiusSm,
       ),
       child: Text(
         text,
-        style: GoogleFonts.inter(
-          fontSize: 12,
+        style: GoogleFonts.plusJakartaSans(
+          fontSize: 10,
           fontWeight: FontWeight.bold,
           color: fg,
+          letterSpacing: 0.5,
         ),
       ),
     );

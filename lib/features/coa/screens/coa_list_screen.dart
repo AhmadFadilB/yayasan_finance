@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/theme/ui_constants.dart';
 import '../../../core/components/app_modal.dart';
 import '../../../core/components/app_button.dart';
 import '../../../core/components/status_badge.dart';
@@ -352,11 +353,11 @@ class _CoaListScreenState extends ConsumerState<CoaListScreen> with SingleTicker
                                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                     decoration: BoxDecoration(
                                       color: AppTheme.primaryColor.withAlpha(18),
-                                      borderRadius: BorderRadius.circular(6),
+                                      borderRadius: AppRadius.radiusSm,
                                     ),
                                     child: Text(
                                       account.code,
-                                      style: GoogleFonts.plusJakartaSans(
+                                      style: GoogleFonts.jetBrainsMono(
                                         fontWeight: FontWeight.bold,
                                         color: AppTheme.primaryColor,
                                         fontSize: 13,

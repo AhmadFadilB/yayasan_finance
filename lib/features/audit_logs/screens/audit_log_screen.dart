@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../core/utils/formatter.dart';
+import '../../../core/theme/ui_constants.dart';
+import '../../../core/theme/app_theme.dart';
 import '../models/audit_log_model.dart';
 import '../providers/audit_log_provider.dart';
 import '../../foundations/providers/foundation_provider.dart';
@@ -240,7 +242,7 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FBFB),
+      backgroundColor: AppTheme.backgroundColor,
       body: RefreshIndicator(
         onRefresh: () async {
           if (activeFoundation != null) {
@@ -258,28 +260,28 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
                   children: [
                     Text(
                       'Log Audit Aktivitas',
-                      style: GoogleFonts.outfit(
+                      style: GoogleFonts.plusJakartaSans(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1A2A25),
+                        color: AppTheme.textDark,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'Riwayat lengkap perubahan data di yayasan ini.',
-                      style: GoogleFonts.outfit(
+                      style: GoogleFonts.inter(
                         fontSize: 14,
-                        color: const Color(0xFF6B7F79),
+                        color: AppTheme.textLight,
                       ),
                     ),
                     const SizedBox(height: 16),
                     // Filter Berdasarkan Modul / Tabel
                     Text(
                       'Modul Data',
-                      style: GoogleFonts.outfit(
+                      style: GoogleFonts.plusJakartaSans(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF6B7F79),
+                        color: AppTheme.textLight,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -293,10 +295,10 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
                             child: FilterChip(
                               label: Text(filter),
                               selected: isSelected,
-                              selectedColor: const Color(0xFF0D5C46).withAlpha(38),
-                              checkmarkColor: const Color(0xFF0D5C46),
-                              labelStyle: GoogleFonts.outfit(
-                                color: isSelected ? const Color(0xFF0D5C46) : const Color(0xFF455A64),
+                              selectedColor: AppTheme.primaryColor.withAlpha(38),
+                              checkmarkColor: AppTheme.primaryColor,
+                              labelStyle: GoogleFonts.plusJakartaSans(
+                                color: isSelected ? AppTheme.primaryColor : const Color(0xFF455A64),
                                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                               ),
                               onSelected: (selected) {
@@ -313,10 +315,10 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
                     // Filter Berdasarkan Aksi
                     Text(
                       'Tindakan',
-                      style: GoogleFonts.outfit(
+                      style: GoogleFonts.plusJakartaSans(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF6B7F79),
+                        color: AppTheme.textLight,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -330,10 +332,10 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
                             child: FilterChip(
                               label: Text(filter),
                               selected: isSelected,
-                              selectedColor: const Color(0xFF0D5C46).withAlpha(38),
-                              checkmarkColor: const Color(0xFF0D5C46),
-                              labelStyle: GoogleFonts.outfit(
-                                color: isSelected ? const Color(0xFF0D5C46) : const Color(0xFF455A64),
+                              selectedColor: AppTheme.primaryColor.withAlpha(38),
+                              checkmarkColor: AppTheme.primaryColor,
+                              labelStyle: GoogleFonts.plusJakartaSans(
+                                color: isSelected ? AppTheme.primaryColor : const Color(0xFF455A64),
                                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                               ),
                               onSelected: (selected) {
@@ -355,10 +357,10 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
 
             // Konten Log
             if (auditState.isLoading && auditState.logs.isEmpty)
-              const SliverFillRemaining(
+              SliverFillRemaining(
                 child: Center(
                   child: CircularProgressIndicator(
-                    color: Color(0xFF0D5C46),
+                    color: AppTheme.primaryColor,
                   ),
                 ),
               )
@@ -367,7 +369,7 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
                 child: Center(
                   child: Text(
                     auditState.errorMessage!,
-                    style: GoogleFonts.outfit(color: Colors.red),
+                    style: GoogleFonts.inter(color: AppTheme.colorError),
                   ),
                 ),
               )
@@ -385,10 +387,10 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
                       const SizedBox(height: 16),
                       Text(
                         'Tidak ada riwayat aktivitas.',
-                        style: GoogleFonts.outfit(
+                        style: GoogleFonts.inter(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
-                          color: const Color(0xFF6B7F79),
+                          color: AppTheme.textLight,
                         ),
                       ),
                     ],
@@ -411,8 +413,8 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
                       child: Card(
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          side: BorderSide(color: Colors.grey.withAlpha(38)),
-                          borderRadius: BorderRadius.circular(12),
+                          side: const BorderSide(color: AppColors.divider),
+                          borderRadius: AppRadius.radiusMd,
                         ),
                         color: Colors.white,
                         child: Column(
@@ -426,7 +428,7 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
                                 children: [
                                   Text(
                                     _getFriendlyAction(log.action),
-                                    style: GoogleFonts.outfit(
+                                    style: GoogleFonts.plusJakartaSans(
                                       fontWeight: FontWeight.bold,
                                       color: actionColor,
                                       fontSize: 14,
@@ -435,9 +437,9 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
                                   const SizedBox(width: 4),
                                   Text(
                                     _getFriendlyTableName(log.tableName),
-                                    style: GoogleFonts.outfit(
+                                    style: GoogleFonts.plusJakartaSans(
                                       fontWeight: FontWeight.bold,
-                                      color: const Color(0xFF1A2A25),
+                                      color: AppTheme.textDark,
                                       fontSize: 14,
                                     ),
                                   ),
@@ -449,14 +451,14 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
                                   const SizedBox(height: 4),
                                   Row(
                                     children: [
-                                      const Icon(Icons.person_outline, size: 14, color: Color(0xFF6B7F79)),
+                                      Icon(Icons.person_outline, size: 14, color: AppTheme.textLight),
                                       const SizedBox(width: 4),
                                       Text(
                                         log.performedByName ?? 'Sistem',
-                                        style: GoogleFonts.outfit(
+                                        style: GoogleFonts.plusJakartaSans(
                                           fontWeight: FontWeight.w500,
                                           fontSize: 13,
-                                          color: const Color(0xFF37474F),
+                                          color: AppTheme.textDark,
                                         ),
                                       ),
                                     ],
@@ -464,13 +466,14 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
                                   const SizedBox(height: 2),
                                   Row(
                                     children: [
-                                      const Icon(Icons.access_time_outlined, size: 14, color: Color(0xFF6B7F79)),
+                                      Icon(Icons.access_time_outlined, size: 14, color: AppTheme.textLight),
                                       const SizedBox(width: 4),
                                       Text(
                                         '$dateStr pukul $timeStr',
-                                        style: GoogleFonts.outfit(
-                                          fontSize: 12,
-                                          color: const Color(0xFF6B7F79),
+                                        style: GoogleFonts.jetBrainsMono(
+                                          fontSize: 11,
+                                          color: AppTheme.textLight,
+                                          fontFeatures: const [FontFeature.tabularFigures()],
                                         ),
                                       ),
                                     ],

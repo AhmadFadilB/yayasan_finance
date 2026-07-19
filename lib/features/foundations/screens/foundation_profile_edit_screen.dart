@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:file_picker/file_picker.dart';
 import '../providers/foundation_provider.dart';
+import '../../../core/theme/ui_constants.dart';
+import '../../../core/theme/app_theme.dart';
 
 class FoundationProfileEditScreen extends ConsumerStatefulWidget {
   const FoundationProfileEditScreen({super.key});
@@ -21,19 +23,19 @@ class _VisualPlaceholder extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF0F4F2),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withAlpha(51)),
+        color: AppTheme.backgroundColor,
+        borderRadius: AppRadius.radiusMd,
+        border: Border.all(color: AppColors.divider),
       ),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 40, color: const Color(0xFF0D5C46)),
+            Icon(icon, size: 40, color: AppTheme.primaryColor),
             const SizedBox(height: 12),
             Text(
               text,
-              style: GoogleFonts.outfit(color: const Color(0xFF6B7F79), fontSize: 13, fontWeight: FontWeight.w500),
+              style: GoogleFonts.plusJakartaSans(color: AppTheme.textLight, fontSize: 13, fontWeight: FontWeight.w500),
             ),
           ],
         ),
@@ -133,7 +135,7 @@ class _FoundationProfileEditScreenState extends ConsumerState<FoundationProfileE
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(isLogo ? 'Logo berhasil diunggah!' : 'Banner berhasil diunggah!'),
-              backgroundColor: const Color(0xFF0D5C46),
+              backgroundColor: AppTheme.colorSuccess,
             ),
           );
         }
@@ -150,7 +152,7 @@ class _FoundationProfileEditScreenState extends ConsumerState<FoundationProfileE
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Gagal mengunggah gambar: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppTheme.colorError,
           ),
         );
       }
@@ -179,7 +181,7 @@ class _FoundationProfileEditScreenState extends ConsumerState<FoundationProfileE
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(success ? 'Profil yayasan berhasil disimpan!' : 'Gagal memperbarui profil.'),
-          backgroundColor: success ? const Color(0xFF0D5C46) : Colors.red,
+          backgroundColor: success ? AppTheme.colorSuccess : AppTheme.colorError,
         ),
       );
     }
@@ -201,18 +203,18 @@ class _FoundationProfileEditScreenState extends ConsumerState<FoundationProfileE
     final isDesktop = size.width > 800;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9FBFB),
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Pengaturan Profil Yayasan',
-              style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18),
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 18),
             ),
             Text(
               'Sesuaikan identitas, logo, dan banner publik yayasan Anda',
-              style: GoogleFonts.outfit(fontSize: 12, color: const Color(0xFF6B7F79)),
+              style: GoogleFonts.inter(fontSize: 12, color: AppTheme.textLight),
             ),
           ],
         ),
@@ -271,10 +273,10 @@ class _FoundationProfileEditScreenState extends ConsumerState<FoundationProfileE
                   alignment: Alignment.centerRight,
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0D5C46),
+                      backgroundColor: AppTheme.primaryColor,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusMd),
                     ),
                     onPressed: _isSaving ? null : _saveProfile,
                     icon: _isSaving
@@ -286,7 +288,7 @@ class _FoundationProfileEditScreenState extends ConsumerState<FoundationProfileE
                         : const Icon(Icons.save),
                     label: Text(
                       'Simpan Profil Yayasan',
-                      style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+                      style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -305,8 +307,8 @@ class _FoundationProfileEditScreenState extends ConsumerState<FoundationProfileE
       elevation: 0,
       color: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: Color(0xFFEBEBEB)),
+        borderRadius: AppRadius.radiusMd,
+        side: const BorderSide(color: AppColors.divider),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -315,7 +317,7 @@ class _FoundationProfileEditScreenState extends ConsumerState<FoundationProfileE
           children: [
             Text(
               'Visual Profil Yayasan',
-              style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: const Color(0xFF0D5C46)),
+              style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
             ),
             const SizedBox(height: 20),
 
@@ -327,12 +329,12 @@ class _FoundationProfileEditScreenState extends ConsumerState<FoundationProfileE
                     height: 150,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF9FBFB),
-                      borderRadius: BorderRadius.circular(12),
+                      color: AppTheme.backgroundColor,
+                      borderRadius: AppRadius.radiusMd,
                     ),
                     child: _uploadedBannerUrl != null
                         ? ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: AppRadius.radiusMd,
                             child: Image.network(
                               _uploadedBannerUrl!,
                               fit: BoxFit.cover,
@@ -376,10 +378,10 @@ class _FoundationProfileEditScreenState extends ConsumerState<FoundationProfileE
                             )
                           : CircleAvatar(
                               radius: 50,
-                              backgroundColor: const Color(0xFF0D5C46),
+                              backgroundColor: AppTheme.primaryColor,
                               child: Text(
                                 initials,
-                                style: GoogleFonts.outfit(color: Colors.white, fontSize: 36, fontWeight: FontWeight.bold),
+                                style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 36, fontWeight: FontWeight.bold),
                               ),
                             ),
                       if (isEditable)
@@ -388,7 +390,7 @@ class _FoundationProfileEditScreenState extends ConsumerState<FoundationProfileE
                           right: 0,
                           child: CircleAvatar(
                             radius: 18,
-                            backgroundColor: const Color(0xFF0D5C46),
+                            backgroundColor: AppTheme.primaryColor,
                             child: _isUploadingLogo
                                 ? const CircularProgressIndicator(color: Colors.white)
                                 : IconButton(
@@ -406,11 +408,11 @@ class _FoundationProfileEditScreenState extends ConsumerState<FoundationProfileE
                       children: [
                         Text(
                           'Rekomendasi Logo',
-                          style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13),
+                          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 13),
                         ),
                         Text(
                           'Pilih gambar berformat JPG/PNG aspek rasio 1:1, max 2MB.',
-                          style: GoogleFonts.outfit(color: const Color(0xFF6B7F79), fontSize: 11),
+                          style: GoogleFonts.inter(color: AppTheme.textLight, fontSize: 11),
                         ),
                       ],
                     ),
@@ -429,8 +431,8 @@ class _FoundationProfileEditScreenState extends ConsumerState<FoundationProfileE
       elevation: 0,
       color: Colors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: Color(0xFFEBEBEB)),
+        borderRadius: AppRadius.radiusMd,
+        side: const BorderSide(color: AppColors.divider),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -439,7 +441,7 @@ class _FoundationProfileEditScreenState extends ConsumerState<FoundationProfileE
           children: [
             Text(
               'Informasi Yayasan',
-              style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold, color: const Color(0xFF0D5C46)),
+              style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
             ),
             const SizedBox(height: 20),
 

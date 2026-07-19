@@ -269,10 +269,11 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 4.0),
                               child: Text(
                                 tx.isIncome ? Formatter.formatRupiah(tx.amount) : '-',
-                                style: GoogleFonts.outfit(
+                                style: GoogleFonts.jetBrainsMono(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13,
-                                  color: tx.isIncome ? const Color(0xFF0D5C46) : Colors.grey,
+                                  color: tx.isIncome ? AppTheme.colorSuccess : Colors.grey,
+                                  fontFeatures: const [FontFeature.tabularFigures()],
                                 ),
                               ),
                             ),
@@ -284,10 +285,11 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 4.0),
                               child: Text(
                                 !tx.isIncome ? Formatter.formatRupiah(tx.amount) : '-',
-                                style: GoogleFonts.outfit(
+                                style: GoogleFonts.jetBrainsMono(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13,
-                                  color: !tx.isIncome ? const Color(0xFFE53935) : Colors.grey,
+                                  color: !tx.isIncome ? AppTheme.colorError : Colors.grey,
+                                  fontFeatures: const [FontFeature.tabularFigures()],
                                 ),
                               ),
                             ),
@@ -299,10 +301,11 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 4.0),
                               child: Text(
                                 Formatter.formatRupiah(runningBal),
-                                style: GoogleFonts.outfit(
+                                style: GoogleFonts.jetBrainsMono(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13,
-                                  color: runningBal >= 0 ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
+                                  color: runningBal >= 0 ? AppTheme.colorSuccess : AppTheme.colorError,
+                                  fontFeatures: const [FontFeature.tabularFigures()],
                                 ),
                               ),
                             ),
@@ -338,13 +341,13 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
             return ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               leading: CircleAvatar(
-                backgroundColor: tx.isIncome ? const Color(0xFF0D5C46).withAlpha(18) : const Color(0xFFE53935).withAlpha(18),
-                foregroundColor: tx.isIncome ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
+                backgroundColor: tx.isIncome ? AppTheme.colorSuccess.withAlpha(26) : AppTheme.colorError.withAlpha(26),
+                foregroundColor: tx.isIncome ? AppTheme.colorSuccess : AppTheme.colorError,
                 child: Icon(tx.isIncome ? Icons.arrow_downward : Icons.arrow_upward, size: 18),
               ),
               title: Text(
                 tx.description?.isNotEmpty == true ? tx.description! : tx.category,
-                style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 13),
+                style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 13),
               ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -352,7 +355,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                   const SizedBox(height: 2),
                   Text(
                     '${Formatter.formatTanggalPendek(tx.transactionDate)} • ${tx.projectName ?? "Umum"}',
-                    style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
+                    style: GoogleFonts.inter(fontSize: 11, color: Colors.grey),
                   ),
                 ],
               ),
@@ -363,29 +366,31 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                   // Uang Masuk / Keluar
                   Text(
                     '${tx.isIncome ? '+' : '-'}${Formatter.formatRupiah(tx.amount)}',
-                    style: GoogleFonts.outfit(
+                    style: GoogleFonts.jetBrainsMono(
                       fontWeight: FontWeight.bold,
                       fontSize: 13,
-                      color: tx.isIncome ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
+                      color: tx.isIncome ? AppTheme.colorSuccess : AppTheme.colorError,
+                      fontFeatures: const [FontFeature.tabularFigures()],
                     ),
                   ),
                   const SizedBox(height: 1),
                   Text(
                     tx.isIncome ? 'DEBIT' : 'KREDIT',
-                    style: GoogleFonts.outfit(
+                    style: GoogleFonts.plusJakartaSans(
                       fontSize: 8,
                       fontWeight: FontWeight.bold,
-                      color: tx.isIncome ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
+                      color: tx.isIncome ? AppTheme.colorSuccess : AppTheme.colorError,
                     ),
                   ),
                   const SizedBox(height: 1),
                   // Saldo Berjalan
                   Text(
                     'Saldo: ${Formatter.formatRupiah(runningBal)}',
-                    style: GoogleFonts.outfit(
+                    style: GoogleFonts.jetBrainsMono(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF546E7A),
+                      color: AppTheme.textLight,
+                      fontFeatures: const [FontFeature.tabularFigures()],
                     ),
                   ),
                 ],
