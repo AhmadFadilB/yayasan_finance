@@ -41,7 +41,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Registrasi berhasil! Silakan periksa kotak masuk email Anda jika diperlukan verifikasi.'),
-            backgroundColor: Color(0xFF0D5C46),
+            backgroundColor: AppTheme.colorSuccess,
           ),
         );
         if (context.mounted) {

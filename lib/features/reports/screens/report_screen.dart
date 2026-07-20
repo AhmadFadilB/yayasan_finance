@@ -667,14 +667,14 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                                 children: [
                                   Text(
                                     'Pemasukan',
-                                    style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
+                                    style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.grey),
                                   ),
                                   Text(
                                     Formatter.formatRupiah(totalIncome),
-                                    style: GoogleFonts.outfit(
-                                      fontSize: 16,
+                                    style: GoogleFonts.jetBrainsMono(
+                                      fontSize: 15,
                                       fontWeight: FontWeight.bold,
-                                      color: const Color(0xFF0D5C46),
+                                      color: AppTheme.colorSuccess,
                                     ),
                                   ),
                                 ],
@@ -687,14 +687,14 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                                 children: [
                                   Text(
                                     'Pengeluaran',
-                                    style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
+                                    style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.grey),
                                   ),
                                   Text(
                                     Formatter.formatRupiah(totalExpense),
-                                    style: GoogleFonts.outfit(
-                                      fontSize: 16,
+                                    style: GoogleFonts.jetBrainsMono(
+                                      fontSize: 15,
                                       fontWeight: FontWeight.bold,
-                                      color: const Color(0xFFE53935),
+                                      color: AppTheme.colorError,
                                     ),
                                   ),
                                 ],
@@ -707,14 +707,14 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                                 children: [
                                   Text(
                                     'Saldo Bersih',
-                                    style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
+                                    style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.grey),
                                   ),
                                   Text(
                                     Formatter.formatRupiah(balance),
-                                    style: GoogleFonts.outfit(
-                                      fontSize: 16,
+                                    style: GoogleFonts.jetBrainsMono(
+                                      fontSize: 15,
                                       fontWeight: FontWeight.bold,
-                                      color: balance >= 0 ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
+                                      color: balance >= 0 ? AppTheme.colorSuccess : AppTheme.colorError,
                                     ),
                                   ),
                                 ],
@@ -731,14 +731,14 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                               children: [
                                 Text(
                                   'Pemasukan',
-                                  style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
+                                  style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.grey),
                                 ),
                                 Text(
                                   Formatter.formatRupiah(totalIncome),
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 16,
+                                  style: GoogleFonts.jetBrainsMono(
+                                    fontSize: 15,
                                     fontWeight: FontWeight.bold,
-                                    color: const Color(0xFF0D5C46),
+                                    color: AppTheme.colorSuccess,
                                   ),
                                 ),
                               ],
@@ -750,14 +750,14 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                               children: [
                                 Text(
                                   'Pengeluaran',
-                                  style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
+                                  style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.grey),
                                 ),
                                 Text(
                                   Formatter.formatRupiah(totalExpense),
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 16,
+                                  style: GoogleFonts.jetBrainsMono(
+                                    fontSize: 15,
                                     fontWeight: FontWeight.bold,
-                                    color: const Color(0xFFE53935),
+                                    color: AppTheme.colorError,
                                   ),
                                 ),
                               ],
@@ -769,14 +769,14 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                               children: [
                                 Text(
                                   'Saldo Bersih',
-                                  style: GoogleFonts.outfit(fontSize: 11, color: Colors.grey),
+                                  style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.grey),
                                 ),
                                 Text(
                                   Formatter.formatRupiah(balance),
-                                  style: GoogleFonts.outfit(
-                                    fontSize: 16,
+                                  style: GoogleFonts.jetBrainsMono(
+                                    fontSize: 15,
                                     fontWeight: FontWeight.bold,
-                                    color: balance >= 0 ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
+                                    color: balance >= 0 ? AppTheme.colorSuccess : AppTheme.colorError,
                                   ),
                                 ),
                               ],

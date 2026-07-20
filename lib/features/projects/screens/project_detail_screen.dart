@@ -291,7 +291,7 @@ class ProjectDetailScreen extends ConsumerWidget {
                   child: buildFinancialCard(
                     'Pemasukan',
                     currentProject.totalIncome,
-                    const Color(0xFF0D5C46),
+                    AppTheme.colorSuccess,
                     Icons.arrow_downward,
                   ),
                 ),
@@ -300,7 +300,7 @@ class ProjectDetailScreen extends ConsumerWidget {
                   child: buildFinancialCard(
                     'Pengeluaran',
                     currentProject.totalExpense,
-                    const Color(0xFFE53935),
+                    AppTheme.colorError,
                     Icons.arrow_upward,
                   ),
                 ),
@@ -309,7 +309,7 @@ class ProjectDetailScreen extends ConsumerWidget {
                   child: buildFinancialCard(
                     'Saldo Sisa',
                     currentProject.balance,
-                    currentProject.balance >= 0 ? const Color(0xFF0D5C46) : const Color(0xFFE53935),
+                    currentProject.balance >= 0 ? AppTheme.colorSuccess : AppTheme.colorError,
                     Icons.account_balance_wallet,
                   ),
                 ),

@@ -29,6 +29,19 @@ class _ProfileMenuAnchorState extends ConsumerState<ProfileMenuAnchor> {
 
     final isDesktop = MediaQuery.of(context).size.width > 800;
 
+    bool showGoToDashboard = false;
+    if (activeFoundation != null) {
+      try {
+        final path = GoRouterState.of(context).uri.path;
+        showGoToDashboard = path != '/dashboard';
+      } catch (_) {
+        try {
+          final path = GoRouter.of(context).routeInformationProvider.value.uri.path;
+          showGoToDashboard = path != '/dashboard';
+        } catch (_) {}
+      }
+    }
+
     if (!authState.isAuthenticated) {
       return MenuAnchor(
         controller: _menuController,
@@ -178,7 +191,7 @@ class _ProfileMenuAnchorState extends ConsumerState<ProfileMenuAnchor> {
         ),
 
         // Ke Dasbor (if not inside dashboard but active foundation exists)
-        if (activeFoundation != null && GoRouterState.of(context).uri.path != '/dashboard')
+        if (showGoToDashboard)
           _buildMenuItem(
             icon: Icons.dashboard_outlined,
             label: 'Ke Dasbor',

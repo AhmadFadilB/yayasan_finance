@@ -148,7 +148,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                 child: _buildFinanceCard(
                                   title: 'Saldo Utama',
                                   amount: netBalance,
-                                  color: const Color(0xFF0D5C46),
+                                  color: AppTheme.primaryColor,
                                   icon: Icons.account_balance_wallet_outlined,
                                   isHighlight: true,
                                 ),
@@ -158,7 +158,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                 child: _buildFinanceCard(
                                   title: 'Total Debit (Masuk)',
                                   amount: totalIncome,
-                                  color: const Color(0xFF1E8267),
+                                  color: AppTheme.colorSuccess,
                                   icon: Icons.trending_up,
                                 ),
                               ),
@@ -167,7 +167,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                 child: _buildFinanceCard(
                                   title: 'Total Kredit (Keluar)',
                                   amount: totalExpense,
-                                  color: const Color(0xFFE53935),
+                                  color: AppTheme.colorError,
                                   icon: Icons.trending_down,
                                 ),
                               ),
@@ -179,7 +179,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               _buildFinanceCard(
                                 title: 'Saldo Utama',
                                 amount: netBalance,
-                                color: const Color(0xFF0D5C46),
+                                color: AppTheme.primaryColor,
                                 icon: Icons.account_balance_wallet_outlined,
                                 isHighlight: true,
                               ),
@@ -187,14 +187,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               _buildFinanceCard(
                                 title: 'Total Debit (Masuk)',
                                 amount: totalIncome,
-                                color: const Color(0xFF1E8267),
+                                color: AppTheme.colorSuccess,
                                 icon: Icons.trending_up,
                               ),
                               const SizedBox(height: 16),
                               _buildFinanceCard(
                                 title: 'Total Kredit (Keluar)',
                                 amount: totalExpense,
-                                color: const Color(0xFFE53935),
+                                color: AppTheme.colorError,
                                 icon: Icons.trending_down,
                               ),
                             ],

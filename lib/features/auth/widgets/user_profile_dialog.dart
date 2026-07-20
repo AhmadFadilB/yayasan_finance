@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:file_picker/file_picker.dart';
 import '../providers/auth_provider.dart';
+import '../../../core/theme/app_theme.dart';
 
 class UserProfileDialog extends ConsumerStatefulWidget {
   const UserProfileDialog({super.key});
@@ -68,9 +69,9 @@ class _UserProfileDialogState extends ConsumerState<UserProfileDialog> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Foto profil berhasil diunggah!'),
-              backgroundColor: Color(0xFF0D5C46),
+            SnackBar(
+              content: const Text('Foto profil berhasil diunggah!'),
+              backgroundColor: AppTheme.colorSuccess,
             ),
           );
         }
@@ -116,17 +117,17 @@ class _UserProfileDialogState extends ConsumerState<UserProfileDialog> {
       final success = profileSuccess && passwordSuccess;
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profil pribadi berhasil disimpan!'),
-            backgroundColor: Color(0xFF0D5C46),
+          SnackBar(
+            content: const Text('Profil pribadi berhasil disimpan!'),
+            backgroundColor: AppTheme.colorSuccess,
           ),
         );
         Navigator.pop(context); // Close the dialog
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Gagal memperbarui profil.'),
-            backgroundColor: Colors.red,
+          SnackBar(
+            content: const Text('Gagal memperbarui profil.'),
+            backgroundColor: AppTheme.colorError,
           ),
         );
       }
@@ -141,7 +142,7 @@ class _UserProfileDialogState extends ConsumerState<UserProfileDialog> {
     return AlertDialog(
       title: Text(
         'Edit Profil Akun Saya',
-        style: GoogleFonts.outfit(fontWeight: FontWeight.bold),
+        style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold),
       ),
       content: SizedBox(
         width: 400,
@@ -162,10 +163,10 @@ class _UserProfileDialogState extends ConsumerState<UserProfileDialog> {
                           )
                         : CircleAvatar(
                             radius: 48,
-                            backgroundColor: const Color(0xFF0D5C46),
+                            backgroundColor: AppTheme.primaryColor,
                             child: Text(
                               initials,
-                              style: GoogleFonts.outfit(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+                              style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
                             ),
                           ),
                     Positioned(
@@ -173,7 +174,7 @@ class _UserProfileDialogState extends ConsumerState<UserProfileDialog> {
                       right: 0,
                       child: CircleAvatar(
                         radius: 16,
-                        backgroundColor: const Color(0xFF0D5C46),
+                        backgroundColor: AppTheme.primaryColor,
                         child: _isUploadingAvatar
                             ? const SizedBox(
                                 width: 14,
@@ -194,7 +195,7 @@ class _UserProfileDialogState extends ConsumerState<UserProfileDialog> {
                 // Name
                 TextFormField(
                   controller: _nameController,
-                  style: GoogleFonts.outfit(),
+                  style: GoogleFonts.inter(),
                   decoration: InputDecoration(
                     labelText: 'Nama Lengkap',
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -213,7 +214,7 @@ class _UserProfileDialogState extends ConsumerState<UserProfileDialog> {
                 TextFormField(
                   initialValue: profile?.id != null ? ref.watch(authProvider).session?.user.email : '',
                   enabled: false,
-                  style: GoogleFonts.outfit(color: Colors.grey),
+                  style: GoogleFonts.inter(color: Colors.grey),
                   decoration: InputDecoration(
                     labelText: 'Email Akun',
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -230,7 +231,7 @@ class _UserProfileDialogState extends ConsumerState<UserProfileDialog> {
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Ubah Kata Sandi (Kosongkan jika tidak diubah)',
-                    style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.bold, color: const Color(0xFF0D5C46)),
+                    style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.primaryColor),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -239,7 +240,7 @@ class _UserProfileDialogState extends ConsumerState<UserProfileDialog> {
                 TextFormField(
                   controller: _passwordController,
                   obscureText: true,
-                  style: GoogleFonts.outfit(),
+                  style: GoogleFonts.inter(),
                   decoration: InputDecoration(
                     labelText: 'Kata Sandi Baru',
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -258,7 +259,7 @@ class _UserProfileDialogState extends ConsumerState<UserProfileDialog> {
                 TextFormField(
                   controller: _confirmPasswordController,
                   obscureText: true,
-                  style: GoogleFonts.outfit(),
+                  style: GoogleFonts.inter(),
                   decoration: InputDecoration(
                     labelText: 'Konfirmasi Kata Sandi',
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
@@ -279,13 +280,14 @@ class _UserProfileDialogState extends ConsumerState<UserProfileDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text('Batal', style: GoogleFonts.outfit(color: Colors.grey)),
+          child: Text('Batal', style: GoogleFonts.plusJakartaSans(color: Colors.grey)),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF0D5C46),
+            backgroundColor: AppTheme.primaryColor,
             foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            elevation: 0,
           ),
           onPressed: _isSaving ? null : _saveProfile,
           child: _isSaving
@@ -294,7 +296,7 @@ class _UserProfileDialogState extends ConsumerState<UserProfileDialog> {
                   height: 16,
                   child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                 )
-              : Text('Simpan', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+              : Text('Simpan', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
         ),
       ],
     );

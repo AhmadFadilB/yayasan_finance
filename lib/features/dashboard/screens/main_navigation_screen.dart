@@ -48,7 +48,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                 children: [
                   Text(
                     'Notifikasi',
-                    style: GoogleFonts.outfit(fontWeight: FontWeight.bold, fontSize: 18),
+                    style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                   if (state.unreadCount > 0)
                     TextButton(
@@ -57,7 +57,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                       },
                       child: Text(
                         'Tandai Semua Dibaca',
-                        style: GoogleFonts.outfit(fontSize: 12, color: const Color(0xFF0D5C46), fontWeight: FontWeight.bold),
+                        style: GoogleFonts.plusJakartaSans(fontSize: 12, color: AppTheme.primaryColor, fontWeight: FontWeight.bold),
                       ),
                     ),
                 ],
@@ -66,7 +66,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                 width: 400,
                 height: 400,
                 child: state.isLoading
-                    ? const Center(child: CircularProgressIndicator(color: Color(0xFF0D5C46)))
+                    ? Center(child: CircularProgressIndicator(color: AppTheme.primaryColor))
                     : state.notifications.isEmpty
                         ? Center(
                             child: Column(
@@ -76,7 +76,7 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                                 const SizedBox(height: 12),
                                 Text(
                                   'Tidak ada notifikasi baru',
-                                  style: GoogleFonts.outfit(color: Colors.grey),
+                                  style: GoogleFonts.inter(color: Colors.grey),
                                 ),
                               ],
                             ),
@@ -498,11 +498,11 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(newNotif.title, style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
-                Text(newNotif.message, style: GoogleFonts.outfit(fontSize: 12)),
+                Text(newNotif.title, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.bold)),
+                Text(newNotif.message, style: GoogleFonts.inter(fontSize: 12)),
               ],
             ),
-            backgroundColor: const Color(0xFF0D5C46),
+            backgroundColor: AppTheme.primaryColor,
             duration: const Duration(seconds: 4),
             action: SnackBarAction(
               label: 'Buka',
