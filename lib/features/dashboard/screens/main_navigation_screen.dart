@@ -345,118 +345,125 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
     ];
 
     return Container(
-      width: 250,
+      width: 280,
       height: double.infinity,
       decoration: const BoxDecoration(
         color: AppTheme.primaryColor,
-        border: Border(
-          right: BorderSide(color: Colors.white12, width: 1),
-        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Header logo
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+            child: AppLogo(showText: true, fontSize: 16, color: Colors.white),
+          ),
+          // Foundation info card
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const AppLogo(showText: true, fontSize: 16, color: Colors.white),
-                const SizedBox(height: 16),
-                // Foundation info card
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withAlpha(15),
-                    borderRadius: AppRadius.radiusMd,
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white.withAlpha(18),
+                borderRadius: AppRadius.radiusMd,
+              ),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 14,
+                    backgroundColor: AppTheme.secondaryColor,
+                    child: Text(
+                      activeFoundation.name.substring(0, 1).toUpperCase(),
+                      style: GoogleFonts.outfit(color: AppTheme.primaryColor, fontSize: 10, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 14,
-                        backgroundColor: AppTheme.secondaryColor,
-                        child: Text(
-                          activeFoundation.name.substring(0, 1).toUpperCase(),
-                          style: GoogleFonts.outfit(color: AppTheme.primaryColor, fontSize: 10, fontWeight: FontWeight.bold),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          activeFoundation.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              activeFoundation.name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
-                            ),
-                            Text(
-                              (activeFoundation.currentUserRole ?? 'viewer').toUpperCase(),
-                              style: GoogleFonts.outfit(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.white70),
-                            ),
-                          ],
+                        Text(
+                          (activeFoundation.currentUserRole ?? 'viewer').toUpperCase(),
+                          style: GoogleFonts.outfit(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.white70),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-          const Divider(height: 1, color: Colors.white12),
           const SizedBox(height: 12),
-          // Group 1: Operasional
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-            child: Text(
-              'OPERASIONAL',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                color: Colors.white30,
-                letterSpacing: 1.2,
+          const Divider(height: 1, color: Colors.white10),
+          const SizedBox(height: 8),
+          
+          // Scrollable Nav List Area to prevent overflow
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Group 1: Operasional
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+                    child: Text(
+                      'OPERASIONAL',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white30,
+                        letterSpacing: 2.0,
+                      ),
+                    ),
+                  ),
+                  ...operasionalItems.map((item) => HoverSidebarItem(
+                        title: item.title,
+                        icon: item.icon,
+                        isSelected: _selectedIndex == item.index,
+                        onTap: () {
+                          if (item.title == 'Jelajah') {
+                            context.go('/');
+                          } else {
+                            setState(() => _selectedIndex = item.index);
+                          }
+                        },
+                      )),
+                  const SizedBox(height: 16),
+                  // Group 2: Administratif
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+                    child: Text(
+                      'ADMINISTRATIF',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white30,
+                        letterSpacing: 2.0,
+                      ),
+                    ),
+                  ),
+                  ...administratifItems.map((item) => HoverSidebarItem(
+                        title: item.title,
+                        icon: item.icon,
+                        isSelected: _selectedIndex == item.index,
+                        onTap: () => setState(() => _selectedIndex = item.index),
+                      )),
+                ],
               ),
             ),
           ),
-          ...operasionalItems.map((item) => HoverSidebarItem(
-                title: item.title,
-                icon: item.icon,
-                isSelected: _selectedIndex == item.index,
-                onTap: () {
-                  if (item.title == 'Jelajah') {
-                    context.go('/');
-                  } else {
-                    setState(() => _selectedIndex = item.index);
-                  }
-                },
-              )),
-          const SizedBox(height: 16),
-          // Group 2: Administratif
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-            child: Text(
-              'ADMINISTRATIF',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 10,
-                fontWeight: FontWeight.bold,
-                color: Colors.white30,
-                letterSpacing: 1.2,
-              ),
-            ),
-          ),
-          ...administratifItems.map((item) => HoverSidebarItem(
-                title: item.title,
-                icon: item.icon,
-                isSelected: _selectedIndex == item.index,
-                onTap: () => setState(() => _selectedIndex = item.index),
-              )),
-          const Spacer(),
+          
           // Bottom area: Switch / logout quick action
-          const Divider(height: 1, color: Colors.white12),
+          const Divider(height: 1, color: Colors.white10),
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
             child: Row(
               children: [
                 Expanded(
@@ -559,56 +566,79 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
 
 
 
-    String getActivePageTitle() {
-      final List<String> pageTitles = [
-        'Dashboard',
-        'Jelajah Proyek Sosial',
-        'Manajemen Proyek',
-        'Transaksi Keuangan',
-        if (isAdmin) 'Persetujuan Transaksi',
-        'Jurnal Umum (Double-Entry)',
-        'Laporan Transaksi',
-        'Laporan Keuangan ISAK 35',
-        'Log Audit Keamanan',
-        'Profil Yayasan',
-      ];
-      if (_selectedIndex >= 0 && _selectedIndex < pageTitles.length) {
-        return pageTitles[_selectedIndex];
-      }
-      return 'Yayasan Finance';
-    }
+    if (isDesktop) {
+      return Scaffold(
+        body: Row(
+          children: [
+            // Full-Height Desktop Sidebar starting from y=0
+            _buildDesktopSidebar(context, activeFoundation, isAdmin),
 
-    Widget buildAppBarTitle() {
-      return Text(
-        getActivePageTitle(),
-        style: GoogleFonts.plusJakartaSans(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: const Color(0xFF1A1F1C),
+            // Content Area to the right of Sidebar
+            Expanded(
+              child: Column(
+                children: [
+                  // TopBar header strictly inside right content column
+                  _buildTopHeader(context, activeFoundation, isAdmin, isDesktop: true),
+                  Expanded(
+                    child: Container(
+                      color: AppTheme.backgroundColor,
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 200),
+                        child: screens[_selectedIndex],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       );
     }
 
+    // Mobile / Responsive Layout
     return Scaffold(
-      drawer: !isDesktop ? _buildMobileDrawer(activeFoundation, isAdmin) : null,
-      appBar: AppBar(
-        centerTitle: !isDesktop ? true : null,
-        elevation: 0,
-        backgroundColor: Colors.white,
-        shape: const Border(
-          bottom: BorderSide(color: Color(0xFFEBEBEB), width: 1),
+      drawer: _buildMobileDrawer(activeFoundation, isAdmin),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(64),
+        child: SafeArea(
+          child: _buildTopHeader(context, activeFoundation, isAdmin, isDesktop: false),
         ),
-        leading: !isDesktop
-            ? Builder(
-                builder: (context) => IconButton(
-                  icon: const Icon(Icons.menu),
-                  onPressed: () => Scaffold.of(context).openDrawer(),
-                  tooltip: 'Menu Utama',
-                ),
-              )
-            : null,
-        title: buildAppBarTitle(),
-        actions: [
+      ),
+      body: Container(
+        color: AppTheme.backgroundColor,
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          child: screens[_selectedIndex],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTopHeader(BuildContext context, dynamic activeFoundation, bool isAdmin, {required bool isDesktop}) {
+    return Container(
+      height: 64,
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(color: Color(0xFFE9E8E6), width: 1),
+        ),
+      ),
+      child: Row(
+        children: [
+          if (!isDesktop) ...[
+            Builder(
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.menu, color: AppTheme.textDark),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+                tooltip: 'Menu Utama',
+              ),
+            ),
+            const SizedBox(width: 8),
+            const AppLogo(showText: true, fontSize: 16),
+          ],
+          const Spacer(),
           Consumer(
             builder: (context, ref, child) {
               final unreadCount = ref.watch(notificationProvider.select((s) => s.unreadCount));
@@ -616,32 +646,20 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
                 alignment: Alignment.center,
                 children: [
                   HoverIconButton(
-                    icon: const Icon(Icons.notifications_outlined, color: Color(0xFF6B7570)),
+                    icon: const Icon(Icons.notifications_outlined, color: Color(0xFF4B5563)),
                     tooltip: 'Notifikasi',
                     onPressed: _showNotificationCenter,
                   ),
                   if (unreadCount > 0)
                     Positioned(
-                      right: 4,
-                      top: 4,
+                      right: 6,
+                      top: 6,
                       child: Container(
-                        padding: const EdgeInsets.all(2),
+                        width: 8,
+                        height: 8,
                         decoration: const BoxDecoration(
                           color: AppTheme.colorError,
                           shape: BoxShape.circle,
-                        ),
-                        constraints: const BoxConstraints(
-                          minWidth: 14,
-                          minHeight: 14,
-                        ),
-                        child: Text(
-                          '$unreadCount',
-                          style: GoogleFonts.outfit(
-                            color: Colors.white,
-                            fontSize: 8,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
@@ -649,30 +667,34 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
               );
             },
           ),
+          const SizedBox(width: 4),
+          HoverIconButton(
+            icon: const Icon(Icons.settings_outlined, color: Color(0xFF4B5563)),
+            tooltip: 'Pengaturan (COA)',
+            onPressed: () {
+              context.push('/dashboard/coa');
+            },
+          ),
           if (isDesktop) ...[
-            const SizedBox(width: 8),
+            const SizedBox(width: 4),
             HoverIconButton(
-              icon: const Icon(Icons.people_outline, color: Color(0xFF6B7570)),
+              icon: const Icon(Icons.people_outline, color: Color(0xFF4B5563)),
               tooltip: 'Anggota Yayasan',
               onPressed: () => FoundationMembersDialog.show(context, activeFoundation.name),
-            ),
-            const SizedBox(width: 8),
-            HoverIconButton(
-              icon: const Icon(Icons.account_tree_outlined, color: Color(0xFF6B7570)),
-              tooltip: 'Bagan Akun (COA)',
-              onPressed: () {
-                context.push('/dashboard/coa');
-              },
             ),
           ],
           const SizedBox(width: 8),
           Consumer(
             builder: (context, ref, child) {
               final profile = ref.watch(authProvider).profile;
+              final roleRaw = activeFoundation.currentUserRole ?? 'admin';
+              final roleLabel = roleRaw == 'admin' 
+                  ? 'Admin Keuangan' 
+                  : (roleRaw == 'treasurer' ? 'Bendahara' : 'Stewardship Lead');
+
               final avatarUrl = profile?.avatarUrl;
-              final initials = profile?.name.isNotEmpty == true 
-                  ? profile!.name.substring(0, 1).toUpperCase() 
-                  : '?';
+              final userName = profile?.name ?? 'User';
+              final initials = userName.isNotEmpty ? userName.substring(0, 1).toUpperCase() : '?';
 
               final avatarWidget = CircleAvatar(
                 radius: 16,
@@ -692,13 +714,37 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
 
               return ProfileMenuAnchor(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                   child: MouseRegion(
                     cursor: SystemMouseCursors.click,
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         avatarWidget,
+                        if (isDesktop) ...[
+                          const SizedBox(width: 8),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                userName,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.textDark,
+                                ),
+                              ),
+                              Text(
+                                roleLabel,
+                                style: GoogleFonts.inter(
+                                  fontSize: 10,
+                                  color: AppTheme.textLight,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                         const SizedBox(width: 4),
                         const Icon(Icons.arrow_drop_down, size: 18, color: Color(0xFF6B7570)),
                       ],
@@ -711,25 +757,6 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: Row(
-        children: [
-          // Sidebar Navigasi untuk Desktop
-          if (isDesktop) ...[
-            _buildDesktopSidebar(context, activeFoundation, isAdmin),
-          ],
-          // Halaman Utama
-          Expanded(
-            child: Container(
-              color: const Color(0xFFF7F6F2),
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 200),
-                child: screens[_selectedIndex],
-              ),
-            ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: null,
     );
   }
 }
@@ -772,10 +799,17 @@ class _HoverSidebarItemState extends State<HoverSidebarItem> {
     final isSelected = widget.isSelected;
     
     Color bgColor = Colors.transparent;
+    Color iconColor = Colors.white70;
+    Color textColor = Colors.white70;
+
     if (isSelected) {
-      bgColor = Colors.white.withAlpha(26);
+      bgColor = AppTheme.secondaryColor; // Solid amber gold
+      iconColor = AppTheme.primaryColor; // Dark color inside active item
+      textColor = AppTheme.primaryColor;
     } else if (_isHovered) {
-      bgColor = Colors.white.withAlpha(13);
+      bgColor = Colors.white.withAlpha(20);
+      iconColor = Colors.white;
+      textColor = Colors.white;
     }
 
     return MouseRegion(
@@ -785,26 +819,19 @@ class _HoverSidebarItemState extends State<HoverSidebarItem> {
       child: GestureDetector(
         onTap: widget.onTap,
         child: Container(
-          height: 40,
-          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+          height: 44,
+          margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
             color: bgColor,
-            borderRadius: AppRadius.radiusSm,
+            borderRadius: AppRadius.radiusBadge, // 12px rounded-xl per Stitch
+            boxShadow: isSelected ? UIConstants.shadowSoft : null,
           ),
           child: Row(
             children: [
-              Container(
-                width: 3,
-                height: 20,
-                decoration: BoxDecoration(
-                  color: isSelected ? AppTheme.secondaryColor : Colors.transparent,
-                  borderRadius: const BorderRadius.horizontal(right: Radius.circular(3)),
-                ),
-              ),
-              const SizedBox(width: 13),
               Icon(
                 widget.icon,
-                color: isSelected ? AppTheme.secondaryColor : Colors.white60,
+                color: iconColor,
                 size: 18,
               ),
               const SizedBox(width: 12),
@@ -814,7 +841,7 @@ class _HoverSidebarItemState extends State<HoverSidebarItem> {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 13,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                    color: isSelected ? Colors.white : Colors.white70,
+                    color: textColor,
                   ),
                 ),
               ),

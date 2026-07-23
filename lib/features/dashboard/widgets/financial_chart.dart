@@ -19,7 +19,7 @@ class FinancialChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final maxVal = totalIncome > totalExpense ? totalIncome : totalExpense;
     // Tentukan interval sumbu Y agar tidak bertumpuk
-    final double yInterval = maxVal > 0 ? (maxVal / 5) : 100000;
+    final double yInterval = maxVal > 0 ? (maxVal / 3) : 100000;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -35,7 +35,11 @@ class FinancialChart extends StatelessWidget {
                       children: [
                          Text(
                           'Perbandingan Keuangan',
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.textDark,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Row(
@@ -52,7 +56,11 @@ class FinancialChart extends StatelessWidget {
                       children: [
                         Text(
                           'Perbandingan Keuangan',
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.textDark,
+                          ),
                         ),
                         // Legenda
                         Row(
@@ -128,9 +136,9 @@ class FinancialChart extends StatelessWidget {
                                 Formatter.formatRupiah(value),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.outfit(
-                                  fontSize: 10,
-                                  color: Colors.grey[600],
+                                style: GoogleFonts.inter(
+                                  fontSize: 9.5,
+                                  color: const Color(0xFF9CA3AF),
                                 ),
                               );
                             },
@@ -148,8 +156,8 @@ class FinancialChart extends StatelessWidget {
                         drawVerticalLine: false,
                         horizontalInterval: yInterval,
                         getDrawingHorizontalLine: (value) => FlLine(
-                          color: Colors.grey.withAlpha(26),
-                          strokeWidth: 1,
+                          color: Colors.grey.withAlpha(12),
+                          strokeWidth: 0.8,
                         ),
                       ),
                       borderData: FlBorderData(show: false),
@@ -159,7 +167,7 @@ class FinancialChart extends StatelessWidget {
                           barRods: [
                             BarChartRodData(
                               toY: totalIncome,
-                              color: AppTheme.colorSuccess,
+                              color: AppTheme.chartSuccessMuted,
                               width: 32,
                               borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(8),
@@ -173,7 +181,7 @@ class FinancialChart extends StatelessWidget {
                           barRods: [
                             BarChartRodData(
                               toY: totalExpense,
-                              color: AppTheme.colorError,
+                              color: AppTheme.chartErrorMuted,
                               width: 32,
                               borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(8),

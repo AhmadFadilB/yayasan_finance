@@ -19,8 +19,8 @@ class AppCard extends StatelessWidget {
     this.margin,
     this.color,
     this.radius,
-    this.hasBorder = true,
-    this.hasShadow = false,
+    this.hasBorder = false,
+    this.hasShadow = true,
     this.onTap,
   });
 
@@ -29,7 +29,7 @@ class AppCard extends StatelessWidget {
     final borderRadius = BorderRadius.circular(radius ?? AppRadius.md);
     
     Widget content = Container(
-      padding: padding ?? const EdgeInsets.all(UIConstants.s16),
+      padding: padding ?? const EdgeInsets.all(32.0),
       decoration: BoxDecoration(
         color: color ?? Colors.white,
         borderRadius: borderRadius,

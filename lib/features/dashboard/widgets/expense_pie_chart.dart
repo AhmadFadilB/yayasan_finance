@@ -22,16 +22,16 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
   int _touchedIndex = -1;
 
   final List<Color> _palette = const [
-    AppTheme.primaryColor,
-    AppTheme.secondaryColor,
-    AppTheme.colorError,
-    AppTheme.primaryLight,
-    AppTheme.colorWarning,
-    Color(0xFF8E24AA), // Purple
-    Color(0xFF00ACC1), // Cyan
-    Color(0xFF43A047), // Green
-    Color(0xFFD81B60), // Pink
-    Color(0xFF5D4037), // Brown
+    AppTheme.primaryColor,       // Dark #0B1F16
+    AppTheme.secondaryColor,     // Amber Gold #C9972B
+    AppTheme.chartSuccessMuted,  // Muted Forest #265835
+    AppTheme.chartErrorMuted,    // Muted Brick #7A2E29
+    Color(0xFF3B4A54),           // Slate Gray
+    Color(0xFF5C6B73),           // Muted Pewter
+    Color(0xFF4A3E56),           // Muted Eggplant
+    Color(0xFF6B5B45),           // Muted Bronze
+    Color(0xFF2C4C5E),           // Muted Deep Blue
+    Color(0xFF475569),           // Muted Charcoal
   ];
 
   @override
@@ -60,7 +60,11 @@ class _ExpensePieChartState extends State<ExpensePieChart> {
         children: [
           Text(
             'Analisis Kategori Pengeluaran',
-            style: Theme.of(context).textTheme.titleLarge,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.textDark,
+            ),
           ),
           const SizedBox(height: 24),
           totalExpense == 0

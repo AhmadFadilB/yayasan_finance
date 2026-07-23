@@ -24,24 +24,28 @@ class AppColors {
 }
 
 class AppTheme {
-  // Brand & Semantic Colors
-  static const Color primaryColor = Color(0xFF08241A); // Deep Forest Green (Minimalist)
-  static const Color primaryLight = Color(0xFF133F2F); // Lighter variant
-  static const Color primaryDark = Color(0xFF04120D); // Darker variant
+  // Brand & Semantic Colors (Exact Stitch Literal Hex)
+  static const Color primaryColor = Color(0xFF08241A); // Stitch brand-forest
+  static const Color primaryLight = Color(0xFF163E2D);
+  static const Color primaryDark = Color(0xFF000905); // Stitch primary
   
-  static const Color secondaryColor = Color(0xFFC9972B); // Warm Amber Gold
+  static const Color secondaryColor = Color(0xFFC9972B); // Stitch brand-gold
 
-  static const Color backgroundColor = Color(0xFFFAF9F5); // Warm Off-White
+  static const Color backgroundColor = Color(0xFFF8F7F4); // Stitch background
   static const Color cardColor = Colors.white;
 
   // Text Colors
-  static const Color textDark = Color(0xFF1A1F1C);
-  static const Color textLight = Color(0xFF6B7570);
+  static const Color textDark = Color(0xFF1A1C1B); // Stitch on-surface
+  static const Color textLight = Color(0xFF6B7570); // Stitch on-surface-variant
 
   // Semantic Colors
   static const Color colorSuccess = Color(0xFF1F7A4D);
   static const Color colorError = Color(0xFFC1443A);
   static const Color colorWarning = Color(0xFFD9A441);
+
+  // Muted / Desaturated Colors for Chart Graphics (Stitch look)
+  static const Color chartSuccessMuted = Color(0xFF265835); // Deep muted forest green
+  static const Color chartErrorMuted = Color(0xFF7A2E29);   // Deep muted brick red
 
   static ThemeData get lightTheme {
     return ThemeData(
@@ -70,13 +74,13 @@ class AppTheme {
       scaffoldBackgroundColor: backgroundColor,
       dividerColor: AppColors.divider,
 
-      // Card Theme with AppRadius.md
+      // Card Theme with AppRadius.md (No Border, Shadow Based)
       cardTheme: CardThemeData(
         color: cardColor,
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: AppRadius.radiusMd,
-          side: const BorderSide(color: AppColors.divider, width: 1),
+          side: BorderSide.none,
         ),
       ),
 
@@ -143,22 +147,22 @@ class AppTheme {
         ),
       ),
 
-      // Input Decoration with standard radius & spacing
+      // Input Decoration with standard radius & borderless soft fill
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white,
-        contentPadding: const EdgeInsets.all(UIConstants.s16),
+        fillColor: const Color(0xFFF3F4F6),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: AppRadius.radiusMd,
-          borderSide: const BorderSide(color: Color(0xFFD1D5DB), width: 1),
+          borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: AppRadius.radiusMd,
-          borderSide: const BorderSide(color: Color(0xFFD1D5DB), width: 1),
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: AppRadius.radiusMd,
-          borderSide: const BorderSide(color: primaryColor, width: 1.5),
+          borderSide: BorderSide.none,
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: AppRadius.radiusMd,

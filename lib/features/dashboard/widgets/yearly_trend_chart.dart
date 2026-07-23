@@ -69,7 +69,7 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
       if (monthlyIncome[i] > maxVal) maxVal = monthlyIncome[i];
       if (monthlyExpense[i] > maxVal) maxVal = monthlyExpense[i];
     }
-    final double yInterval = maxVal > 0 ? (maxVal / 5) : 100000;
+    final double yInterval = maxVal > 0 ? (maxVal / 3) : 100000;
 
     final monthLabels = const [
       'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
@@ -85,7 +85,11 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
             children: [
               Text(
                 'Tren Keuangan Bulanan',
-                style: Theme.of(context).textTheme.titleLarge,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textDark,
+                ),
               ),
               DropdownButton<int>(
                 value: _selectedYear,
@@ -130,8 +134,8 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
                   drawVerticalLine: false,
                   horizontalInterval: yInterval,
                   getDrawingHorizontalLine: (value) => FlLine(
-                    color: Colors.grey.withAlpha(20),
-                    strokeWidth: 1,
+                    color: Colors.grey.withAlpha(12),
+                    strokeWidth: 0.8,
                   ),
                 ),
                 titlesData: FlTitlesData(
@@ -174,9 +178,9 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
                         if (value == 0) return const SizedBox.shrink();
                         return Text(
                           Formatter.formatRupiah(value),
-                          style: GoogleFonts.outfit(
-                            fontSize: 9,
-                            color: Colors.grey[600],
+                          style: GoogleFonts.inter(
+                            fontSize: 9.5,
+                            color: const Color(0xFF9CA3AF),
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -209,48 +213,52 @@ class _YearlyTrendChartState extends State<YearlyTrendChart> {
                   ),
                 ),
                 lineBarsData: [
-                  // Line Pemasukan (Green)
+                  // Line Pemasukan (Muted Green)
                   LineChartBarData(
                     spots: List.generate(12, (i) => FlSpot(i.toDouble(), monthlyIncome[i])),
-                    isCurved: false,
-                    color: AppTheme.colorSuccess,
-                    barWidth: 3,
+                    isCurved: true,
+                    preventCurveOverShooting: true,
+                    curveSmoothness: 0.2,
+                    color: AppTheme.chartSuccessMuted,
+                    barWidth: 2.5,
                     isStrokeCapRound: true,
                     dotData: FlDotData(
                       show: true,
                       getDotPainter: (spot, percent, barData, index) =>
                           FlDotCirclePainter(
-                        radius: 4,
+                        radius: 3.5,
                         color: Colors.white,
-                        strokeWidth: 2.5,
-                        strokeColor: AppTheme.colorSuccess,
+                        strokeWidth: 2.0,
+                        strokeColor: AppTheme.chartSuccessMuted,
                       ),
                     ),
                     belowBarData: BarAreaData(
                       show: true,
-                      color: AppTheme.colorSuccess.withAlpha(20),
+                      color: AppTheme.chartSuccessMuted.withAlpha(18),
                     ),
                   ),
-                  // Line Pengeluaran (Red)
+                  // Line Pengeluaran (Muted Red)
                   LineChartBarData(
                     spots: List.generate(12, (i) => FlSpot(i.toDouble(), monthlyExpense[i])),
-                    isCurved: false,
-                    color: AppTheme.colorError,
-                    barWidth: 3,
+                    isCurved: true,
+                    preventCurveOverShooting: true,
+                    curveSmoothness: 0.2,
+                    color: AppTheme.chartErrorMuted,
+                    barWidth: 2.5,
                     isStrokeCapRound: true,
                     dotData: FlDotData(
                       show: true,
                       getDotPainter: (spot, percent, barData, index) =>
                           FlDotCirclePainter(
-                        radius: 4,
+                        radius: 3.5,
                         color: Colors.white,
-                        strokeWidth: 2.5,
-                        strokeColor: AppTheme.colorError,
+                        strokeWidth: 2.0,
+                        strokeColor: AppTheme.chartErrorMuted,
                       ),
                     ),
                     belowBarData: BarAreaData(
                       show: true,
-                      color: AppTheme.colorError.withAlpha(15),
+                      color: AppTheme.chartErrorMuted.withAlpha(15),
                     ),
                   ),
                 ],

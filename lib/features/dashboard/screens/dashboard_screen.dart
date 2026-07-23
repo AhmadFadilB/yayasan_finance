@@ -70,7 +70,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               },
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(24.0),
+                padding: const EdgeInsets.symmetric(horizontal: 36.0, vertical: 36.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -81,7 +81,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             children: [
                               Text(
                                 'Ringkasan Keuangan',
-                                style: Theme.of(context).textTheme.headlineMedium,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.textDark,
+                                ),
                               ),
                               SegmentedButton<DashboardFilter>(
                                 segments: const [
@@ -110,9 +114,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             children: [
                               Text(
                                 'Ringkasan Keuangan',
-                                style: Theme.of(context).textTheme.headlineMedium,
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.textDark,
+                                ),
                               ),
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 16),
                               SizedBox(
                                 width: double.infinity,
                                 child: SegmentedButton<DashboardFilter>(
@@ -138,7 +146,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               ),
                             ],
                           ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 48),
 
                     // Cards Panel (Responsive Layout)
                     isDesktop
@@ -153,7 +161,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                   isHighlight: true,
                                 ),
                               ),
-                              const SizedBox(width: 16),
+                              const SizedBox(width: 24),
                               Expanded(
                                 child: _buildFinanceCard(
                                   title: 'Total Debit (Masuk)',
@@ -162,7 +170,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                   icon: Icons.trending_up,
                                 ),
                               ),
-                              const SizedBox(width: 16),
+                              const SizedBox(width: 24),
                               Expanded(
                                 child: _buildFinanceCard(
                                   title: 'Total Kredit (Keluar)',
@@ -183,14 +191,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                 icon: Icons.account_balance_wallet_outlined,
                                 isHighlight: true,
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 24),
                               _buildFinanceCard(
                                 title: 'Total Debit (Masuk)',
                                 amount: totalIncome,
                                 color: AppTheme.colorSuccess,
                                 icon: Icons.trending_up,
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 24),
                               _buildFinanceCard(
                                 title: 'Total Kredit (Keluar)',
                                 amount: totalExpense,
@@ -199,7 +207,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                               ),
                             ],
                           ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 48),
 
                     // Chart, Pie Chart & Yearly Trend Grid (Responsive Layout)
                     isDesktop
@@ -225,7 +233,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 24),
+                              const SizedBox(height: 48),
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -251,15 +259,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                                 totalIncome: totalIncome,
                                 totalExpense: totalExpense,
                               ),
-                              const SizedBox(height: 24),
+                              const SizedBox(height: 48),
                               ExpensePieChart(
                                 transactions: transactionState.transactions,
                               ),
-                              const SizedBox(height: 24),
+                              const SizedBox(height: 48),
                               YearlyTrendChart(
                                 transactions: transactionState.transactions,
                               ),
-                              const SizedBox(height: 24),
+                              const SizedBox(height: 48),
                               _buildRecentTransactionsList(recentTxs),
                             ],
                           ),
@@ -277,51 +285,53 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     required IconData icon,
     bool isHighlight = false,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: AppRadius.radiusMd,
-        border: Border.all(color: AppColors.divider, width: 1),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Container(
+    if (isHighlight) {
+      // Hero Card: Saldo Utama (Dark background #0B1F16, Amber badge icon)
+      return Container(
+        padding: const EdgeInsets.all(32.0),
         decoration: BoxDecoration(
-          border: Border(
-            left: BorderSide(color: isHighlight ? AppTheme.primaryColor : color, width: 4),
-          ),
+          color: AppTheme.primaryColor, // Dark #0B1F16
+          borderRadius: AppRadius.radiusMd,
+          boxShadow: UIConstants.shadowSoft,
         ),
-        padding: const EdgeInsets.all(16.0),
         child: Row(
           children: [
-            CircleAvatar(
-              backgroundColor: isHighlight 
-                  ? AppTheme.primaryColor.withAlpha(26) 
-                  : color.withAlpha(26),
-              foregroundColor: isHighlight ? AppTheme.primaryColor : color,
-              child: Icon(icon),
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                color: AppTheme.secondaryColor, // Amber gold badge
+                borderRadius: AppRadius.radiusBadge,
+              ),
+              child: Center(
+                child: Icon(
+                  icon,
+                  color: AppTheme.primaryColor,
+                  size: 26,
+                ),
+              ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 20),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppTheme.textLight,
-                          fontWeight: FontWeight.w500,
-                        ),
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      color: Colors.white70,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   FittedBox(
                     fit: BoxFit.scaleDown,
                     child: MoneyText(
                       amount: amount,
-                      fontSize: 22,
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      styleType: title.contains('Debit') 
-                          ? MoneyTextStyleType.debit 
-                          : (title.contains('Kredit') ? MoneyTextStyleType.credit : MoneyTextStyleType.neutral),
+                      customColor: Colors.white,
                     ),
                   ),
                 ],
@@ -329,6 +339,66 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             ),
           ],
         ),
+      );
+    }
+
+    // Standard Metric Card (Total Debit / Total Kredit)
+    final isDebit = title.contains('Debit');
+    final badgeBgColor = isDebit ? const Color(0xFFDCFCE7) : const Color(0xFFFEE2E2);
+    final badgeIconColor = isDebit ? const Color(0xFF15803D) : const Color(0xFFB91C1C);
+    final badgeIcon = isDebit ? Icons.north_east_rounded : Icons.south_west_rounded;
+
+    return Container(
+      padding: const EdgeInsets.all(32.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: AppRadius.radiusMd,
+        boxShadow: UIConstants.shadowSoft,
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: badgeBgColor,
+              borderRadius: AppRadius.radiusBadge,
+            ),
+            child: Center(
+              child: Icon(
+                badgeIcon,
+                color: badgeIconColor,
+                size: 24,
+              ),
+            ),
+          ),
+          const SizedBox(width: 20),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.inter(
+                    fontSize: 13,
+                    color: AppTheme.textLight,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: MoneyText(
+                    amount: amount,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    styleType: isDebit ? MoneyTextStyleType.debit : MoneyTextStyleType.credit,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -340,7 +410,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         children: [
           Text(
             'Transaksi Terbaru',
-            style: Theme.of(context).textTheme.titleLarge,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.textDark,
+            ),
           ),
           const SizedBox(height: 16),
           if (recentTxs.isEmpty)

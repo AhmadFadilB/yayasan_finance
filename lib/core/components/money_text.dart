@@ -15,6 +15,8 @@ class MoneyText extends StatelessWidget {
   final FontWeight fontWeight;
   final MoneyTextStyleType styleType;
   final bool showSign;
+  final Color? customColor;
+  final double? letterSpacing;
 
   const MoneyText({
     super.key,
@@ -23,25 +25,34 @@ class MoneyText extends StatelessWidget {
     this.fontWeight = FontWeight.w600,
     this.styleType = MoneyTextStyleType.neutral,
     this.showSign = false,
+    this.customColor,
+    this.letterSpacing,
   });
 
   @override
   Widget build(BuildContext context) {
-    Color color;
+    Color color = customColor ?? AppTheme.textDark;
     String sign = '';
 
-    switch (styleType) {
-      case MoneyTextStyleType.debit:
-        color = AppTheme.colorSuccess;
-        if (showSign && amount > 0) sign = '+ ';
-        break;
-      case MoneyTextStyleType.credit:
-        color = AppTheme.colorError;
-        if (showSign && amount > 0) sign = '- ';
-        break;
-      case MoneyTextStyleType.neutral:
-        color = AppTheme.textDark;
-        break;
+    if (customColor == null) {
+      switch (styleType) {
+        case MoneyTextStyleType.debit:
+          color = AppTheme.colorSuccess;
+          if (showSign && amount > 0) sign = '+ ';
+          break;
+        case MoneyTextStyleType.credit:
+          color = AppTheme.colorError;
+          if (showSign && amount > 0) sign = '- ';
+          break;
+        case MoneyTextStyleType.neutral:
+          color = AppTheme.textDark;
+          break;
+      }
+    } else {
+      if (showSign && amount > 0) {
+        if (styleType == MoneyTextStyleType.debit) sign = '+ ';
+        if (styleType == MoneyTextStyleType.credit) sign = '- ';
+      }
     }
 
     final formatted = Formatter.formatRupiah(amount);
@@ -56,6 +67,7 @@ class MoneyText extends StatelessWidget {
         fontSize: fontSize,
         fontWeight: fontWeight,
         color: color,
+        letterSpacing: letterSpacing ?? 0.6,
         fontFeatures: const [
           FontFeature.tabularFigures(),
         ],
